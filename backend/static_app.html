@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenKeeper</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --panel: #1c253b;
+        --accent: #0ea5e9;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        background: radial-gradient(circle at top, #1b2442, #0b0f1a 50%);
+        color: var(--text);
+      }
+      .app { min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1f2937, #0f172a); padding: 16px 20px; border-radius: 16px; border: 1px solid #27324a; }
+      .title { font-size: 24px; font-weight: 700; }
+      .subtitle { font-size: 13px; color: var(--muted); }
+      .status { padding: 8px 14px; border-radius: 999px; font-size: 12px; letter-spacing: 0.1em; }
+      .status.on { background: #0f766e; }
+      .status.off { background: #7c2d12; }
+      .status.warn { background: #b45309; }
+      .notice { margin-top: 8px; font-size: 12px; color: var(--muted); }
+      .links { display: flex; gap: 10px; font-size: 12px; }
+      .links a { color: var(--accent); text-decoration: none; }
+      .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+      .card { background: var(--panel); padding: 16px; border-radius: 14px; border: 1px solid #2b3652; }
+      .card-title { font-weight: 600; margin-bottom: 12px; }
+      .grid { display: grid; gap: 10px; }
+      label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+      input, select { padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
+      button { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+      .actions { margin-top: 12px; display: flex; gap: 8px; }
+      .room { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 16px; }
+      .hidden { display: none !important; }
+      .divider { height: 1px; background: #2b3652; margin: 12px 0; }
+      .panel { background: var(--panel); border-radius: 14px; border: 1px solid #2b3652; padding: 16px; }
+      .panel-title { font-weight: 600; margin-bottom: 12px; }
+      .history { display: flex; flex-direction: column; gap: 12px; }
+      .history-list { flex: 1; max-height: 420px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+      .history-item { padding: 12px; background: #101a2d; border-radius: 12px; border: 1px solid #24314f; }
+      .history-item.player { border-left: 4px solid #38bdf8; }
+      .history-item.keeper { border-left: 4px solid #22c55e; }
+      .history-item.system { border-left: 4px solid #64748b; }
+      .history-item.secret { background: #0b2f20; border-color: #14532d; }
+      .history-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; margin-bottom: 4px; }
+      .history-content { font-size: 14px; }
+      .input-row { display: flex; gap: 8px; }
+      .input-row input { flex: 1; }
+      .input-row input:disabled { background: #0f172a; color: #64748b; cursor: not-allowed; }
+      .input-row button:disabled { opacity: 0.6; cursor: not-allowed; }
+      .side { display: flex; flex-direction: column; gap: 16px; }
+      .card-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+      .chip { padding: 6px 10px; border-radius: 999px; font-size: 12px; color: #0b0f1a; font-weight: 700; }
+      .stats, .attributes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; }
+      .players { display: flex; flex-direction: column; gap: 8px; }
+      .player { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+      .dot { width: 10px; height: 10px; border-radius: 50%; }
+      .muted { color: var(--muted); font-size: 12px; }
+      @media (max-width: 900px) { .room { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <div class="title">OpenKeeper</div>
+          <div class="subtitle">TRPG Agent Session Console</div>
+        </div>
+        <div>
+          <div id="status" class="status off">DISCONNECTED</div>
+        </div>
+      </header>
+
+      <section id="lobby" class="setup">
+        <div class="card">
+          <div class="card-title">选择角色</div>
+          <div class="grid">
+            <label>已有角色<select id="existingPlayers"></select></label>
+          </div>
+          <div class="actions">
+            <button id="useExisting">进入游戏</button>
+          </div>
+          <div class="notice">选择已有角色后进入游戏界面。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">角色创建</div>
+          <div class="grid">
+            <label>名称<input id="name" /></label>
+            <label>性别<select id="gender"><option value="男">男</option><option value="女">女</option></select></label>
+            <label>颜色<input id="color" type="color" value="#2dd4bf" /></label>
+            <label>职业<select id="profession"></select></label>
+          </div>
+          <div class="actions">
+            <button id="create">创建角色</button>
+          </div>
+          <div id="notice" class="notice"></div>
+        </div>
+      </section>
+
+      <section id="game" class="room hidden">
+        <div class="history panel">
+          <div class="panel-title">历史记录</div>
+          <div id="history" class="history-list"></div>
+          <div class="input-row">
+            <input id="actionInput" placeholder="行动输入..." />
+            <button id="send">发送</button>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="panel">
+            <div class="panel-title">角色卡</div>
+            <div class="card-info">
+              <div>
+                <strong id="cardName">Unknown</strong>
+                <div class="muted" id="cardProfession"></div>
+                <div class="muted" id="cardBackground"></div>
+              </div>
+              <div class="chip" id="cardChip"> </div>
+            </div>
+            <div class="stats" id="cardStats"></div>
+            <div class="attributes" id="cardAttributes"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">房间玩家</div>
+            <div class="players" id="roomPlayers"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const state = {
+        ws: null,
+        history: [],
+        stateView: { players: {} },
+        sessionInfo: null,
+        professions: {},
+        players: [],
+        machineId: "",
+        onlineIds: [],
+      };
+
+      const serverUrl = window.location.origin;
+      const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
+      let playerId = crypto.randomUUID();
+      state.machineId = localStorage.getItem("openkeeper_machine_id");
+      if (!state.machineId) {
+        state.machineId = crypto.randomUUID();
+        localStorage.setItem("openkeeper_machine_id", state.machineId);
+      }
+
+      function textFromI18n(content) {
+        if (!content) return "";
+        return content.zh || content.en || "";
+      }
+
+      function renderHistory() {
+        const container = el("history");
+        container.innerHTML = "";
+        state.history.forEach((entry) => {
+          const item = document.createElement("div");
+          item.className = `history-item ${entry.actor_type} ${entry.message_type === "secret" ? "secret" : ""}`;
+          if (entry.actor_type === "player") {
+            const pcolor = state.stateView.players?.[entry.actor_id]?.color;
+            if (pcolor) item.style.borderLeftColor = pcolor;
+          }
+          const actor =
+            entry.actor_type === "player"
+              ? state.stateView.players?.[entry.actor_id]?.name || "Player"
+              : entry.actor_type === "keeper"
+              ? "Keeper"
+              : "System";
+          const secretTag =
+            entry.message_type === "secret" && entry.actor_type === "keeper"
+              ? " Secret"
+              : "";
+          item.innerHTML = `
+            <div class="history-meta">
+              <span>${actor}${secretTag}</span>
+            </div>
+            <div class="history-content">${textFromI18n(entry.content)}</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      function renderPlayerCard() {
+        const player = state.stateView.players?.[playerId] || {};
+        el("cardName").textContent = player.name || "Unknown";
+        const profKey = player.profession || "";
+        const profLabel = state.professions[profKey]?.label_zh || state.professions[profKey]?.label || profKey;
+        el("cardProfession").textContent = profLabel;
+        const bg = player.background || state.professions[profKey]?.background_zh || "";
+        const bgEl = el("cardBackground");
+        if (bgEl) bgEl.textContent = bg;
+        const chip = el("cardChip");
+        chip.textContent = player.gender || "";
+        chip.style.background = player.color || "#475569";
+        const stats = player.stats || {};
+        const hpMax = stats.hp_max ?? stats.hp ?? 0;
+        const sanMax = stats.san_max ?? stats.san ?? 0;
+        const hp = Math.min(stats.hp ?? 0, hpMax);
+        const san = Math.min(stats.san ?? 0, sanMax);
+        el("cardStats").innerHTML = `
+          <div>生命: ${hp} / ${hpMax}</div>
+          <div>理智: ${san} / ${sanMax}</div>
+          <div>魔力: ${stats.mp ?? 0}</div>
+          <div>幸运: ${stats.luck ?? 0}</div>
+        `;
+        const attrs = player.attributes || {};
+        const attrLabels = {
+          str: "力量",
+          dex: "敏捷",
+          int: "智力",
+          con: "体质",
+          app: "外貌",
+          pow: "意志",
+          siz: "体型",
+          edu: "教育",
+        };
+        el("cardAttributes").innerHTML = Object.entries(attrs)
+          .map(([key, value]) => `<div>${attrLabels[key] || key}: ${value}</div>`)
+          .join("");
+      }
+
+      function renderRoomPlayers() {
+        const container = el("roomPlayers");
+        container.innerHTML = "";
+        Object.values(state.stateView.players || {})
+          .filter((p) => state.onlineIds.includes(p.player_id))
+          .forEach((p) => {
+          const item = document.createElement("div");
+          item.className = "player";
+          const hpMax = p.stats?.hp_max ?? p.stats?.hp ?? 0;
+          const sanMax = p.stats?.san_max ?? p.stats?.san ?? 0;
+          const hp = Math.min(p.stats?.hp ?? 0, hpMax);
+          const san = Math.min(p.stats?.san ?? 0, sanMax);
+          item.innerHTML = `
+            <span class="dot" style="background:${p.color || "#475569"}"></span>
+            <span>${p.name || ""}</span>
+            <span class="muted">生命 ${hp} / ${hpMax} | 理智 ${san} / ${sanMax}</span>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      function renderAll() {
+        renderHistory();
+        renderPlayerCard();
+        renderRoomPlayers();
+        updateActionLock();
+      }
+
+      function updateActionLock() {
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        const phase = state.stateView.phase || "lobby";
+        const locked = phase !== "active" || (stats.hp ?? 1) <= 0 || (stats.san ?? 1) <= 0;
+        const input = el("actionInput");
+        const btn = el("send");
+        input.disabled = locked;
+        btn.disabled = locked;
+        if (locked) {
+          if (phase !== "active") {
+            input.placeholder = "等待调查开始";
+          } else {
+            input.placeholder = "行动输入...";
+            setNotice("你的角色已死亡或疯狂，无法行动。");
+          }
+        } else {
+          input.placeholder = "行动输入...";
+        }
+      }
+
+      function renderLobbyPlayers() {
+        const select = el("existingPlayers");
+        const list = state.players;
+        if (!list.length) {
+          select.innerHTML = "<option value=\"\">暂无角色</option>";
+          return;
+        }
+        select.innerHTML = list
+          .map((p) => {
+            const profLabel =
+              state.professions[p.profession]?.label_zh ||
+              state.professions[p.profession]?.label ||
+              p.profession ||
+              "";
+            const label = `${p.name || "未知"} / ${p.gender || "未知"} / ${profLabel}`;
+            return `<option value=\"${p.player_id}\">${label}</option>`;
+          })
+          .join("");
+      }
+
+      async function loadProfessions() {
+        const serverUrl = window.location.origin;
+        try {
+          const res = await fetch(`${serverUrl}/professions`);
+          const data = await res.json();
+          state.professions = data.professions || {};
+        } catch (e) {
+          state.professions = {};
+        }
+        const select = el("profession");
+        const keys = Object.keys(state.professions);
+        const fallbackLabels = {
+          retired_soldier: "退役士兵",
+          police: "警察",
+          doctor: "医生",
+          professor: "大学教授",
+          private_detective: "私人侦探",
+          journalist: "记者",
+          occult_researcher: "神秘学研究者",
+          engineer: "工程师",
+          archaeologist: "考古学家",
+          lawyer: "律师",
+          nurse: "护士",
+          photojournalist: "摄影记者",
+        };
+        const list = keys.length ? keys : [
+          "retired_soldier",
+          "police",
+          "doctor",
+          "professor",
+          "private_detective",
+          "journalist",
+          "occult_researcher",
+          "engineer",
+          "archaeologist",
+          "lawyer",
+          "nurse",
+          "photojournalist",
+        ];
+        select.innerHTML = list
+          .map((p) => {
+            const label =
+              state.professions[p]?.label_zh ||
+              state.professions[p]?.label ||
+              fallbackLabels[p] ||
+              p;
+            return `<option value="${p}">${label}</option>`;
+          })
+          .join("");
+      }
+
+      async function loadPlayers() {
+        const serverUrl = window.location.origin;
+        try {
+          const res = await fetch(
+            `${serverUrl}/players?machine_id=${state.machineId}&include_unbound=true`
+          );
+          const data = await res.json();
+          state.players = data.players || [];
+        } catch (e) {
+          state.players = [];
+        }
+        renderLobbyPlayers();
+      }
+
+      function setNotice(text) {
+        el("notice").textContent = text;
+      }
+
+      el("create").addEventListener("click", async () => {
+        const serverUrl = window.location.origin;
+        const profession = el("profession").value;
+        const skills = state.professions[profession]?.skills || {};
+        playerId = crypto.randomUUID();
+        const payload = {
+          player_id: playerId,
+          name: el("name").value,
+          gender: el("gender").value,
+          color: el("color").value,
+          profession,
+          machine_id: state.machineId,
+          background: state.professions[profession]?.background_zh || "",
+          attributes: { str:50, dex:50, int:50, con:50, app:50, pow:50, siz:50, edu:50 },
+          stats: { hp:10, hp_max:10, san:60, san_max:60, mp:10, luck:50 },
+          skills,
+          statuses: [],
+        };
+        try {
+          const res = await fetch(`${serverUrl}/players`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          setNotice("角色创建成功。");
+          await loadPlayers();
+          el("existingPlayers").value = playerId;
+          el("lobby").classList.add("hidden");
+          el("game").classList.remove("hidden");
+          connect();
+        } catch (e) {
+          setNotice("角色创建失败，请检查后端服务。");
+        }
+      });
+
+      el("useExisting").addEventListener("click", () => {
+        const selected = el("existingPlayers").value;
+        if (!selected) {
+          setNotice("请选择一个角色。");
+          return;
+        }
+        playerId = selected;
+        fetch(`${window.location.origin}/players/claim`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ player_id: playerId, machine_id: state.machineId }),
+        });
+        el("lobby").classList.add("hidden");
+        el("game").classList.remove("hidden");
+        connect();
+      });
+
+      function connect() {
+        if (state.ws) state.ws.close();
+        state.ws = new WebSocket(wsUrl);
+        state.ws.onopen = () => {
+          el("status").className = "status on";
+          el("status").textContent = "CONNECTED";
+          state.ws.send(JSON.stringify({
+            type: "client.join",
+            payload: { player_id: playerId, role: "player" }
+          }));
+        };
+        state.ws.onmessage = (evt) => {
+          const message = JSON.parse(evt.data);
+          if (message.type === "server.session_state") {
+            state.sessionInfo = message.payload;
+            state.history = message.payload.latest_history || [];
+            state.stateView = message.payload.visible_state || { players: {} };
+            state.onlineIds = message.payload.online_player_ids || [];
+            renderAll();
+            return;
+          }
+          if (message.type === "server.history_append") {
+            const entry = message.payload.entry;
+            if (Array.isArray(entry)) {
+              state.history = entry;
+            } else {
+              state.history.push(entry);
+            }
+            renderHistory();
+            return;
+          }
+          if (message.type === "server.state_update") {
+            state.stateView = message.payload.state_diff || { players: {} };
+            state.onlineIds = message.payload.online_player_ids || state.onlineIds;
+            renderPlayerCard();
+            renderRoomPlayers();
+            updateActionLock();
+          }
+        };
+        state.ws.onclose = () => {
+          el("status").className = "status off";
+          el("status").textContent = "DISCONNECTED";
+        };
+        state.ws.onerror = () => {
+          el("status").className = "status warn";
+          el("status").textContent = "ERROR";
+          setNotice("连接失败，请检查后端服务与 WS 地址。");
+        };
+      }
+
+      el("send").addEventListener("click", () => {
+        if (!state.ws || state.ws.readyState !== 1) return;
+        const input = el("actionInput");
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        if ((stats.hp ?? 1) <= 0 || (stats.san ?? 1) <= 0) {
+          setNotice("你的角色已死亡或疯狂，无法行动。");
+          return;
+        }
+        if (!input.value.trim()) return;
+        state.ws.send(JSON.stringify({
+          type: "client.player_action",
+          payload: {
+            player_id: playerId,
+            action_text: { zh: input.value, en: "" }
+          }
+        }));
+        input.value = "";
+      });
+
+      el("actionInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") el("send").click();
+      });
+
+      loadProfessions();
+      loadPlayers();
+    </script>
+  </body>
+</html>

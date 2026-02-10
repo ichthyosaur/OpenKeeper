@@ -1,0 +1,33 @@
+{
+  "module_name": "空城密语",
+  "introduction": "一座被遗忘的内陆小城，数年前突然封锁，外界传言不断。",
+  "entry_narration": "你们在黄昏时分踏入城门，风里带着干冷的尘土味。街道空荡，远处的钟楼敲响了缓慢的三声。",
+  "key_characters": [
+    {
+      "name": "沈岚",
+      "public_info": "城中唯一仍在巡夜的女警，沉默寡言。",
+      "hidden_secrets": "她知道封城的真正原因，并在掩护一个幸存者。"
+    },
+    {
+      "name": "杜衡",
+      "public_info": "废弃医院的前院长，言谈谨慎。",
+      "hidden_secrets": "他参与了禁忌实验，保管着最后的研究记录。"
+    }
+  ],
+  "core_secrets": [
+    "城中央钟楼下埋着一处旧防空洞，藏着实验设施。",
+    "封城并非疫病，而是一场无法公开的失败仪式。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "truth_revealed",
+      "description": "真相被揭露，幸存者得救，城门重新开启。",
+      "conditions": "玩家找到研究记录并阻止仪式残余。"
+    },
+    {
+      "ending_id": "silence_falls",
+      "description": "玩家失踪，空城的沉默永远延续。",
+      "conditions": "玩家未能阻止仪式残余或被卷入封闭设施。"
+    }
+  ]
+}

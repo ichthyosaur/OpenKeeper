@@ -1,0 +1,33 @@
+{
+  "module_name": "Mansion of the Hollow Sun",
+  "introduction": "An isolated coastal town hides a forgotten manor and a chain of disappearances.",
+  "entry_narration": "A cold rain sweeps the cliffs as you arrive at the manor gates. The iron is warm to the touch.",
+  "key_characters": [
+    {
+      "name": "Elena Ward",
+      "public_info": "Caretaker of the manor, calm and precise.",
+      "hidden_secrets": "She is the last of an old cult lineage and protects the sealed chamber."
+    },
+    {
+      "name": "Deputy Harrow",
+      "public_info": "Local deputy, distrustful of outsiders.",
+      "hidden_secrets": "He staged evidence to keep people away from the cliffs."
+    }
+  ],
+  "core_secrets": [
+    "The manor contains a prewar observatory used for forbidden rituals.",
+    "The disappearances are linked to a broken seal beneath the manor."
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "seal_restored",
+      "description": "The players restore the seal and the town survives.",
+      "conditions": "The broken seal is repaired and the core ritual is interrupted."
+    },
+    {
+      "ending_id": "hollow_sun_rises",
+      "description": "The ritual completes and the town is consumed.",
+      "conditions": "Players fail to stop the ritual and the final rite completes."
+    }
+  ]
+}

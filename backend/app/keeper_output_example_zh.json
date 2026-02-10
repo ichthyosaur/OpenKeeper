@@ -1,0 +1,19 @@
+{
+  "message_type": "public",
+  "visible_to": ["all"],
+  "content": {
+    "zh": "你谨慎地推开门，一股霉湿的冷气扑面而来。地板上有拖拽的痕迹。",
+    "en": ""
+  },
+  "actions": [
+    {
+      "function_name": "roll_dice",
+      "parameters": {
+        "dice_expression": "1d100",
+        "reason": "侦查检定",
+        "actor_id": "player_001"
+      }
+    }
+  ],
+  "notes": "示例：先动作后叙事"
+}

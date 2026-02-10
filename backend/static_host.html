@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenKeeper Host</title>
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --panel: #1c253b;
+        --accent: #22c55e;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        background: radial-gradient(circle at top, #1b2442, #0b0f1a 50%);
+        color: var(--text);
+      }
+      .app { min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #113422, #0f172a); padding: 16px 20px; border-radius: 16px; border: 1px solid #27324a; }
+      .title { font-size: 24px; font-weight: 700; }
+      .subtitle { font-size: 13px; color: var(--muted); }
+      .status { padding: 8px 14px; border-radius: 999px; font-size: 12px; letter-spacing: 0.1em; }
+      .status.on { background: #0f766e; }
+      .status.off { background: #7c2d12; }
+      .status.warn { background: #b45309; }
+      .grid { display: grid; gap: 10px; }
+      .badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: #0f172a; color: var(--muted); font-size: 12px; }
+      select { padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
+      select[multiple] { min-height: 120px; background: #0b2f20; border-color: #14532d; }
+      button { background: var(--accent); color: #052e16; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+      .room { display: grid; grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); gap: 16px; }
+      .panel { background: var(--panel); border-radius: 14px; border: 1px solid #2b3652; padding: 16px; }
+      .panel-title { font-weight: 600; margin-bottom: 12px; }
+      .history-list { max-height: 520px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+      .history-item { padding: 12px; background: #101a2d; border-radius: 12px; border: 1px solid #24314f; }
+      .history-item.player { border-left: 4px solid #38bdf8; }
+      .history-item.keeper { border-left: 4px solid #22c55e; }
+      .history-item.system { border-left: 4px solid #64748b; }
+      .history-item.secret { background: #0b2f20; border-color: #14532d; }
+      .history-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; margin-bottom: 4px; }
+      .history-content { font-size: 14px; }
+      .players { display: flex; flex-direction: column; gap: 12px; }
+      .player { border: 1px solid #24314f; border-radius: 12px; padding: 10px; }
+      .player-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+      .pill { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #0f172a; }
+      .status-badge { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #7c2d12; color: #ffedd5; }
+      .muted { color: var(--muted); font-size: 12px; }
+      .top-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+      .row { display: flex; gap: 8px; align-items: center; }
+      textarea { width: 100%; min-height: 80px; padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
+      @media (max-width: 900px) { .room { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <div class="title">OpenKeeper Host</div>
+          <div class="subtitle">全量历史与玩家状态</div>
+        </div>
+        <div id="status" class="status off">DISCONNECTED</div>
+      </header>
+
+      <section class="top-row">
+        <div class="panel">
+          <div class="panel-title">Host 状态</div>
+          <div class="grid">
+            <div class="badge" id="serverInfo"></div>
+            <div class="badge" id="wsInfo"></div>
+            <div class="badge" id="hostInfo"></div>
+          </div>
+          <div class="muted" style="margin-top:6px;">Host 可见全部 Secret。</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">模组与 Keeper</div>
+          <div class="grid">
+            <label>模组<select id="moduleSelect"></select></label>
+            <label>Keeper<select id="keeperSelect"><option value="stub">Stub Keeper</option></select></label>
+            <label>记忆窗口（条）
+              <input id="historyCount" type="number" min="1" value="100" />
+            </label>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button id="startModule">开始模组</button>
+            <button id="resetGame">重置游戏</button>
+          </div>
+          <div class="muted" id="hostNotice" style="margin-top:6px;"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Host 消息</div>
+          <div class="grid">
+            <label>类型
+              <select id="hostMsgType">
+                <option value="system">System</option>
+                <option value="secret">Secret</option>
+              </select>
+            </label>
+            <label>内容
+              <textarea id="hostMsgContent" placeholder="输入消息内容..."></textarea>
+            </label>
+            <label>Secret 可见玩家
+              <select id="hostMsgVisible" multiple></select>
+            </label>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button id="sendHostMsg">发送消息</button>
+          </div>
+          <div class="muted" id="hostMsgNotice" style="margin-top:6px;"></div>
+        </div>
+      </section>
+
+      <section class="room">
+        <div class="panel">
+          <div class="panel-title">历史记录（含 Secret）</div>
+          <div id="history" class="history-list"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">玩家状态</div>
+          <div id="players" class="players"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const state = { ws: null, history: [], stateView: { players: {} }, professions: {}, modules: [], players: [], onlineIds: [] };
+      const serverUrl = window.location.origin;
+      const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
+      const hostId = crypto.randomUUID();
+      el("serverInfo").textContent = `Server: ${serverUrl}`;
+      el("wsInfo").textContent = `WS: ${wsUrl}`;
+      el("hostInfo").textContent = `Host ID: ${hostId}`;
+      el("hostInfo").insertAdjacentHTML("afterend", "<div class=\"badge\" id=\"phaseInfo\"></div>");
+      el("phaseInfo").textContent = "Phase: lobby";
+
+      function setNotice(text) {
+        el("hostNotice").textContent = text || "";
+      }
+
+      function textFromI18n(content) {
+        if (!content) return "";
+        return content.zh || content.en || "";
+      }
+
+      function renderHistory() {
+        const container = el("history");
+        container.innerHTML = "";
+        state.history.forEach((entry) => {
+          const item = document.createElement("div");
+          item.className = `history-item ${entry.actor_type} ${entry.message_type === "secret" ? "secret" : ""}`;
+          if (entry.actor_type === "player") {
+            const pcolor = state.stateView.players?.[entry.actor_id]?.color;
+            if (pcolor) item.style.borderLeftColor = pcolor;
+          }
+          const actor =
+            entry.actor_type === "player"
+              ? state.stateView.players?.[entry.actor_id]?.name || "Player"
+              : entry.actor_type === "keeper"
+              ? "Keeper"
+              : "System";
+          const secretTag =
+            entry.message_type === "secret" && entry.actor_type === "keeper"
+              ? " Secret"
+              : "";
+          item.innerHTML = `
+            <div class="history-meta">
+              <span>${actor}${secretTag}</span>
+            </div>
+            <div class="history-content">${textFromI18n(entry.content)}</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      function renderPlayers() {
+        const container = el("players");
+        container.innerHTML = "";
+        const fallbackLabels = {
+          retired_soldier: "退役士兵",
+          police: "警察",
+          doctor: "医生",
+          professor: "大学教授",
+          private_detective: "私人侦探",
+          journalist: "记者",
+          occult_researcher: "神秘学研究者",
+          engineer: "工程师",
+          archaeologist: "考古学家",
+          lawyer: "律师",
+          nurse: "护士",
+          photojournalist: "摄影记者",
+        };
+        Object.values(state.stateView.players || {})
+          .filter((p) => state.onlineIds.includes(p.player_id))
+          .forEach((p) => {
+          const item = document.createElement("div");
+          item.className = "player";
+          const attrs = p.attributes || {};
+          const stats = p.stats || {};
+          const profKey = p.profession || "";
+          const profLabel =
+            state.professions[profKey]?.label_zh ||
+            state.professions[profKey]?.label ||
+            fallbackLabels[profKey] ||
+            profKey;
+          const hpMax = stats.hp_max ?? stats.hp ?? 0;
+          const sanMax = stats.san_max ?? stats.san ?? 0;
+          const hp = Math.min(stats.hp ?? 0, hpMax);
+          const san = Math.min(stats.san ?? 0, sanMax);
+          const statusBadge =
+            hp <= 0
+              ? "<span class=\"status-badge\">死亡</span>"
+              : san <= 0
+              ? "<span class=\"status-badge\">疯狂</span>"
+              : "";
+          item.innerHTML = `
+            <div class="player-head">
+              <strong>${p.name || ""}</strong>
+              <div style="display:flex; gap:6px; align-items:center;">
+                ${statusBadge}
+                <span class="pill" style="background:${p.color || "#334155"}">${profLabel}</span>
+              </div>
+            </div>
+            <div class="muted">生命 ${hp} / ${hpMax} / 理智 ${san} / ${sanMax} / 魔力 ${stats.mp ?? 0} / 幸运 ${stats.luck ?? 0}</div>
+            <div class="muted">力量 ${attrs.str ?? 0} 敏捷 ${attrs.dex ?? 0} 智力 ${attrs.int ?? 0} 体质 ${attrs.con ?? 0}</div>
+            <div class="muted">外貌 ${attrs.app ?? 0} 意志 ${attrs.pow ?? 0} 体型 ${attrs.siz ?? 0} 教育 ${attrs.edu ?? 0}</div>
+          `;
+          container.appendChild(item);
+        });
+        renderSecretTargets();
+      }
+
+      async function loadProfessions() {
+        try {
+          const res = await fetch(`${serverUrl}/professions`);
+          const data = await res.json();
+          state.professions = data.professions || {};
+        } catch (e) {
+          state.professions = {};
+        }
+      }
+
+      async function loadModules() {
+        try {
+          const res = await fetch(`${serverUrl}/modules`);
+          const data = await res.json();
+          state.modules = data.modules || [];
+        } catch (e) {
+          state.modules = [];
+        }
+        const select = el("moduleSelect");
+        if (!state.modules.length) {
+          select.innerHTML = "<option value=\"\">无模组</option>";
+          return;
+        }
+        select.innerHTML = state.modules
+          .map((m) => `<option value="${m.id}">${m.id}</option>`)
+          .join("");
+      }
+
+      async function loadPlayers() {
+        try {
+          const res = await fetch(`${serverUrl}/players`);
+          const data = await res.json();
+          state.players = data.players || [];
+        } catch (e) {
+          state.players = [];
+        }
+        renderSecretTargets();
+      }
+
+      function renderSecretTargets() {
+        const select = el("hostMsgVisible");
+        const players = Object.values(state.stateView.players || {}).filter((p) =>
+          state.onlineIds.includes(p.player_id)
+        );
+        if (!players.length) {
+          select.innerHTML = "<option value=\"\">暂无玩家</option>";
+          return;
+        }
+        select.innerHTML = players
+          .map((p) => `<option value=\"${p.player_id}\">${p.name || p.player_id}</option>`)
+          .join("");
+      }
+
+      async function startModule() {
+        const moduleName = el("moduleSelect").value;
+        if (!moduleName) {
+          setNotice("请选择模组。");
+          return;
+        }
+        const res = await fetch(`${serverUrl}/session/start`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ module_name: moduleName, keeper: el("keeperSelect").value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`模组已开始：${data.module_name}`);
+        } else {
+          setNotice(data.error || "开始失败");
+        }
+      }
+
+      async function resetGame() {
+        const res = await fetch(`${serverUrl}/session/reset`, { method: "POST" });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice("游戏已重置。");
+          state.history = [];
+          renderHistory();
+        } else {
+          setNotice("重置失败。");
+        }
+      }
+
+      function toggleSecretSelect() {
+        const msgType = el("hostMsgType").value;
+        const select = el("hostMsgVisible");
+        select.disabled = msgType !== "secret";
+      }
+
+      async function sendHostMessage() {
+        const msgType = el("hostMsgType").value;
+        const text = el("hostMsgContent").value.trim();
+        if (!text) {
+          el("hostMsgNotice").textContent = "请输入内容。";
+          return;
+        }
+        let visible = ["all"];
+        if (msgType === "secret") {
+          const select = el("hostMsgVisible");
+          visible = Array.from(select.selectedOptions).map((o) => o.value);
+          if (!visible.length || !visible[0]) {
+            el("hostMsgNotice").textContent = "Secret 需要至少一个玩家。";
+            return;
+          }
+        }
+        const res = await fetch(`${serverUrl}/host/message`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message_type: msgType,
+            visible_to: msgType === "secret" ? visible : ["all"],
+            content: { zh: text, en: "" },
+            actions: [],
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          el("hostMsgNotice").textContent = "发送成功。";
+          el("hostMsgContent").value = "";
+        } else {
+          el("hostMsgNotice").textContent = data.error || "发送失败。";
+        }
+      }
+
+      async function updateHistoryCount() {
+        const value = el("historyCount").value;
+        const res = await fetch(`${serverUrl}/config/history`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ history_count: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`记忆窗口已更新：${data.history_count}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function connect() {
+        await loadProfessions();
+        await loadModules();
+        await loadPlayers();
+        if (state.ws) state.ws.close();
+        state.ws = new WebSocket(wsUrl);
+        state.ws.onopen = () => {
+          el("status").className = "status on";
+          el("status").textContent = "CONNECTED";
+          state.ws.send(JSON.stringify({
+            type: "client.join",
+            payload: { player_id: hostId, role: "host" }
+          }));
+        };
+        state.ws.onmessage = (evt) => {
+          const message = JSON.parse(evt.data);
+          if (message.type === "server.session_state") {
+            state.history = message.payload.latest_history || [];
+            state.stateView = message.payload.visible_state || { players: {} };
+            state.onlineIds = message.payload.online_player_ids || [];
+            el("phaseInfo").textContent = `Phase: ${state.stateView.phase || "lobby"}`;
+            renderHistory();
+            renderPlayers();
+            return;
+          }
+          if (message.type === "server.history_append") {
+            const entry = message.payload.entry;
+            if (Array.isArray(entry)) {
+              state.history = entry;
+            } else {
+              state.history.push(entry);
+            }
+            renderHistory();
+            return;
+          }
+          if (message.type === "server.state_update") {
+            state.stateView = message.payload.state_diff || { players: {} };
+            state.onlineIds = message.payload.online_player_ids || state.onlineIds;
+            el("phaseInfo").textContent = `Phase: ${state.stateView.phase || "lobby"}`;
+            renderPlayers();
+          }
+        };
+        state.ws.onclose = () => {
+          el("status").className = "status off";
+          el("status").textContent = "DISCONNECTED";
+        };
+        state.ws.onerror = () => {
+          el("status").className = "status warn";
+          el("status").textContent = "ERROR";
+        };
+      }
+
+      el("startModule").addEventListener("click", startModule);
+      el("resetGame").addEventListener("click", resetGame);
+      el("sendHostMsg").addEventListener("click", sendHostMessage);
+      el("hostMsgType").addEventListener("change", toggleSecretSelect);
+      el("historyCount").addEventListener("change", updateHistoryCount);
+
+      toggleSecretSelect();
+      connect();
+    </script>
+  </body>
+</html>

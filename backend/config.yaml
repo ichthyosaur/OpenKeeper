@@ -1,0 +1,6 @@
+mongo_uri: "mongodb://localhost:27017"
+mongo_db: "openkeeper"
+api_key: ""
+base_url: ""
+model: "gpt-4o-mini"
+history_count: 100
