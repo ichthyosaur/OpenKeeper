@@ -5,7 +5,6 @@
 ## 功能概览
 - LLM 作为 Keeper，输出 JSON 并通过 actions 驱动状态
 - 1920s 经典规则（CoC 7e）判定：常规/困难/极难 + 奖励/惩罚骰
-- Server 唯一权威状态源，Secret 可见性严格控制（Host 总可见）
 - 角色与模组管理，结局由 Keeper 触发
 
 ## 环境要求
