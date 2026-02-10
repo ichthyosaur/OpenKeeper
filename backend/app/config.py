@@ -7,7 +7,7 @@ from typing import Any, Optional, Union
 import yaml
 
 
-@dataclass(frozen=True)
+@dataclass
 class AppConfig:
     mongo_uri: str
     mongo_db: str
@@ -15,6 +15,10 @@ class AppConfig:
     base_url: Optional[str]
     model: str
     history_count: int
+    max_followups: int
+    stream_cps: int
+    temperature: float
+    llm_parse_retries: int
 
 
 DEFAULT_CONFIG = {
@@ -24,6 +28,10 @@ DEFAULT_CONFIG = {
     "base_url": None,
     "model": "gpt-4o-mini",
     "history_count": 100,
+    "max_followups": 2,
+    "stream_cps": 50,
+    "temperature": 0.7,
+    "llm_parse_retries": 3,
 }
 
 
@@ -43,4 +51,8 @@ def load_config(path: Union[str, Path]) -> AppConfig:
         base_url=data.get("base_url"),
         model=str(data.get("model")),
         history_count=int(data.get("history_count")),
+        max_followups=int(data.get("max_followups")),
+        stream_cps=int(data.get("stream_cps")),
+        temperature=float(data.get("temperature")),
+        llm_parse_retries=max(0, int(data.get("llm_parse_retries"))),
     )

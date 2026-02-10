@@ -29,5 +29,118 @@
       "description": "玩家失踪，空城的沉默永远延续。",
       "conditions": "玩家未能阻止仪式残余或被卷入封闭设施。"
     }
+  ],
+  "ending_triggers": [
+    "玩家掌握研究记录并关闭钟楼共鸣装置。",
+    "玩家被困在地窖/实验室且无法脱身。",
+    "所有调查员死亡或疯狂。"
+  ],
+  "locations": [
+    {
+      "name": "旧钟楼",
+      "description": "城中心的钟楼锈迹斑驳，钟声总比时间慢半拍。",
+      "features": ["尘封钟室", "螺旋阶梯", "裂开的钟面"],
+      "secrets": ["地窖入口被铁链锁住"],
+      "connections": ["主街", "市政广场"]
+    },
+    {
+      "name": "废弃医院",
+      "description": "走廊尽头常有冰冷的消毒水味，病房门牌已模糊。",
+      "features": ["封闭病区", "烧毁的档案室"],
+      "secrets": ["地下实验室的通风口"],
+      "connections": ["南区", "小巷" ]
+    },
+    {
+      "name": "城门检查站",
+      "description": "半倒的路障与停滞的检疫亭，登记簿被雨水浸透。",
+      "features": ["警戒灯", "旧公告板"],
+      "secrets": ["最后一次封城指令被撕毁"],
+      "connections": ["城外公路", "主街"]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "gate_entry",
+      "title": "黄昏入城",
+      "summary": "空城的第一印象与封锁痕迹浮现。",
+      "beats": ["尘土味", "缓慢钟声", "路障残迹"],
+      "required_clues": [],
+      "outcomes": ["选择调查钟楼", "寻找幸存者"]
+    },
+    {
+      "scene_id": "hospital_records",
+      "title": "断档的病历",
+      "summary": "找到被火烧掉一半的实验记录。",
+      "beats": ["烧焦纸页", "隐约药剂味", "脚步回音"],
+      "required_clues": ["clue_trial_file"],
+      "outcomes": ["追踪实验室", "向沈岚求证"]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_trial_file",
+      "description": "一份残破实验记录，记录“共鸣测试”失败。",
+      "location": "废弃医院",
+      "linked_to": ["truth_revealed"],
+      "reveal": "仪式需要钟楼地下的装置。"
+    },
+    {
+      "clue_id": "clue_chain_marks",
+      "description": "钟楼地窖铁链上残留的深色锈痕。",
+      "location": "旧钟楼",
+      "linked_to": ["杜衡"],
+      "reveal": "有人在封城后仍进入过地窖。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "sirens_return",
+      "trigger": "夜半在主街逗留",
+      "description": "无人城中响起短促警笛，像是旧录音重播。",
+      "consequences": ["触发紧张氛围", "引来沈岚盘问"]
+    },
+    {
+      "event_id": "cold_wind",
+      "trigger": "进入钟楼地窖",
+      "description": "一阵刺骨冷风吹灭手灯。",
+      "consequences": ["SAN 压力", "听见低语"]
+    }
+  ],
+  "items": [
+    {
+      "name": "门禁钥匙",
+      "description": "锈迹斑斑的金属钥匙，贴着“B区”字样。",
+      "effect": "开启废弃医院封闭病区。",
+      "location": "城门检查站"
+    },
+    {
+      "name": "旧式录音机",
+      "description": "带着磁带的便携机，录有断续钟声。",
+      "effect": "重放时可触发共鸣线索。",
+      "location": "旧钟楼"
+    }
+  ],
+  "factions": [
+    {
+      "name": "封城残留行动组",
+      "goal": "掩盖失败仪式的真相。",
+      "resources": ["废弃仓库", "旧档案"],
+      "methods": ["断章取义", "恐吓外来者"],
+      "attitude": "敌意但害怕真相失控。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "共鸣回声",
+      "nature": "仪式残留的精神回响，借钟声扩散。",
+      "signs": ["钟声失真", "耳鸣与低语"],
+      "escalation": ["幻觉加重", "意志崩解", "集体失声"],
+      "weakness": "切断钟楼共鸣装置。"
+    }
+  ],
+  "timeline": [
+    {"time": "8年前", "event": "市政实验项目秘密立项。"},
+    {"time": "3年前", "event": "仪式失败，封城指令下达。"},
+    {"time": "现在", "event": "城门再次开启，真相重现。"}
   ]
 }

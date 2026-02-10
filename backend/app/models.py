@@ -40,6 +40,8 @@ class ActionCall(BaseModel):
         "update_player_attribute",
         "add_status",
         "remove_status",
+        "oppose_check",
+        "end_module",
     ]
     parameters: dict[str, Any]
 
@@ -131,6 +133,66 @@ class ModuleEnding(BaseModel):
     conditions: str
 
 
+class ModuleLocation(BaseModel):
+    name: str
+    description: str
+    features: list[str] = []
+    secrets: list[str] = []
+    connections: list[str] = []
+
+
+class ModuleScene(BaseModel):
+    scene_id: str
+    title: str
+    summary: str
+    beats: list[str] = []
+    required_clues: list[str] = []
+    outcomes: list[str] = []
+
+
+class ModuleClue(BaseModel):
+    clue_id: str
+    description: str
+    location: str
+    linked_to: list[str] = []
+    reveal: str = ""
+
+
+class ModuleEvent(BaseModel):
+    event_id: str
+    trigger: str
+    description: str
+    consequences: list[str] = []
+
+
+class ModuleItem(BaseModel):
+    name: str
+    description: str
+    effect: str = ""
+    location: str = ""
+
+
+class ModuleFaction(BaseModel):
+    name: str
+    goal: str
+    resources: list[str] = []
+    methods: list[str] = []
+    attitude: str = ""
+
+
+class ModuleThreat(BaseModel):
+    name: str
+    nature: str
+    signs: list[str] = []
+    escalation: list[str] = []
+    weakness: str = ""
+
+
+class ModuleTimelineEntry(BaseModel):
+    time: str
+    event: str
+
+
 class Module(BaseModel):
     module_name: str
     introduction: str
@@ -138,3 +200,12 @@ class Module(BaseModel):
     key_characters: list[ModuleCharacter]
     core_secrets: list[str]
     possible_endings: list[ModuleEnding]
+    ending_triggers: list[str] = []
+    locations: list[ModuleLocation] = []
+    scenes: list[ModuleScene] = []
+    clues: list[ModuleClue] = []
+    events: list[ModuleEvent] = []
+    items: list[ModuleItem] = []
+    factions: list[ModuleFaction] = []
+    threats: list[ModuleThreat] = []
+    timeline: list[ModuleTimelineEntry] = []

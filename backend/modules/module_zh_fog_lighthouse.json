@@ -1,0 +1,165 @@
+{
+  "module_name": "雾港灯塔",
+  "introduction": "北海岸的雾港常年潮湿，灯塔自三周前熄灭后，渔船频频失踪。当地教区与港务局彼此推诿，一封匿名求助信把你们带到了此地。",
+  "entry_narration": "你们踏上满是盐霜的石堤，潮雾把灯塔的轮廓吞吐。远处码头传来空洞的铃响，像是有人在雾里敲击铁链。",
+  "key_characters": [
+    {
+      "name": "玛琳·克劳",
+      "public_info": "港务局女文员，疲惫而焦虑，负责灯塔物资记录。",
+      "hidden_secrets": "她篡改了补给账目，掩盖灯塔守卫失踪前的异常采购。"
+    },
+    {
+      "name": "鲁本·凯尔",
+      "public_info": "灯塔看守的弟弟，脾气暴躁，坚称哥哥还活着。",
+      "hidden_secrets": "他曾在灯塔地窖里看到发光的海藻，隐瞒了这一点。"
+    },
+    {
+      "name": "费舍尔神父",
+      "public_info": "本地教区神父，愿意提供住处与资料。",
+      "hidden_secrets": "教区地窖藏有一份关于“海中歌声”的旧记录。"
+    }
+  ],
+  "core_secrets": [
+    "灯塔地下旧仓库连接着一条被封堵的海蚀洞，洞内残留不属于人类的石刻。",
+    "熄灯并非事故，而是守卫在阻止一种会模仿人声的海中存在。",
+    "失踪的渔船被引向礁区，留下的残骸里混入了奇异的骨质碎片。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "light_rekindled",
+      "description": "灯塔重新点亮，雾港暂时恢复平静，但海面深处的低语未止。",
+      "conditions": "玩家封堵海蚀洞并修复灯塔照明装置。"
+    },
+    {
+      "ending_id": "song_claims_all",
+      "description": "雾越聚越厚，港口彻底沉寂，灯塔永远熄灭。",
+      "conditions": "玩家未能阻止“歌声”，并放任其引导渔船。"
+    },
+    {
+      "ending_id": "bargain_with_depths",
+      "description": "玩家以代价换取短暂安宁，雾港得以延续，但代价将带来新的阴影。",
+      "conditions": "玩家选择与海中存在交易或做出献祭。"
+    }
+  ],
+  "ending_triggers": [
+    "海蚀洞被封堵且灯塔重启。",
+    "玩家放任歌声引导渔船或未能阻止海中存在。",
+    "玩家与海中存在达成交易或献祭。",
+    "所有调查员死亡或疯狂。"
+  ],
+  "locations": [
+    {
+      "name": "灯塔主塔",
+      "description": "潮湿的石塔内回响着风声与残破的机械声。",
+      "features": ["熄灭的透镜室", "锈蚀齿轮", "守卫卧室"],
+      "secrets": ["暗门通向旧仓库"],
+      "connections": ["码头", "石堤"]
+    },
+    {
+      "name": "雾港码头",
+      "description": "潮汐堆积的木栈道与空荡的渔网棚。",
+      "features": ["空船残骸", "缺口的缆绳"],
+      "secrets": ["某条船的航海日志被人取走"],
+      "connections": ["港务局", "石堤"]
+    },
+    {
+      "name": "教区地窖",
+      "description": "微光烛台映照古旧木架，灰尘如盐雾凝结。",
+      "features": ["旧卷宗", "破损地图"],
+      "secrets": ["关于“歌声”的记录册"],
+      "connections": ["教堂", "巷道"]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "harbor_arrival",
+      "title": "雾港初见",
+      "summary": "玩家抵达雾港并感受异常的潮雾与冷意。",
+      "beats": ["空洞铃响", "潮雾吞吐", "渔民避让"],
+      "required_clues": [],
+      "outcomes": ["调查码头", "询问港务局"]
+    },
+    {
+      "scene_id": "tower_descent",
+      "title": "塔下暗门",
+      "summary": "发现通往旧仓库与海蚀洞的暗门。",
+      "beats": ["潮湿石墙", "油灯忽明", "潮声逼近"],
+      "required_clues": ["clue_supply_record"],
+      "outcomes": ["进入洞穴", "返回找神父"]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_supply_record",
+      "description": "篡改的补给账目，记录了异常的油料消耗。",
+      "location": "港务局",
+      "linked_to": ["玛琳·克劳"],
+      "reveal": "守卫在故意让灯塔熄灭以封锁海路。"
+    },
+    {
+      "clue_id": "clue_glow_algae",
+      "description": "发光海藻样本，带有未知盐分结晶。",
+      "location": "灯塔旧仓库",
+      "linked_to": ["song_claims_all"],
+      "reveal": "海中存在的踪迹靠近洞穴。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "fog_surge",
+      "trigger": "玩家在码头久留",
+      "description": "潮雾骤浓，视野骤减。",
+      "consequences": ["导航困难", "听见低沉歌声"]
+    },
+    {
+      "event_id": "chain_bell",
+      "trigger": "夜晚进入灯塔",
+      "description": "铁链铃声从无风处响起。",
+      "consequences": ["SAN 压力", "吸引守卫残影"]
+    }
+  ],
+  "items": [
+    {
+      "name": "航海日志",
+      "description": "末页写着模糊的潮位与时间记号。",
+      "effect": "揭示渔船失踪的潮汐规律。",
+      "location": "雾港码头"
+    },
+    {
+      "name": "旧式灯芯",
+      "description": "被油浸透的灯芯，仍带微热。",
+      "effect": "可用于修复灯塔照明装置。",
+      "location": "灯塔主塔"
+    }
+  ],
+  "factions": [
+    {
+      "name": "港务局记录组",
+      "goal": "维持港口运转与声誉。",
+      "resources": ["账本", "船只登记"],
+      "methods": ["隐瞒事故", "推诿责任"],
+      "attitude": "表面合作，暗藏戒心。"
+    },
+    {
+      "name": "教区守望者",
+      "goal": "阻止“歌声”扩散。",
+      "resources": ["旧记录", "避邪仪式"],
+      "methods": ["祈祷", "封存资料"],
+      "attitude": "愿意协助但不愿公开真相。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "海中歌声",
+      "nature": "模仿人声的深海存在，能引诱靠近礁区。",
+      "signs": ["远处的呼唤", "潮雾具黏性"],
+      "escalation": ["灯塔彻熄", "渔船消失", "港口沉寂"],
+      "weakness": "封堵海蚀洞并重新点亮灯塔。"
+    }
+  ],
+  "timeline": [
+    {"time": "3个月前", "event": "渔船首次失踪。"},
+    {"time": "3周前", "event": "灯塔突然熄灭。"},
+    {"time": "现在", "event": "匿名信发出，调查开始。"}
+  ]
+}

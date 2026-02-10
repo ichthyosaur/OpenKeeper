@@ -26,4 +26,20 @@ def validate_keeper_output(output: KeeperOutput) -> List[str]:
     if output.content is None:
         errors.append("content is required")
 
+    for action in output.actions:
+        params = action.parameters or {}
+        if action.function_name in ("apply_damage", "apply_sanity_change"):
+            if "amount" not in params:
+                errors.append(f"{action.function_name} requires amount")
+            elif not isinstance(params.get("amount"), int):
+                errors.append(f"{action.function_name} amount must be int")
+        if action.function_name == "update_player_attribute":
+            if "delta" not in params:
+                errors.append("update_player_attribute requires delta")
+            elif not isinstance(params.get("delta"), int):
+                errors.append("update_player_attribute delta must be int")
+        if action.function_name == "end_module":
+            if "ending_id" not in params or "description" not in params:
+                errors.append("end_module requires ending_id and description")
+
     return errors

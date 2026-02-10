@@ -6,6 +6,8 @@ from pathlib import Path
 
 from app.models import ActionCall, I18NText, KeeperOutput, MessageType
 
+# Deprecated: Stub Keeper is kept for reference only. Use LLM Keeper instead.
+
 
 PROMPT_PATH = Path(__file__).resolve().parent / "keeper_prompt_zh.txt"
 

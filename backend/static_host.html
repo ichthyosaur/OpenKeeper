@@ -3,55 +3,199 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%2322c55e'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%230b0f1a'/%3E%3C/svg%3E" />
     <title>OpenKeeper Host</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
       :root {
-        --bg: #0b0f1a;
-        --panel: #1c253b;
+        --bg: #0a0f1f;
+        --panel: #111a2d;
+        --panel-2: #141f36;
         --accent: #22c55e;
-        --text: #e2e8f0;
-        --muted: #94a3b8;
+        --accent-2: #38bdf8;
+        --text: #e6edf6;
+        --muted: #98a4b8;
+        --stroke: rgba(148, 163, 184, 0.18);
+        --shadow: 0 18px 40px rgba(3, 7, 18, 0.45);
+      }
+      :root[data-theme="archive"] {
+        --bg: #0a0f1f;
+        --panel: #111a2d;
+        --panel-2: #141f36;
+        --accent: #22c55e;
+        --text: #e6edf6;
+        --muted: #98a4b8;
+      }
+      :root[data-theme="nautical"] {
+        --bg: #081722;
+        --panel: #0f1f2e;
+        --panel-2: #142a3d;
+        --accent: #2dd4bf;
+        --text: #e5f3f6;
+        --muted: #86a8b0;
+      }
+      :root[data-theme="newsprint"] {
+        --bg: #1c1a17;
+        --panel: #26221e;
+        --panel-2: #2f2a25;
+        --accent: #a3e635;
+        --text: #f2e9dc;
+        --muted: #c7b9a2;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        background: radial-gradient(circle at top, #1b2442, #0b0f1a 50%);
+        font-family: "Space Grotesk", "IBM Plex Sans", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.18), transparent 45%),
+          radial-gradient(circle at 85% 12%, rgba(245, 158, 11, 0.2), transparent 40%),
+          linear-gradient(160deg, #0a0f1f 10%, #0b132a 40%, #0a0f1f 90%);
         color: var(--text);
       }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 40 Q60 10 120 40 T240 40' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='1'/%3E%3Cpath d='M0 120 Q60 90 120 120 T240 120' fill='none' stroke='rgba(148,163,184,0.1)' stroke-width='1'/%3E%3Cpath d='M0 200 Q60 170 120 200 T240 200' fill='none' stroke='rgba(148,163,184,0.08)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 24px 24px, 240px 240px;
+        opacity: 0.18;
+        pointer-events: none;
+      }
+      :root[data-theme="nautical"] body::before {
+        background-image:
+          radial-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 30 Q60 0 120 30 T240 30' fill='none' stroke='rgba(45,212,191,0.18)' stroke-width='1'/%3E%3Cpath d='M0 90 Q60 60 120 90 T240 90' fill='none' stroke='rgba(45,212,191,0.14)' stroke-width='1'/%3E%3Cpath d='M0 150 Q60 120 120 150 T240 150' fill='none' stroke='rgba(45,212,191,0.12)' stroke-width='1'/%3E%3Cpath d='M0 210 Q60 180 120 210 T240 210' fill='none' stroke='rgba(45,212,191,0.1)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 22px 22px, 240px 240px;
+        opacity: 0.2;
+      }
+      :root[data-theme="newsprint"] body::before {
+        background-image:
+          radial-gradient(rgba(199, 185, 162, 0.18) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 20 H240' stroke='rgba(199,185,162,0.15)' stroke-width='1'/%3E%3Cpath d='M0 60 H240' stroke='rgba(199,185,162,0.12)' stroke-width='1'/%3E%3Cpath d='M0 100 H240' stroke='rgba(199,185,162,0.1)' stroke-width='1'/%3E%3Cpath d='M0 140 H240' stroke='rgba(199,185,162,0.08)' stroke-width='1'/%3E%3Cpath d='M0 180 H240' stroke='rgba(199,185,162,0.06)' stroke-width='1'/%3E%3Cpath d='M0 220 H240' stroke='rgba(199,185,162,0.05)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 26px 26px, 240px 240px;
+        opacity: 0.18;
+      }
       .app { min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-      .topbar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #113422, #0f172a); padding: 16px 20px; border-radius: 16px; border: 1px solid #27324a; }
-      .title { font-size: 24px; font-weight: 700; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background:
+          linear-gradient(120deg, rgba(245, 158, 11, 0.12), transparent 55%),
+          linear-gradient(135deg, #0f172a, #111a2d);
+        padding: 18px 22px;
+        border-radius: 18px;
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .topbar::after {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .title { font-size: 28px; font-weight: 700; font-family: "Fraunces", serif; letter-spacing: 0.02em; }
       .subtitle { font-size: 13px; color: var(--muted); }
       .status { padding: 8px 14px; border-radius: 999px; font-size: 12px; letter-spacing: 0.1em; }
       .status.on { background: #0f766e; }
       .status.off { background: #7c2d12; }
       .status.warn { background: #b45309; }
       .grid { display: grid; gap: 10px; }
-      .badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: #0f172a; color: var(--muted); font-size: 12px; }
-      select { padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
-      select[multiple] { min-height: 120px; background: #0b2f20; border-color: #14532d; }
-      button { background: var(--accent); color: #052e16; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+      .badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: rgba(12, 18, 34, 0.9); color: var(--muted); font-size: 12px; border: 1px solid var(--stroke); }
+      select { padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.2); background: rgba(9, 14, 27, 0.7); color: var(--text); }
+      select[multiple] { min-height: 120px; background: rgba(15, 81, 50, 0.2); border-color: rgba(20, 83, 45, 0.6); }
+      .debug-box { width: 100%; min-height: 120px; background: rgba(9, 14, 27, 0.85); color: #e2e8f0; border: 1px solid var(--stroke); border-radius: 12px; padding: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; white-space: pre-wrap; }
+      button {
+        background: linear-gradient(135deg, #16a34a, var(--accent));
+        color: #0b0f1a;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(34, 197, 94, 0.3); }
       .room { display: grid; grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); gap: 16px; }
-      .panel { background: var(--panel); border-radius: 14px; border: 1px solid #2b3652; padding: 16px; }
+      .panel { background: linear-gradient(170deg, var(--panel), rgba(8, 13, 26, 0.9)); border-radius: 18px; border: 1px solid var(--stroke); padding: 16px; box-shadow: var(--shadow); }
       .panel-title { font-weight: 600; margin-bottom: 12px; }
       .history-list { max-height: 520px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
-      .history-item { padding: 12px; background: #101a2d; border-radius: 12px; border: 1px solid #24314f; }
+      .history-item { padding: 12px; background: rgba(12, 18, 34, 0.85); border-radius: 14px; border: 1px solid rgba(56, 189, 248, 0.15); }
       .history-item.player { border-left: 4px solid #38bdf8; }
-      .history-item.keeper { border-left: 4px solid #22c55e; }
+      .history-item.keeper { border-left: 4px solid #0f3d2e; }
       .history-item.system { border-left: 4px solid #64748b; }
-      .history-item.secret { background: #0b2f20; border-color: #14532d; }
+      .history-item.secret { background: rgba(15, 81, 50, 0.2); border-color: rgba(20, 83, 45, 0.6); }
+      .modal { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.7); display: flex; align-items: center; justify-content: center; z-index: 50; }
+      .modal.hidden { display: none; }
+      .modal-card { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 20px; max-width: 560px; width: 90%; }
+      .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+      .modal-body { white-space: pre-wrap; line-height: 1.6; color: var(--text); font-size: 14px; }
+      .modal-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
+      .modal { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.7); display: flex; align-items: center; justify-content: center; z-index: 50; }
+      .modal.hidden { display: none; }
+      .modal-card { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 20px; max-width: 560px; width: 90%; }
+      .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+      .modal-body { white-space: pre-wrap; line-height: 1.6; color: var(--text); font-size: 14px; }
+      .modal-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
       .history-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; margin-bottom: 4px; }
       .history-content { font-size: 14px; }
       .players { display: flex; flex-direction: column; gap: 12px; }
-      .player { border: 1px solid #24314f; border-radius: 12px; padding: 10px; }
+      .player { border: 1px solid rgba(56, 189, 248, 0.12); border-radius: 12px; padding: 10px; background: rgba(10, 16, 30, 0.6); }
       .player-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-      .pill { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #0f172a; }
+      .pill { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: rgba(10, 15, 28, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); }
       .status-badge { padding: 4px 8px; border-radius: 999px; font-size: 12px; background: #7c2d12; color: #ffedd5; }
       .muted { color: var(--muted); font-size: 12px; }
       .top-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
       .row { display: flex; gap: 8px; align-items: center; }
-      textarea { width: 100%; min-height: 80px; padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
+      textarea { width: 100%; min-height: 80px; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.2); background: rgba(9, 14, 27, 0.7); color: var(--text); }
+      .roll { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+      .roll strong { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+      .toast-stack {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+        z-index: 60;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: rgba(12, 18, 34, 0.95);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+        color: var(--text);
+        font-size: 13px;
+        animation: toastFade 5s ease forwards;
+      }
+      .toast-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; color: var(--accent); }
+      .toast-icon svg { width: 20px; height: 20px; }
+      @keyframes toastFade {
+        0% { opacity: 0; transform: translateY(-6px); }
+        10% { opacity: 1; transform: translateY(0); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-6px); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
       @media (max-width: 900px) { .room { grid-template-columns: 1fr; } }
     </style>
   </head>
@@ -60,7 +204,7 @@
       <header class="topbar">
         <div>
           <div class="title">OpenKeeper Host</div>
-          <div class="subtitle">全量历史与玩家状态</div>
+          <div class="subtitle">古神正在低语……</div>
         </div>
         <div id="status" class="status off">DISCONNECTED</div>
       </header>
@@ -79,9 +223,28 @@
           <div class="panel-title">模组与 Keeper</div>
           <div class="grid">
             <label>模组<select id="moduleSelect"></select></label>
-            <label>Keeper<select id="keeperSelect"><option value="stub">Stub Keeper</option></select></label>
+            <label>Keeper<select id="keeperSelect"><option value="llm">1920s Keeper</option></select></label>
             <label>记忆窗口（条）
               <input id="historyCount" type="number" min="1" value="100" />
+            </label>
+            <label>递归续写上限
+              <input id="maxFollowups" type="number" min="0" value="2" />
+            </label>
+            <label>流式速度（字/秒）
+              <input id="streamCps" type="number" min="1" value="50" />
+            </label>
+            <label>温度
+              <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.7" />
+            </label>
+            <label>LLM 解析失败重试次数
+              <input id="llmRetry" type="number" min="0" value="3" />
+            </label>
+            <label>界面风格
+              <select id="themeSelect">
+                <option value="archive">档案室</option>
+                <option value="nautical">航海惊悚</option>
+                <option value="newsprint">旧报纸</option>
+              </select>
             </label>
           </div>
           <div style="margin-top:12px; display:flex; gap:8px;">
@@ -111,6 +274,17 @@
           </div>
           <div class="muted" id="hostMsgNotice" style="margin-top:6px;"></div>
         </div>
+        <div class="panel">
+          <div class="panel-title">LLM 原始输出</div>
+          <div id="keeperRaw" class="debug-box">暂无</div>
+          <div class="grid" style="margin-top:10px;">
+            <div class="badge" id="inputTokens">Input tokens (session): -</div>
+            <div class="badge" id="outputTokens">Output tokens (session): -</div>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button id="refreshRaw">刷新</button>
+          </div>
+        </div>
       </section>
 
       <section class="room">
@@ -123,12 +297,31 @@
           <div class="panel-title">玩家状态</div>
           <div id="players" class="players"></div>
         </div>
+        <div class="panel small">
+          <div class="panel-title">判定面板</div>
+          <div id="rollPanel" class="roll">
+            <div class="muted">暂无判定</div>
+          </div>
+        </div>
       </section>
     </div>
+    <div id="toastStack" class="toast-stack"></div>
 
     <script>
       const el = (id) => document.getElementById(id);
-      const state = { ws: null, history: [], stateView: { players: {} }, professions: {}, modules: [], players: [], onlineIds: [] };
+      const state = {
+        ws: null,
+        history: [],
+        stateView: { players: {} },
+        professions: {},
+        modules: [],
+        players: [],
+        onlineIds: [],
+        streamingCount: 0,
+        pendingEntries: [],
+        activeStreamIds: new Set(),
+        toastCache: new Map(),
+      };
       const serverUrl = window.location.origin;
       const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
       const hostId = crypto.randomUUID();
@@ -153,6 +346,7 @@
         state.history.forEach((entry) => {
           const item = document.createElement("div");
           item.className = `history-item ${entry.actor_type} ${entry.message_type === "secret" ? "secret" : ""}`;
+          if (entry.stream_id) item.dataset.streamId = entry.stream_id;
           if (entry.actor_type === "player") {
             const pcolor = state.stateView.players?.[entry.actor_id]?.color;
             if (pcolor) item.style.borderLeftColor = pcolor;
@@ -175,6 +369,209 @@
           `;
           container.appendChild(item);
         });
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function appendStreamDelta(streamId, delta) {
+        const container = el("history");
+        const item = container.querySelector(`[data-stream-id="${streamId}"]`);
+        if (!item) return false;
+        const content = item.querySelector(".history-content");
+        if (!content) return false;
+        const shouldStick = container.scrollTop + container.clientHeight >= container.scrollHeight - 40;
+        content.textContent = (content.textContent || "") + delta;
+        if (shouldStick) {
+          container.scrollTop = container.scrollHeight;
+        }
+        return true;
+      }
+
+      function toastIcon(type) {
+        if (type === "apply_damage") {
+          return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z'/></svg>";
+        }
+        if (type === "apply_sanity_change") {
+          return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M9 4a7 7 0 0 1 9 9'/><path d='M15 20a7 7 0 0 1-9-9'/><path d='M8 12h8'/></svg>";
+        }
+        return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 3v18'/><path d='M5 12h14'/></svg>";
+      }
+
+      function showToast(text, type) {
+        const stack = el("toastStack");
+        if (!stack) return;
+        const item = document.createElement("div");
+        item.className = "toast";
+        item.innerHTML = `<div class="toast-icon">${toastIcon(type)}</div><div>${text}</div>`;
+        stack.appendChild(item);
+        setTimeout(() => {
+          item.remove();
+        }, 5200);
+      }
+
+      function toastFromEntry(entry) {
+        const keyParts = [];
+        if (entry?.actions?.[0]) {
+          const action = entry.actions[0];
+          keyParts.push(action.function_name, JSON.stringify(action.parameters || {}));
+        } else if (entry?.state_diff?.players) {
+          const players = entry.state_diff.players;
+          const playerId = Object.keys(players)[0] || "";
+          const data = players[playerId] || {};
+          if (data.last_damage) keyParts.push("apply_damage", playerId, data.last_damage.amount);
+          if (data.last_sanity) keyParts.push("apply_sanity_change", playerId, data.last_sanity.amount);
+        }
+        const key = keyParts.join("|");
+        if (!key) return;
+        const now = Date.now();
+        const last = state.toastCache.get(key) || 0;
+        if (now - last < 4000) return;
+        state.toastCache.set(key, now);
+        const action = entry?.actions?.[0];
+        if (action) {
+          const fn = action.function_name;
+          if (["apply_damage", "apply_sanity_change", "update_player_attribute", "add_status", "remove_status"].includes(fn)) {
+            const amount = action.parameters?.amount;
+            if (fn === "apply_damage") {
+              showToast(`生命值 -${Math.abs(amount ?? 0)}`, fn);
+              return;
+            }
+            if (fn === "apply_sanity_change") {
+              const delta = Number(amount ?? 0);
+              const label = delta < 0 ? `理智 ${delta}` : `理智 +${delta}`;
+              showToast(label, fn);
+              return;
+            }
+            if (fn === "update_player_attribute") {
+              const attr = action.parameters?.attribute || "";
+              const delta = Number(action.parameters?.delta ?? 0);
+              const sign = delta >= 0 ? "+" : "";
+              showToast(`${attr} ${sign}${delta}`, fn);
+              return;
+            }
+            return;
+          }
+        }
+        if (entry?.action_type === "state_update" && entry?.state_diff?.players) {
+          const players = entry.state_diff.players;
+          const playerId = Object.keys(players)[0];
+          const data = players[playerId] || {};
+          if (data.last_damage) {
+            const amount = data.last_damage?.amount ?? 0;
+            showToast(`生命值 -${Math.abs(amount)}`, "apply_damage");
+          } else if (data.last_sanity) {
+            const amount = data.last_sanity?.amount ?? 0;
+            const delta = Number(amount);
+            const label = delta < 0 ? `理智 ${delta}` : `理智 +${delta}`;
+            showToast(label, "apply_sanity_change");
+          }
+        }
+      }
+      function renderOpposedPanel() {
+        const panel = el("rollPanel");
+        if (!panel) return;
+        const last = [...state.history].reverse().find((e) => e.action_type === "dice_roll");
+        if (!last || !last.state_diff || !last.state_diff.opposed) {
+          const dice = last?.state_diff?.dice || {};
+          const reason = last?.state_diff?.reason || "";
+          const total = dice.total ?? 0;
+          if (dice.type === "coc7e") {
+            const target = dice.target ?? "?";
+            const level = dice.success_level || "failure";
+            const difficulty = dice.difficulty || "regular";
+            const difficultyMap = { regular: "常规", hard: "困难", extreme: "极难" };
+            const outcomeMap = {
+              critical: "大成功",
+              extreme_success: "极难成功",
+              hard_success: "困难成功",
+              regular_success: "成功",
+              failure: "失败",
+              fumble: "大失败",
+            };
+            const badgeClass = level === "failure" || level === "fumble" ? "fail" : "success";
+            panel.innerHTML = `
+              <strong>检定</strong>
+              <div>目标值：${target} / 难度：${difficultyMap[difficulty] || difficulty}</div>
+              <div>结果：${total} <span class="badge ${badgeClass}">${outcomeMap[level] || level}</span></div>
+              <div>原因：${reason}</div>
+            `;
+            return;
+          }
+          if (!last || !last.state_diff) {
+            panel.innerHTML = "<div class=\"muted\">暂无判定</div>";
+            return;
+          }
+          const outcome = total <= 5 ? "极难成功" : total <= 50 ? "成功" : "失败";
+          const badgeClass = total <= 50 ? "success" : "fail";
+          panel.innerHTML = `
+            <strong>掷骰</strong>
+            <div>表达式：${dice.expression || ""}</div>
+            <div>结果：${total} <span class="badge ${badgeClass}">${outcome}</span></div>
+            <div>原因：${reason}</div>
+          `;
+          return;
+        }
+        const attacker = last.state_diff.attacker || {};
+        const defender = last.state_diff.defender || {};
+        const outcomeMap = {
+          critical: "大成功",
+          extreme_success: "极难成功",
+          hard_success: "困难成功",
+          regular_success: "成功",
+          failure: "失败",
+          fumble: "大失败",
+        };
+        const winner = last.state_diff.winner || "tie";
+        panel.innerHTML = `
+          <strong>对抗检定</strong>
+          <div>攻击方：${attacker.skill_name || "攻击方"} / ${attacker.total ?? "?"} / ${outcomeMap[attacker.success_level] || attacker.success_level}</div>
+          <div>防守方：${defender.skill_name || "防守方"} / ${defender.total ?? "?"} / ${outcomeMap[defender.success_level] || defender.success_level}</div>
+          <div>胜者：${winner}</div>
+        `;
+      }
+
+      function isActionEntry(entry) {
+        return entry?.action_type === "dice_roll" || entry?.action_type === "state_update";
+      }
+
+      function pushHistoryEntry(entry, streamId) {
+        if (streamId) {
+          const idx = state.history.findIndex((e) => e.stream_id === streamId);
+          if (idx >= 0) {
+            state.history[idx] = { ...entry, stream_id: streamId };
+          } else {
+            state.history.push({ ...entry, stream_id: streamId });
+          }
+          return;
+        }
+        state.history.push(entry);
+      }
+
+      function flushPendingEntries() {
+        if (!state.pendingEntries.length) return;
+        const pending = state.pendingEntries;
+        state.pendingEntries = [];
+        pending.forEach(({ entry, streamId }) => {
+          pushHistoryEntry(entry, streamId);
+          toastFromEntry(entry);
+        });
+        renderHistory();
+      }
+
+      async function refreshRaw() {
+        const res = await fetch(`${serverUrl}/keeper/raw`);
+        const data = await res.json();
+        if (data.ok) {
+          el("keeperRaw").textContent = data.raw || "暂无";
+          const usage = data.usage_total || data.usage || {};
+          const promptTokens = usage.prompt_tokens ?? "-";
+          const completionTokens = usage.completion_tokens ?? "-";
+          el("inputTokens").textContent = `Input tokens (session): ${promptTokens}`;
+          el("outputTokens").textContent = `Output tokens (session): ${completionTokens}`;
+        } else {
+          el("keeperRaw").textContent = data.error || "读取失败";
+          el("inputTokens").textContent = "Input tokens (session): -";
+          el("outputTokens").textContent = "Output tokens (session): -";
+        }
       }
 
       function renderPlayers() {
@@ -262,6 +659,19 @@
           .join("");
       }
 
+
+      async function loadConfig() {
+        try {
+          const res = await fetch(`${serverUrl}/config`);
+          const data = await res.json();
+          if (typeof data.history_count === "number") el("historyCount").value = data.history_count;
+          if (typeof data.max_followups === "number") el("maxFollowups").value = data.max_followups;
+          if (typeof data.stream_cps === "number") el("streamCps").value = data.stream_cps;
+          if (typeof data.temperature === "number") el("temperature").value = data.temperature;
+          if (typeof data.llm_parse_retries === "number") el("llmRetry").value = data.llm_parse_retries;
+        } catch (e) {}
+      }
+
       async function loadPlayers() {
         try {
           const res = await fetch(`${serverUrl}/players`);
@@ -296,7 +706,11 @@
         const res = await fetch(`${serverUrl}/session/start`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ module_name: moduleName, keeper: el("keeperSelect").value }),
+          body: JSON.stringify({
+            module_name: moduleName,
+            keeper: el("keeperSelect").value,
+            theme: el("themeSelect").value,
+          }),
         });
         const data = await res.json();
         if (data.ok) {
@@ -305,6 +719,7 @@
           setNotice(data.error || "开始失败");
         }
       }
+
 
       async function resetGame() {
         const res = await fetch(`${serverUrl}/session/reset`, { method: "POST" });
@@ -374,10 +789,108 @@
         }
       }
 
+      async function updateMaxFollowups() {
+        const value = el("maxFollowups").value;
+        const res = await fetch(`${serverUrl}/config/followups`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ max_followups: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`递归上限已更新：${data.max_followups}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateStreamCps() {
+        const value = el("streamCps").value;
+        const res = await fetch(`${serverUrl}/config/stream`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stream_cps: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`流式速度已更新：${data.stream_cps} 字/秒`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateTemperature() {
+        const value = el("temperature").value;
+        const res = await fetch(`${serverUrl}/config/temperature`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ temperature: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`温度已更新：${data.temperature}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateLlmRetry() {
+        const value = el("llmRetry").value;
+        const res = await fetch(`${serverUrl}/config/llm-retry`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ llm_parse_retries: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`重试次数已更新：${data.llm_parse_retries}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateTheme() {
+        const theme = el("themeSelect").value;
+        const res = await fetch(`${serverUrl}/config/theme`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ theme }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`界面风格已更新：${data.theme}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateKeeper() {
+        const keeper = el("keeperSelect").value;
+        const res = await fetch(`${serverUrl}/keeper/select`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ keeper }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice("Keeper 已切换：1920s Keeper");
+        } else {
+          setNotice(data.error || "切换失败");
+        }
+      }
+
       async function connect() {
         await loadProfessions();
         await loadModules();
         await loadPlayers();
+        await loadConfig();
+        try {
+          const res = await fetch(`${serverUrl}/keeper`);
+          const data = await res.json();
+          if (data.keeper) {
+            el("keeperSelect").value = data.keeper;
+          }
+        } catch (e) {}
         if (state.ws) state.ws.close();
         state.ws = new WebSocket(wsUrl);
         state.ws.onopen = () => {
@@ -395,18 +908,57 @@
             state.stateView = message.payload.visible_state || { players: {} };
             state.onlineIds = message.payload.online_player_ids || [];
             el("phaseInfo").textContent = `Phase: ${state.stateView.phase || "lobby"}`;
+            if (message.payload.theme) {
+              el("themeSelect").value = message.payload.theme;
+              document.documentElement.setAttribute("data-theme", message.payload.theme);
+            }
             renderHistory();
             renderPlayers();
             return;
           }
           if (message.type === "server.history_append") {
             const entry = message.payload.entry;
+            const streamId = message.payload.stream_id;
             if (Array.isArray(entry)) {
               state.history = entry;
             } else {
-              state.history.push(entry);
+              if (state.streamingCount > 0 && (!streamId || !state.activeStreamIds.has(streamId))) {
+                state.pendingEntries.push({ entry, streamId });
+              } else {
+                pushHistoryEntry(entry, streamId);
+                toastFromEntry(entry);
+              }
             }
             renderHistory();
+            renderOpposedPanel();
+            return;
+          }
+          if (message.type === "server.keeper_stream_start") {
+            const { stream_id, message_type } = message.payload;
+            state.streamingCount += 1;
+            state.activeStreamIds.add(stream_id);
+            const exists = state.history.findIndex((e) => e.stream_id === stream_id) >= 0;
+            if (!exists) {
+              state.history.push({
+                stream_id,
+                actor_type: "keeper",
+                message_type,
+                content: { zh: "" },
+              });
+              renderHistory();
+            }
+            return;
+          }
+          if (message.type === "server.keeper_stream_delta") {
+            const { stream_id, delta } = message.payload;
+            const idx = state.history.findIndex((e) => e.stream_id === stream_id);
+            if (idx >= 0) {
+              const current = state.history[idx].content?.zh || "";
+              state.history[idx].content = { zh: current + delta };
+              if (!appendStreamDelta(stream_id, delta)) {
+                renderHistory();
+              }
+            }
             return;
           }
           if (message.type === "server.state_update") {
@@ -414,6 +966,28 @@
             state.onlineIds = message.payload.online_player_ids || state.onlineIds;
             el("phaseInfo").textContent = `Phase: ${state.stateView.phase || "lobby"}`;
             renderPlayers();
+          }
+          if (message.type === "server.history_clear") {
+            state.history = [];
+            state.streamingCount = 0;
+            state.pendingEntries = [];
+            state.activeStreamIds.clear();
+            renderHistory();
+            return;
+          }
+          if (message.type === "server.theme_update") {
+            const theme = message.payload?.theme || "archive";
+            el("themeSelect").value = theme;
+            document.documentElement.setAttribute("data-theme", theme);
+            return;
+          }
+          if (message.type === "server.keeper_stream_end") {
+            renderHistory();
+            state.streamingCount = Math.max(0, state.streamingCount - 1);
+            state.activeStreamIds.delete(message.payload?.stream_id);
+            if (state.streamingCount === 0) {
+              flushPendingEntries();
+            }
           }
         };
         state.ws.onclose = () => {
@@ -431,7 +1005,13 @@
       el("sendHostMsg").addEventListener("click", sendHostMessage);
       el("hostMsgType").addEventListener("change", toggleSecretSelect);
       el("historyCount").addEventListener("change", updateHistoryCount);
-
+      el("maxFollowups").addEventListener("change", updateMaxFollowups);
+      el("streamCps").addEventListener("change", updateStreamCps);
+      el("temperature").addEventListener("change", updateTemperature);
+      el("llmRetry").addEventListener("change", updateLlmRetry);
+      el("themeSelect").addEventListener("change", updateTheme);
+      el("keeperSelect").addEventListener("change", updateKeeper);
+      el("refreshRaw").addEventListener("click", refreshRaw);
       toggleSecretSelect();
       connect();
     </script>

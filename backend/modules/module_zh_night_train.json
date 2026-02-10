@@ -1,0 +1,165 @@
+{
+  "module_name": "夜行列车",
+  "introduction": "一列只在夜半经过的加班车被传言为“幽灵列车”。近来有乘客在终点站消失，铁路公司秘而不宣。你们被雇来查明真相。",
+  "entry_narration": "汽笛划破黑夜，车厢的煤烟味混着雨水涌来。列车员递给你们旧式硬纸票，窗外的站灯像疲惫的眼睛一盏盏退后。",
+  "key_characters": [
+    {
+      "name": "艾伯特·莱恩",
+      "public_info": "列车长，守规矩且冷淡，强调“不要离开车厢”。",
+      "hidden_secrets": "他知道列车在某段轨道会“短暂消失”，但被公司封口。"
+    },
+    {
+      "name": "萝丝·米切尔",
+      "public_info": "女乘客，自称寻找失踪的丈夫，神色憔悴。",
+      "hidden_secrets": "她携带一枚古旧铜徽，属于早年废弃的铁路工会。"
+    },
+    {
+      "name": "伊莱·布鲁克",
+      "public_info": "车厢维修工，寡言少语，常检查车底。",
+      "hidden_secrets": "他在车底发现奇怪的符号与不属于铁轨的金属碎屑。"
+    }
+  ],
+  "core_secrets": [
+    "列车行经的“黑段”轨道建在早年塌陷的矿井上方，曾发生集体事故。",
+    "黑段会与另一条“不存在的轨道”重叠，短暂进入一处被遗忘的站台。",
+    "失踪者并未死亡，而是被困在那座站台，时间在其中几乎停止。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "signal_restored",
+      "description": "玩家修复旧信号设备，使列车避开黑段，失踪者得到部分救回。",
+      "conditions": "玩家找到并修复废弃信号塔或重连线路。"
+    },
+    {
+      "ending_id": "station_claims",
+      "description": "列车永远消失在夜色里，只有雨中传来遥远的汽笛。",
+      "conditions": "玩家无法阻止列车再次进入黑段并被困。"
+    },
+    {
+      "ending_id": "last_ticket",
+      "description": "玩家与被困者交换位置，列车脱离异常，但他们留在黑站台。",
+      "conditions": "玩家主动选择留下或牺牲以解救他人。"
+    }
+  ],
+  "ending_triggers": [
+    "信号塔修复，黑段被切断。",
+    "列车再次进入黑段且无法返回。",
+    "玩家选择留下交换位置以解救他人。",
+    "所有调查员死亡或疯狂。"
+  ],
+  "locations": [
+    {
+      "name": "夜行列车",
+      "description": "深夜仍在运行的列车，车厢内灯光总是略暗。",
+      "features": ["三等车厢", "餐车", "车顶检修口"],
+      "secrets": ["车厢编号与时刻表不一致"],
+      "connections": ["黑段轨道", "终点站"]
+    },
+    {
+      "name": "黑段轨道",
+      "description": "被公司标为“检修封闭”的路段，夜间仍可通行。",
+      "features": ["矿井塌陷口", "旧信号灯"],
+      "secrets": ["符号刻痕与消失点"],
+      "connections": ["信号塔", "不存在的站台"]
+    },
+    {
+      "name": "不存在的站台",
+      "description": "煤烟与尘埃凝成静止的黑色月台。",
+      "features": ["废弃售票口", "停摆钟表"],
+      "secrets": ["时间几乎停滞"],
+      "connections": ["黑段轨道"]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "boarding",
+      "title": "夜半上车",
+      "summary": "玩家在雨夜登车，面对异常规矩与诡异乘客。",
+      "beats": ["硬纸票", "车长警告", "煤烟味"],
+      "required_clues": [],
+      "outcomes": ["开始调查列车", "与乘客交谈"]
+    },
+    {
+      "scene_id": "black_segment",
+      "title": "黑段消失",
+      "summary": "列车短暂脱离现实轨道，进入被遗忘站台。",
+      "beats": ["车厢灯熄", "耳鸣与静默", "站台阴影"],
+      "required_clues": ["clue_union_badge"],
+      "outcomes": ["救出被困者", "列车失控"]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_union_badge",
+      "description": "古旧铜徽与工会铭牌，对应废弃信号塔。",
+      "location": "车厢",
+      "linked_to": ["signal_restored"],
+      "reveal": "信号塔曾被工会守护。"
+    },
+    {
+      "clue_id": "clue_metal_shard",
+      "description": "车底金属碎屑，带有矿井记号。",
+      "location": "夜行列车",
+      "linked_to": ["black_segment"],
+      "reveal": "黑段轨道与矿井塌陷有关。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "signal_flicker",
+      "trigger": "列车进入黑段前",
+      "description": "车窗外信号灯闪烁，车内温度骤降。",
+      "consequences": ["SAN 压力", "列车速度变慢"]
+    },
+    {
+      "event_id": "door_lock",
+      "trigger": "玩家试图离开车厢",
+      "description": "车门自动锁死，传来低沉广播。",
+      "consequences": ["触发警觉", "与车长冲突"]
+    }
+  ],
+  "items": [
+    {
+      "name": "旧信号钥匙",
+      "description": "锈迹钥匙上刻着铁路公司旧徽。",
+      "effect": "开启废弃信号塔设备。",
+      "location": "车长室"
+    },
+    {
+      "name": "终点站通行证",
+      "description": "无署名的纸片，写着“不要回头”。",
+      "effect": "抵御站台的精神拖拽。",
+      "location": "不存在的站台"
+    }
+  ],
+  "factions": [
+    {
+      "name": "铁路公司",
+      "goal": "维持线路运营，掩盖黑段事故。",
+      "resources": ["车组人员", "封闭档案"],
+      "methods": ["封口协议", "误导乘客"],
+      "attitude": "表面合作，实际阻挠。"
+    },
+    {
+      "name": "失踪者残留意志",
+      "goal": "离开站台，重返现实。",
+      "resources": ["微弱求救声"],
+      "methods": ["低语引导"],
+      "attitude": "恳求但不稳定。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "黑段重叠",
+      "nature": "现实与不存在轨道的短暂叠加。",
+      "signs": ["信号灯失真", "时间错位"],
+      "escalation": ["列车失控", "整列消失"],
+      "weakness": "修复信号与切断重叠路径。"
+    }
+  ],
+  "timeline": [
+    {"time": "30年前", "event": "矿井塌陷，事故被掩盖。"},
+    {"time": "7年前", "event": "夜行列车首次出现异象。"},
+    {"time": "最近", "event": "乘客在终点站消失。"}
+  ]
+}

@@ -7,11 +7,96 @@ from typing import Any
 from app.models import ActionCall
 
 
-_DICE_RE = re.compile(r"^(\d+)d(\d+)([+-]\d+)?$")
+_DICE_RE = re.compile(r"(\d+)d(\d+)([+-]\d+)?", re.IGNORECASE)
+
+
+def _coc_success_level(roll: int, target: int) -> str:
+    if roll == 1:
+        return "critical"
+    if target < 50 and roll >= 96:
+        return "fumble"
+    if target >= 50 and roll == 100:
+        return "fumble"
+    if roll <= max(1, target // 5):
+        return "extreme_success"
+    if roll <= max(1, target // 2):
+        return "hard_success"
+    if roll <= target:
+        return "regular_success"
+    return "failure"
+
+
+def roll_coc_check(
+    target: int,
+    *,
+    bonus_dice: int = 0,
+    penalty_dice: int = 0,
+) -> dict[str, Any]:
+    bonus = max(0, int(bonus_dice))
+    penalty = max(0, int(penalty_dice))
+    net = bonus - penalty
+    unit = random.randint(0, 9)
+    tens_count = 1 + abs(net)
+    tens_rolls = [random.randint(0, 9) for _ in range(tens_count)]
+    if net >= 0:
+        chosen_tens = min(tens_rolls)
+    else:
+        chosen_tens = max(tens_rolls)
+    total = chosen_tens * 10 + unit
+    if total == 0:
+        total = 100
+    level = _coc_success_level(total, target)
+    return {
+        "type": "coc7e",
+        "expression": "1d100",
+        "unit": unit,
+        "tens": chosen_tens,
+        "tens_rolls": tens_rolls,
+        "bonus_dice": bonus,
+        "penalty_dice": penalty,
+        "target": target,
+        "total": total,
+        "success_level": level,
+    }
+
+
+def _success_rank(level: str) -> int:
+    order = {
+        "critical": 5,
+        "extreme_success": 4,
+        "hard_success": 3,
+        "regular_success": 2,
+        "failure": 1,
+        "fumble": 0,
+    }
+    return order.get(level, 1)
+
+
+def _compare_opposed(a: dict[str, Any], b: dict[str, Any]) -> str:
+    ar = _success_rank(a.get("success_level", "failure"))
+    br = _success_rank(b.get("success_level", "failure"))
+    if ar > br:
+        return "attacker"
+    if br > ar:
+        return "defender"
+    at = int(a.get("target", 0))
+    bt = int(b.get("target", 0))
+    if at > bt:
+        return "attacker"
+    if bt > at:
+        return "defender"
+    aroll = int(a.get("total", 0))
+    broll = int(b.get("total", 0))
+    if aroll > broll:
+        return "attacker"
+    if broll > aroll:
+        return "defender"
+    return "tie"
 
 
 def roll_dice_expression(expr: str) -> dict[str, Any]:
-    match = _DICE_RE.match(expr.replace(" ", ""))
+    cleaned = expr.replace(" ", "")
+    match = _DICE_RE.search(cleaned)
     if not match:
         raise ValueError("Invalid dice expression. Expected format like 1d100+10")
     count = int(match.group(1))
@@ -31,8 +116,63 @@ def dispatch_action(action: ActionCall, state: dict[str, Any]) -> dict[str, Any]
     fn = action.function_name
     params = action.parameters
     if fn == "roll_dice":
+        target = params.get("target")
+        if target is not None:
+            result = roll_coc_check(
+                int(target),
+                bonus_dice=int(params.get("bonus_dice", 0)),
+                penalty_dice=int(params.get("penalty_dice", 0)),
+            )
+            difficulty = params.get("difficulty", "regular")
+            reason = params.get("reason")
+            skill_name = params.get("skill_name")
+            required = {
+                "regular": "regular_success",
+                "hard": "hard_success",
+                "extreme": "extreme_success",
+            }.get(difficulty, "regular_success")
+            level = result.get("success_level", "failure")
+            result["difficulty"] = difficulty
+            result["is_success"] = level in ("critical", "extreme_success", "hard_success", "regular_success") and (
+                required == "regular_success"
+                or (required == "hard_success" and level in ("hard_success", "extreme_success", "critical"))
+                or (required == "extreme_success" and level in ("extreme_success", "critical"))
+            )
+            return {
+                "dice": result,
+                "reason": reason,
+                "actor_id": params.get("actor_id"),
+                "skill_name": skill_name,
+            }
         result = roll_dice_expression(params["dice_expression"])
         return {"dice": result, "reason": params.get("reason"), "actor_id": params.get("actor_id")}
+    if fn == "oppose_check":
+        attacker = params.get("attacker", {})
+        defender = params.get("defender", {})
+        reason = params.get("reason")
+        a_roll = roll_coc_check(
+            int(attacker.get("target", 0)),
+            bonus_dice=int(attacker.get("bonus_dice", 0)),
+            penalty_dice=int(attacker.get("penalty_dice", 0)),
+        )
+        b_roll = roll_coc_check(
+            int(defender.get("target", 0)),
+            bonus_dice=int(defender.get("bonus_dice", 0)),
+            penalty_dice=int(defender.get("penalty_dice", 0)),
+        )
+        a_roll["difficulty"] = attacker.get("difficulty", "regular")
+        b_roll["difficulty"] = defender.get("difficulty", "regular")
+        a_roll["skill_name"] = attacker.get("skill_name")
+        b_roll["skill_name"] = defender.get("skill_name")
+        winner = _compare_opposed(a_roll, b_roll)
+        return {
+            "opposed": True,
+            "attacker": a_roll,
+            "defender": b_roll,
+            "winner": winner,
+            "reason": reason,
+            "actor_id": params.get("actor_id"),
+        }
     if fn == "apply_damage":
         return _apply_damage(state, params)
     if fn == "apply_sanity_change":

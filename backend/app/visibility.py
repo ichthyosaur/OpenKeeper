@@ -8,7 +8,7 @@ def is_visible(entry: HistoryEntry, viewer_id: str, viewer_role: str) -> bool:
         return True
     if viewer_role == "host":
         return True
-    return viewer_id in entry.visible_to
+    return "all" in entry.visible_to or viewer_id in entry.visible_to
 
 
 def filter_history(history: list[HistoryEntry], viewer_id: str, viewer_role: str) -> list[HistoryEntry]:

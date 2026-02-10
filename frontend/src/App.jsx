@@ -13,6 +13,12 @@ const fallbackProfessions = [
   "lawyer",
   "nurse",
   "photojournalist",
+  "librarian",
+  "antiquarian",
+  "stage_magician",
+  "pilot",
+  "dockworker",
+  "chemist",
 ];
 
 const defaultAttributes = {
@@ -33,6 +39,20 @@ const defaultStats = {
   luck: 50,
 };
 
+function makeUUID() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  const bytes = new Uint8Array(16);
+  for (let i = 0; i < bytes.length; i += 1) {
+    bytes[i] = Math.floor(Math.random() * 256);
+  }
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 function textFromI18n(content) {
   if (!content) return "";
   return content.zh || content.en || "";
@@ -42,7 +62,7 @@ export default function App() {
   const [serverUrl, setServerUrl] = useState("http://localhost:8000");
   const [wsUrl, setWsUrl] = useState("ws://localhost:8000/ws");
   const [role, setRole] = useState("player");
-  const [playerId, setPlayerId] = useState(() => crypto.randomUUID());
+  const [playerId, setPlayerId] = useState(() => makeUUID());
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [color, setColor] = useState("#2dd4bf");
@@ -53,6 +73,8 @@ export default function App() {
   const [stateView, setStateView] = useState({ players: {} });
   const [sessionInfo, setSessionInfo] = useState(null);
   const [inputText, setInputText] = useState("");
+  const [lanInfo, setLanInfo] = useState(null);
+  const [lanError, setLanError] = useState("");
   const wsRef = useRef(null);
 
   const playerCard = useMemo(() => {
@@ -79,6 +101,19 @@ export default function App() {
         }
       })
       .catch(() => {});
+  }, [serverUrl]);
+
+  useEffect(() => {
+    setLanError("");
+    fetch(`${serverUrl}/local_ip`)
+      .then((res) => res.json())
+      .then((data) => {
+        setLanInfo(data);
+      })
+      .catch(() => {
+        setLanInfo(null);
+        setLanError("无法获取局域网地址");
+      });
   }, [serverUrl]);
 
   async function createCharacter() {
@@ -159,12 +194,19 @@ export default function App() {
     setInputText("");
   }
 
+  function applyLanAddress() {
+    if (!lanInfo?.ip) return;
+    const port = lanInfo.port || 8000;
+    setServerUrl(`http://${lanInfo.ip}:${port}`);
+    setWsUrl(`ws://${lanInfo.ip}:${port}/ws`);
+  }
+
   return (
     <div className="app">
       <header className="topbar">
         <div>
           <div className="title">OpenKeeper</div>
-          <div className="subtitle">TRPG Agent Session Console</div>
+          <div className="subtitle">古神正在低语……</div>
         </div>
         <div className={`status ${connected ? "on" : "off"}`}>
           {connected ? "CONNECTED" : "DISCONNECTED"}
@@ -229,6 +271,36 @@ export default function App() {
           </div>
           <div className="actions">
             <button onClick={connect}>连接</button>
+          </div>
+          <div className="lan-tip">
+            <div className="lan-title">局域网访问提示</div>
+            {lanInfo?.ip ? (
+              lanInfo.ip.startsWith("127.") ? (
+                <div className="muted">检测到回环地址，请确认电脑已联网并允许防火墙入站。</div>
+              ) : (
+                <>
+                  <div className="lan-row">
+                    <span className="muted">内网 IP</span>
+                    <span>{lanInfo.ip}</span>
+                  </div>
+                  <div className="lan-row">
+                    <span className="muted">玩家</span>
+                    <span>{lanInfo.urls?.player || `http://${lanInfo.ip}:${lanInfo.port || 8000}/player`}</span>
+                  </div>
+                  <div className="lan-row">
+                    <span className="muted">Host</span>
+                    <span>{lanInfo.urls?.host || `http://${lanInfo.ip}:${lanInfo.port || 8000}/host`}</span>
+                  </div>
+                  <div className="actions">
+                    <button className="ghost" onClick={applyLanAddress}>
+                      使用局域网地址
+                    </button>
+                  </div>
+                </>
+              )
+            ) : (
+              <div className="muted">{lanError || "尚未获取局域网地址"}</div>
+            )}
           </div>
         </div>
       </section>

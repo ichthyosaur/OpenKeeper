@@ -3,25 +3,108 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230ea5e9'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%230b0f1a'/%3E%3C/svg%3E" />
     <title>OpenKeeper</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
       :root {
-        --bg: #0b0f1a;
-        --panel: #1c253b;
-        --accent: #0ea5e9;
-        --text: #e2e8f0;
-        --muted: #94a3b8;
+        --bg: #0a0f1f;
+        --panel: #111a2d;
+        --panel-2: #141f36;
+        --accent: #22c55e;
+        --accent-2: #38bdf8;
+        --text: #e6edf6;
+        --muted: #98a4b8;
+        --glow: rgba(245, 158, 11, 0.25);
+        --stroke: rgba(148, 163, 184, 0.18);
+        --shadow: 0 18px 40px rgba(3, 7, 18, 0.45);
+      }
+      :root[data-theme="archive"] {
+        --bg: #0a0f1f;
+        --panel: #111a2d;
+        --panel-2: #141f36;
+        --accent: #22c55e;
+        --text: #e6edf6;
+        --muted: #98a4b8;
+      }
+      :root[data-theme="nautical"] {
+        --bg: #081722;
+        --panel: #0f1f2e;
+        --panel-2: #142a3d;
+        --accent: #2dd4bf;
+        --text: #e5f3f6;
+        --muted: #86a8b0;
+      }
+      :root[data-theme="newsprint"] {
+        --bg: #1c1a17;
+        --panel: #26221e;
+        --panel-2: #2f2a25;
+        --accent: #a3e635;
+        --text: #f2e9dc;
+        --muted: #c7b9a2;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        background: radial-gradient(circle at top, #1b2442, #0b0f1a 50%);
+        font-family: "Space Grotesk", "IBM Plex Sans", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.18), transparent 45%),
+          radial-gradient(circle at 90% 15%, rgba(245, 158, 11, 0.2), transparent 40%),
+          linear-gradient(160deg, #0a0f1f 10%, #0b132a 40%, #0a0f1f 90%);
         color: var(--text);
       }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 40 Q60 10 120 40 T240 40' fill='none' stroke='rgba(148,163,184,0.12)' stroke-width='1'/%3E%3Cpath d='M0 120 Q60 90 120 120 T240 120' fill='none' stroke='rgba(148,163,184,0.1)' stroke-width='1'/%3E%3Cpath d='M0 200 Q60 170 120 200 T240 200' fill='none' stroke='rgba(148,163,184,0.08)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 24px 24px, 240px 240px;
+        opacity: 0.18;
+        pointer-events: none;
+      }
+      :root[data-theme="nautical"] body::before {
+        background-image:
+          radial-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 30 Q60 0 120 30 T240 30' fill='none' stroke='rgba(45,212,191,0.18)' stroke-width='1'/%3E%3Cpath d='M0 90 Q60 60 120 90 T240 90' fill='none' stroke='rgba(45,212,191,0.14)' stroke-width='1'/%3E%3Cpath d='M0 150 Q60 120 120 150 T240 150' fill='none' stroke='rgba(45,212,191,0.12)' stroke-width='1'/%3E%3Cpath d='M0 210 Q60 180 120 210 T240 210' fill='none' stroke='rgba(45,212,191,0.1)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 22px 22px, 240px 240px;
+        opacity: 0.2;
+      }
+      :root[data-theme="newsprint"] body::before {
+        background-image:
+          radial-gradient(rgba(199, 185, 162, 0.18) 1px, transparent 1px),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M0 20 H240' stroke='rgba(199,185,162,0.15)' stroke-width='1'/%3E%3Cpath d='M0 60 H240' stroke='rgba(199,185,162,0.12)' stroke-width='1'/%3E%3Cpath d='M0 100 H240' stroke='rgba(199,185,162,0.1)' stroke-width='1'/%3E%3Cpath d='M0 140 H240' stroke='rgba(199,185,162,0.08)' stroke-width='1'/%3E%3Cpath d='M0 180 H240' stroke='rgba(199,185,162,0.06)' stroke-width='1'/%3E%3Cpath d='M0 220 H240' stroke='rgba(199,185,162,0.05)' stroke-width='1'/%3E%3C/svg%3E");
+        background-size: 26px 26px, 240px 240px;
+        opacity: 0.18;
+      }
       .app { min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-      .topbar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1f2937, #0f172a); padding: 16px 20px; border-radius: 16px; border: 1px solid #27324a; }
-      .title { font-size: 24px; font-weight: 700; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background:
+          linear-gradient(120deg, rgba(245, 158, 11, 0.12), transparent 55%),
+          linear-gradient(135deg, #0f172a, #111a2d);
+        padding: 18px 22px;
+        border-radius: 18px;
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .topbar::after {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .title { font-size: 28px; font-weight: 700; font-family: "Fraunces", serif; letter-spacing: 0.02em; }
       .subtitle { font-size: 13px; color: var(--muted); }
       .status { padding: 8px 14px; border-radius: 999px; font-size: 12px; letter-spacing: 0.1em; }
       .status.on { background: #0f766e; }
@@ -30,26 +113,83 @@
       .notice { margin-top: 8px; font-size: 12px; color: var(--muted); }
       .links { display: flex; gap: 10px; font-size: 12px; }
       .links a { color: var(--accent); text-decoration: none; }
-      .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-      .card { background: var(--panel); padding: 16px; border-radius: 14px; border: 1px solid #2b3652; }
-      .card-title { font-weight: 600; margin-bottom: 12px; }
+      .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; animation: fadeInUp 0.5s ease both; }
+      .card {
+        background: linear-gradient(160deg, rgba(20, 31, 54, 0.95), rgba(14, 21, 38, 0.9));
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--stroke);
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        border-radius: 17px;
+        border: 1px solid rgba(56, 189, 248, 0.12);
+        pointer-events: none;
+      }
+      .card-title { font-weight: 600; margin-bottom: 12px; font-family: "Fraunces", serif; letter-spacing: 0.01em; }
       .grid { display: grid; gap: 10px; }
       label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
-      input, select { padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3a5a; background: #0f172a; color: var(--text); }
-      button { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+      input, select {
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        background: rgba(9, 14, 27, 0.7);
+        color: var(--text);
+        box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.1);
+      }
+      button {
+        background: linear-gradient(135deg, #16a34a, var(--accent));
+        color: #0b0f1a;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(34, 197, 94, 0.3); }
       .actions { margin-top: 12px; display: flex; gap: 8px; }
-      .room { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 16px; }
+      .lan-tip { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px dashed rgba(245, 158, 11, 0.35); background: rgba(12, 18, 34, 0.9); display: grid; gap: 8px; }
+      .lan-title { font-weight: 600; font-size: 13px; }
+      .lan-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; word-break: break-all; }
+      .room { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 16px; animation: fadeInUp 0.5s ease both; }
       .hidden { display: none !important; }
       .divider { height: 1px; background: #2b3652; margin: 12px 0; }
-      .panel { background: var(--panel); border-radius: 14px; border: 1px solid #2b3652; padding: 16px; }
+      .panel { background: linear-gradient(170deg, var(--panel), rgba(8, 13, 26, 0.9)); border-radius: 18px; border: 1px solid var(--stroke); padding: 16px; box-shadow: var(--shadow); }
       .panel-title { font-weight: 600; margin-bottom: 12px; }
+      .panel.small { padding: 12px; }
+      .roll { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+      .roll strong { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+      .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .badge.success { background: rgba(14, 116, 144, 0.2); color: #ecfeff; border: 1px solid rgba(56, 189, 248, 0.4); }
+      .badge.fail { background: rgba(124, 45, 18, 0.25); color: #ffedd5; border: 1px solid rgba(251, 146, 60, 0.35); }
+      .badge.normal { background: rgba(30, 41, 59, 0.6); color: #e2e8f0; border: 1px solid rgba(148, 163, 184, 0.2); }
+      .modal { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.7); display: flex; align-items: center; justify-content: center; z-index: 50; }
+      .modal.hidden { display: none; }
+      .modal-card { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 20px; max-width: 560px; width: 90%; }
+      .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+      .modal-body {
+        white-space: pre-wrap;
+        line-height: 1.6;
+        color: var(--text);
+        font-size: 14px;
+        max-height: 60vh;
+        overflow-y: auto;
+        padding-right: 6px;
+      }
+      .modal-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
       .history { display: flex; flex-direction: column; gap: 12px; }
       .history-list { flex: 1; max-height: 420px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
-      .history-item { padding: 12px; background: #101a2d; border-radius: 12px; border: 1px solid #24314f; }
+      .history-item { padding: 12px; background: rgba(12, 18, 34, 0.85); border-radius: 14px; border: 1px solid rgba(56, 189, 248, 0.15); }
       .history-item.player { border-left: 4px solid #38bdf8; }
-      .history-item.keeper { border-left: 4px solid #22c55e; }
+      .history-item.keeper { border-left: 4px solid #0f3d2e; }
       .history-item.system { border-left: 4px solid #64748b; }
-      .history-item.secret { background: #0b2f20; border-color: #14532d; }
+      .history-item.secret { background: rgba(15, 81, 50, 0.2); border-color: rgba(20, 83, 45, 0.6); }
       .history-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; margin-bottom: 4px; }
       .history-content { font-size: 14px; }
       .input-row { display: flex; gap: 8px; }
@@ -58,12 +198,49 @@
       .input-row button:disabled { opacity: 0.6; cursor: not-allowed; }
       .side { display: flex; flex-direction: column; gap: 16px; }
       .card-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-      .chip { padding: 6px 10px; border-radius: 999px; font-size: 12px; color: #0b0f1a; font-weight: 700; }
+      .chip { padding: 6px 10px; border-radius: 999px; font-size: 12px; color: #0b0f1a; font-weight: 700; box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
       .stats, .attributes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; }
       .players { display: flex; flex-direction: column; gap: 8px; }
       .player { display: flex; align-items: center; gap: 10px; font-size: 14px; }
       .dot { width: 10px; height: 10px; border-radius: 50%; }
+      .flag { font-size: 11px; padding: 2px 6px; border-radius: 999px; background: #7c2d12; color: #ffedd5; }
       .muted { color: var(--muted); font-size: 12px; }
+      .toast-stack {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+        z-index: 60;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: rgba(12, 18, 34, 0.95);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+        color: var(--text);
+        font-size: 13px;
+        animation: toastFade 5s ease forwards;
+      }
+      .toast-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; color: var(--accent); }
+      .toast-icon svg { width: 20px; height: 20px; }
+      @keyframes toastFade {
+        0% { opacity: 0; transform: translateY(-6px); }
+        10% { opacity: 1; transform: translateY(0); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-6px); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
       @media (max-width: 900px) { .room { grid-template-columns: 1fr; } }
     </style>
   </head>
@@ -72,9 +249,10 @@
       <header class="topbar">
         <div>
           <div class="title">OpenKeeper</div>
-          <div class="subtitle">TRPG Agent Session Console</div>
+          <div class="subtitle">古神正在低语……</div>
         </div>
-        <div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="backToLobby" class="hidden">返回角色选择</button>
           <div id="status" class="status off">DISCONNECTED</div>
         </div>
       </header>
@@ -87,6 +265,7 @@
           </div>
           <div class="actions">
             <button id="useExisting">进入游戏</button>
+            <button id="deletePlayer">删除角色</button>
           </div>
           <div class="notice">选择已有角色后进入游戏界面。</div>
         </div>
@@ -97,18 +276,61 @@
             <label>名称<input id="name" /></label>
             <label>性别<select id="gender"><option value="男">男</option><option value="女">女</option></select></label>
             <label>颜色<input id="color" type="color" value="#2dd4bf" /></label>
-            <label>职业<select id="profession"></select></label>
+            <label>职业<select id="profession">
+              <option value="retired_soldier">退役士兵</option>
+              <option value="police">警察</option>
+              <option value="doctor">医生</option>
+              <option value="professor">大学教授</option>
+              <option value="private_detective">私人侦探</option>
+              <option value="journalist">记者</option>
+              <option value="occult_researcher">神秘学研究者</option>
+              <option value="engineer">工程师</option>
+              <option value="archaeologist">考古学家</option>
+              <option value="lawyer">律师</option>
+              <option value="nurse">护士</option>
+              <option value="photojournalist">摄影记者</option>
+              <option value="librarian">图书馆员</option>
+              <option value="antiquarian">古董商</option>
+              <option value="stage_magician">舞台魔术师</option>
+              <option value="pilot">飞行员</option>
+              <option value="dockworker">码头工人</option>
+              <option value="chemist">化学师</option>
+            </select></label>
           </div>
           <div class="actions">
             <button id="create">创建角色</button>
           </div>
           <div id="notice" class="notice"></div>
         </div>
+
+        <div class="card">
+          <div class="card-title">局域网访问提示</div>
+          <div class="lan-tip">
+            <div class="lan-title">可分享的访问地址</div>
+            <div id="lanStatus" class="muted">正在获取…</div>
+            <div id="lanRows" class="hidden">
+              <div class="lan-row">
+                <span class="muted">内网 IP</span>
+                <span id="lanIp">-</span>
+              </div>
+              <div class="lan-row">
+                <span class="muted">玩家</span>
+                <span id="lanPlayer">-</span>
+              </div>
+              <div class="lan-row">
+                <span class="muted">Host</span>
+                <span id="lanHost">-</span>
+              </div>
+            </div>
+          </div>
+          <div class="notice">手机与电脑在同一 Wi‑Fi 时可用。</div>
+        </div>
       </section>
 
       <section id="game" class="room hidden">
         <div class="history panel">
           <div class="panel-title">历史记录</div>
+          <div id="moduleIntro" class="muted hidden"></div>
           <div id="history" class="history-list"></div>
           <div class="input-row">
             <input id="actionInput" placeholder="行动输入..." />
@@ -131,12 +353,30 @@
             <div class="attributes" id="cardAttributes"></div>
           </div>
 
+          <div class="panel small">
+            <div class="panel-title">判定面板</div>
+            <div id="rollPanel" class="roll">
+              <div class="muted">暂无判定</div>
+            </div>
+          </div>
+
           <div class="panel">
             <div class="panel-title">房间玩家</div>
             <div class="players" id="roomPlayers"></div>
           </div>
         </div>
       </section>
+    </div>
+    <div id="toastStack" class="toast-stack"></div>
+
+    <div id="endingModal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-title">模组结局</div>
+        <div id="endingText" class="modal-body"></div>
+        <div class="modal-actions">
+          <button id="closeEnding">关闭</button>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -150,14 +390,32 @@
         players: [],
         machineId: "",
         onlineIds: [],
+        streamingCount: 0,
+        pendingEntries: [],
+        moduleIntroText: "",
+        activeStreamIds: new Set(),
+        toastCache: new Map(),
       };
 
       const serverUrl = window.location.origin;
       const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
-      let playerId = crypto.randomUUID();
+      function makeUUID() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          return window.crypto.randomUUID();
+        }
+        const bytes = new Uint8Array(16);
+        for (let i = 0; i < bytes.length; i += 1) {
+          bytes[i] = Math.floor(Math.random() * 256);
+        }
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      }
+      let playerId = makeUUID();
       state.machineId = localStorage.getItem("openkeeper_machine_id");
       if (!state.machineId) {
-        state.machineId = crypto.randomUUID();
+        state.machineId = makeUUID();
         localStorage.setItem("openkeeper_machine_id", state.machineId);
       }
 
@@ -166,12 +424,33 @@
         return content.zh || content.en || "";
       }
 
+      function setLanInfo(info) {
+        const status = el("lanStatus");
+        const rows = el("lanRows");
+        if (!info || !info.ip) {
+          status.textContent = "无法获取局域网地址";
+          rows.classList.add("hidden");
+          return;
+        }
+        status.textContent = info.ip.startsWith("127.") ? "检测到回环地址，请检查网络或防火墙" : "已获取";
+        el("lanIp").textContent = info.ip;
+        el("lanPlayer").textContent = info.urls?.player || `http://${info.ip}:${info.port || 8000}/player`;
+        el("lanHost").textContent = info.urls?.host || `http://${info.ip}:${info.port || 8000}/host`;
+        rows.classList.remove("hidden");
+      }
+
+      fetch(`${serverUrl}/local_ip`)
+        .then((res) => res.json())
+        .then((data) => setLanInfo(data))
+        .catch(() => setLanInfo(null));
+
       function renderHistory() {
         const container = el("history");
         container.innerHTML = "";
         state.history.forEach((entry) => {
           const item = document.createElement("div");
           item.className = `history-item ${entry.actor_type} ${entry.message_type === "secret" ? "secret" : ""}`;
+          if (entry.stream_id) item.dataset.streamId = entry.stream_id;
           if (entry.actor_type === "player") {
             const pcolor = state.stateView.players?.[entry.actor_id]?.color;
             if (pcolor) item.style.borderLeftColor = pcolor;
@@ -194,6 +473,114 @@
           `;
           container.appendChild(item);
         });
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function toastIcon(type) {
+        if (type === "apply_damage") {
+          return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z'/></svg>";
+        }
+        if (type === "apply_sanity_change") {
+          return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M9 4a7 7 0 0 1 9 9'/><path d='M15 20a7 7 0 0 1-9-9'/><path d='M8 12h8'/></svg>";
+        }
+        return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 3v18'/><path d='M5 12h14'/></svg>";
+      }
+
+      function showToast(text, type) {
+        const stack = el("toastStack");
+        if (!stack) return;
+        const item = document.createElement("div");
+        item.className = "toast";
+        item.innerHTML = `<div class="toast-icon">${toastIcon(type)}</div><div>${text}</div>`;
+        stack.appendChild(item);
+        setTimeout(() => {
+          item.remove();
+        }, 5200);
+      }
+
+      function toastFromEntry(entry) {
+        const keyParts = [];
+        if (entry?.actions?.[0]) {
+          const action = entry.actions[0];
+          keyParts.push(action.function_name, JSON.stringify(action.parameters || {}));
+        } else if (entry?.state_diff?.players) {
+          const players = entry.state_diff.players;
+          const playerId = Object.keys(players)[0] || "";
+          const data = players[playerId] || {};
+          if (data.last_damage) keyParts.push("apply_damage", playerId, data.last_damage.amount);
+          if (data.last_sanity) keyParts.push("apply_sanity_change", playerId, data.last_sanity.amount);
+        }
+        const key = keyParts.join("|");
+        if (!key) return;
+        const now = Date.now();
+        const last = state.toastCache.get(key) || 0;
+        if (now - last < 4000) return;
+        state.toastCache.set(key, now);
+        const action = entry?.actions?.[0];
+        if (action) {
+          const fn = action.function_name;
+          if (["apply_damage", "apply_sanity_change", "update_player_attribute", "add_status", "remove_status"].includes(fn)) {
+            const amount = action.parameters?.amount;
+            if (fn === "apply_damage") {
+              showToast(`生命值 -${Math.abs(amount ?? 0)}`, fn);
+              return;
+            }
+            if (fn === "apply_sanity_change") {
+              const delta = Number(amount ?? 0);
+              const label = delta < 0 ? `理智 ${delta}` : `理智 +${delta}`;
+              showToast(label, fn);
+              return;
+            }
+            if (fn === "update_player_attribute") {
+              const attr = action.parameters?.attribute || "";
+              const delta = Number(action.parameters?.delta ?? 0);
+              const sign = delta >= 0 ? "+" : "";
+              showToast(`${attr} ${sign}${delta}`, fn);
+              return;
+            }
+            return;
+          }
+        }
+        if (entry?.action_type === "state_update" && entry?.state_diff?.players) {
+          const players = entry.state_diff.players;
+          const playerId = Object.keys(players)[0];
+          const data = players[playerId] || {};
+          if (data.last_damage) {
+            const amount = data.last_damage?.amount ?? 0;
+            showToast(`生命值 -${Math.abs(amount)}`, "apply_damage");
+          } else if (data.last_sanity) {
+            const amount = data.last_sanity?.amount ?? 0;
+            const delta = Number(amount);
+            const label = delta < 0 ? `理智 ${delta}` : `理智 +${delta}`;
+            showToast(label, "apply_sanity_change");
+          }
+        }
+      }
+
+      function appendStreamDelta(streamId, delta) {
+        const container = el("history");
+        const item = container.querySelector(`[data-stream-id="${streamId}"]`);
+        if (!item) return false;
+        const content = item.querySelector(".history-content");
+        if (!content) return false;
+        const shouldStick = container.scrollTop + container.clientHeight >= container.scrollHeight - 40;
+        content.textContent = (content.textContent || "") + delta;
+        if (shouldStick) {
+          container.scrollTop = container.scrollHeight;
+        }
+        return true;
+      }
+
+      function showEndingModal(entry) {
+        const modal = el("endingModal");
+        const textEl = el("endingText");
+        const description = entry?.state_diff?.description || "";
+        const keeperText = entry?.state_diff?.keeper_text || "";
+        const conditions = entry?.state_diff?.conditions || "";
+        const combined = keeperText ? `${keeperText}\n\n${description}` : description;
+        const withConditions = conditions ? `${combined}\n\n触发条件：${conditions}` : combined;
+        textEl.textContent = withConditions || "模组已结束。";
+        modal.classList.remove("hidden");
       }
 
       function renderPlayerCard() {
@@ -247,10 +634,17 @@
           const sanMax = p.stats?.san_max ?? p.stats?.san ?? 0;
           const hp = Math.min(p.stats?.hp ?? 0, hpMax);
           const san = Math.min(p.stats?.san ?? 0, sanMax);
+          const flag =
+            hp <= 0
+              ? "<span class=\"flag\">死亡</span>"
+              : san <= 0
+              ? "<span class=\"flag\">疯狂</span>"
+              : "";
           item.innerHTML = `
             <span class="dot" style="background:${p.color || "#475569"}"></span>
             <span>${p.name || ""}</span>
             <span class="muted">生命 ${hp} / ${hpMax} | 理智 ${san} / ${sanMax}</span>
+            ${flag}
           `;
           container.appendChild(item);
         });
@@ -261,6 +655,98 @@
         renderPlayerCard();
         renderRoomPlayers();
         updateActionLock();
+        renderRollPanel();
+      }
+
+      function isActionEntry(entry) {
+        return entry?.action_type === "dice_roll" || entry?.action_type === "state_update";
+      }
+
+      function pushHistoryEntry(entry, streamId) {
+        if (streamId) {
+          const idx = state.history.findIndex((e) => e.stream_id === streamId);
+          if (idx >= 0) {
+            state.history[idx] = { ...entry, stream_id: streamId };
+          } else {
+            state.history.push({ ...entry, stream_id: streamId });
+          }
+          return;
+        }
+        state.history.push(entry);
+      }
+
+      function flushPendingEntries() {
+        if (!state.pendingEntries.length) return;
+        const pending = state.pendingEntries;
+        state.pendingEntries = [];
+        pending.forEach(({ entry, streamId }) => {
+          pushHistoryEntry(entry, streamId);
+          toastFromEntry(entry);
+        });
+        renderHistory();
+        renderRollPanel();
+      }
+
+      function renderRollPanel() {
+        const panel = el("rollPanel");
+        const last = [...state.history].reverse().find((e) => e.action_type === "dice_roll");
+        if (!last || !last.state_diff) {
+          panel.innerHTML = "<div class=\"muted\">暂无判定</div>";
+          return;
+        }
+        const dice = last.state_diff.dice || {};
+        if (last.state_diff.opposed) {
+          const attacker = last.state_diff.attacker || {};
+          const defender = last.state_diff.defender || {};
+          const outcomeMap = {
+            critical: "大成功",
+            extreme_success: "极难成功",
+            hard_success: "困难成功",
+            regular_success: "成功",
+            failure: "失败",
+            fumble: "大失败",
+          };
+          const winner = last.state_diff.winner || "tie";
+          panel.innerHTML = `
+            <strong>对抗检定</strong>
+            <div>攻击方：${attacker.skill_name || "攻击方"} / ${attacker.total ?? "?"} / ${outcomeMap[attacker.success_level] || attacker.success_level}</div>
+            <div>防守方：${defender.skill_name || "防守方"} / ${defender.total ?? "?"} / ${outcomeMap[defender.success_level] || defender.success_level}</div>
+            <div>胜者：${winner}</div>
+          `;
+          return;
+        }
+        const reason = last.state_diff.reason || "";
+        const total = dice.total ?? 0;
+          if (dice.type === "coc7e") {
+            const target = dice.target ?? "?";
+            const level = dice.success_level || "failure";
+            const difficulty = dice.difficulty || "regular";
+            const difficultyMap = { regular: "常规", hard: "困难", extreme: "极难" };
+            const outcomeMap = {
+              critical: "大成功",
+              extreme_success: "极难成功",
+              hard_success: "困难成功",
+              regular_success: "成功",
+              failure: "失败",
+              fumble: "大失败",
+            };
+            const badgeClass = level === "failure" || level === "fumble" ? "fail" : "success";
+            panel.innerHTML = `
+              <strong>检定</strong>
+              <div>目标值：${target} / 难度：${difficultyMap[difficulty] || difficulty}</div>
+              <div>结果：${total} <span class="badge ${badgeClass}">${outcomeMap[level] || level}</span></div>
+              <div>原因：${reason}</div>
+            `;
+            return;
+        }
+        const outcome = total <= 5 ? "极难成功" : total <= 50 ? "成功" : "失败";
+        const badgeClass = total <= 50 ? "success" : "fail";
+        panel.innerHTML = `
+          <strong>掷骰</strong>
+          <div>表达式：${dice.expression || ""}</div>
+          <div>结果：${total} <span class="badge ${badgeClass}">${outcome}</span></div>
+          <div>原因：${reason}</div>
+        `;
       }
 
       function updateActionLock() {
@@ -276,7 +762,13 @@
           if (phase !== "active") {
             input.placeholder = "等待调查开始";
           } else {
-            input.placeholder = "行动输入...";
+            if ((stats.hp ?? 1) <= 0) {
+              input.placeholder = "你已死亡";
+            } else if ((stats.san ?? 1) <= 0) {
+              input.placeholder = "你已陷入疯狂";
+            } else {
+              input.placeholder = "行动输入...";
+            }
             setNotice("你的角色已死亡或疯狂，无法行动。");
           }
         } else {
@@ -328,6 +820,12 @@
           lawyer: "律师",
           nurse: "护士",
           photojournalist: "摄影记者",
+          librarian: "图书馆员",
+          antiquarian: "古董商",
+          stage_magician: "舞台魔术师",
+          pilot: "飞行员",
+          dockworker: "码头工人",
+          chemist: "化学师",
         };
         const list = keys.length ? keys : [
           "retired_soldier",
@@ -342,6 +840,12 @@
           "lawyer",
           "nurse",
           "photojournalist",
+          "librarian",
+          "antiquarian",
+          "stage_magician",
+          "pilot",
+          "dockworker",
+          "chemist",
         ];
         select.innerHTML = list
           .map((p) => {
@@ -377,7 +881,7 @@
         const serverUrl = window.location.origin;
         const profession = el("profession").value;
         const skills = state.professions[profession]?.skills || {};
-        playerId = crypto.randomUUID();
+        playerId = makeUUID();
         const payload = {
           player_id: playerId,
           name: el("name").value,
@@ -403,6 +907,7 @@
           el("existingPlayers").value = playerId;
           el("lobby").classList.add("hidden");
           el("game").classList.remove("hidden");
+          el("backToLobby").classList.remove("hidden");
           connect();
         } catch (e) {
           setNotice("角色创建失败，请检查后端服务。");
@@ -423,7 +928,28 @@
         });
         el("lobby").classList.add("hidden");
         el("game").classList.remove("hidden");
+        el("backToLobby").classList.remove("hidden");
         connect();
+      });
+
+      el("deletePlayer").addEventListener("click", async () => {
+        const selected = el("existingPlayers").value;
+        if (!selected) {
+          setNotice("请选择一个角色。");
+          return;
+        }
+        const res = await fetch(`${window.location.origin}/players/delete`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ player_id: selected }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice("角色已删除。");
+          await loadPlayers();
+        } else {
+          setNotice(data.error || "删除失败。");
+        }
       });
 
       function connect() {
@@ -444,17 +970,69 @@
             state.history = message.payload.latest_history || [];
             state.stateView = message.payload.visible_state || { players: {} };
             state.onlineIds = message.payload.online_player_ids || [];
+            if (message.payload.module_introduction) {
+              state.moduleIntroText = message.payload.module_introduction;
+            }
+            if (message.payload.theme) {
+              document.documentElement.setAttribute("data-theme", message.payload.theme);
+            }
+            const phase = state.stateView.phase || "lobby";
+            const introEl = el("moduleIntro");
+            if (phase === "active" && state.moduleIntroText) {
+              introEl.textContent = state.moduleIntroText;
+              introEl.classList.remove("hidden");
+            } else {
+              introEl.classList.add("hidden");
+            }
             renderAll();
             return;
           }
           if (message.type === "server.history_append") {
             const entry = message.payload.entry;
+            const streamId = message.payload.stream_id;
             if (Array.isArray(entry)) {
               state.history = entry;
             } else {
-              state.history.push(entry);
+              if (state.streamingCount > 0 && (!streamId || !state.activeStreamIds.has(streamId))) {
+                state.pendingEntries.push({ entry, streamId });
+              } else {
+                pushHistoryEntry(entry, streamId);
+                toastFromEntry(entry);
+              }
             }
             renderHistory();
+            renderRollPanel();
+            if (entry?.state_diff?.ending_id) {
+              showEndingModal(entry);
+            }
+            return;
+          }
+          if (message.type === "server.keeper_stream_start") {
+            const { stream_id, message_type } = message.payload;
+            state.streamingCount += 1;
+            state.activeStreamIds.add(stream_id);
+            const exists = state.history.findIndex((e) => e.stream_id === stream_id) >= 0;
+            if (!exists) {
+              state.history.push({
+                stream_id,
+                actor_type: "keeper",
+                message_type,
+                content: { zh: "" },
+              });
+              renderHistory();
+            }
+            return;
+          }
+          if (message.type === "server.keeper_stream_delta") {
+            const { stream_id, delta } = message.payload;
+            const idx = state.history.findIndex((e) => e.stream_id === stream_id);
+            if (idx >= 0) {
+              const current = state.history[idx].content?.zh || "";
+              state.history[idx].content = { zh: current + delta };
+              if (!appendStreamDelta(stream_id, delta)) {
+                renderHistory();
+              }
+            }
             return;
           }
           if (message.type === "server.state_update") {
@@ -463,6 +1041,40 @@
             renderPlayerCard();
             renderRoomPlayers();
             updateActionLock();
+          }
+          if (message.type === "server.module_info") {
+            state.moduleIntroText = message.payload.module_introduction || "";
+            const phase = state.stateView.phase || "lobby";
+            const introEl = el("moduleIntro");
+            if (phase === "active" && state.moduleIntroText) {
+              introEl.textContent = state.moduleIntroText;
+              introEl.classList.remove("hidden");
+            }
+            return;
+          }
+          if (message.type === "server.theme_update") {
+            const theme = message.payload?.theme || "archive";
+            document.documentElement.setAttribute("data-theme", theme);
+            return;
+          }
+          if (message.type === "server.history_clear") {
+            state.history = [];
+            state.streamingCount = 0;
+            state.pendingEntries = [];
+            state.activeStreamIds.clear();
+            state.moduleIntroText = "";
+            el("moduleIntro").classList.add("hidden");
+            renderHistory();
+            renderRollPanel();
+            return;
+          }
+          if (message.type === "server.keeper_stream_end") {
+            renderHistory();
+            state.streamingCount = Math.max(0, state.streamingCount - 1);
+            state.activeStreamIds.delete(message.payload?.stream_id);
+            if (state.streamingCount === 0) {
+              flushPendingEntries();
+            }
           }
         };
         state.ws.onclose = () => {
@@ -496,8 +1108,30 @@
         input.value = "";
       });
 
+      el("closeEnding").addEventListener("click", () => {
+        el("endingModal").classList.add("hidden");
+      });
+
       el("actionInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") el("send").click();
+        if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
+          el("send").click();
+        }
+      });
+
+      el("backToLobby").addEventListener("click", async () => {
+        if (state.ws) state.ws.close();
+        state.history = [];
+        state.streamingCount = 0;
+        state.pendingEntries = [];
+        state.activeStreamIds.clear();
+        state.moduleIntroText = "";
+        el("moduleIntro").classList.add("hidden");
+        document.documentElement.setAttribute("data-theme", "archive");
+        el("game").classList.add("hidden");
+        el("lobby").classList.remove("hidden");
+        el("backToLobby").classList.add("hidden");
+        await loadPlayers();
+        renderLobbyPlayers();
       });
 
       loadProfessions();

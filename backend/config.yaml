@@ -2,5 +2,9 @@ mongo_uri: "mongodb://localhost:27017"
 mongo_db: "openkeeper"
 api_key: ""
 base_url: ""
-model: "gpt-4o-mini"
+model: ""
 history_count: 100
+max_followups: 5
+stream_cps: 50
+temperature: 0.7
+llm_parse_retries: 3

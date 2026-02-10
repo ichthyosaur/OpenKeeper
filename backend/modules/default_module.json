@@ -29,5 +29,118 @@
       "description": "The ritual completes and the town is consumed.",
       "conditions": "Players fail to stop the ritual and the final rite completes."
     }
+  ],
+  "ending_triggers": [
+    "Players restore the observatory seal and disperse the ritual ash.",
+    "Players allow the ritual to complete or fail to stop the final rite.",
+    "All investigators are dead or insane."
+  ],
+  "locations": [
+    {
+      "name": "Hollow Sun Manor",
+      "description": "A crumbling cliffside estate with lights that never align with its windows.",
+      "features": ["sealed study", "cold hearth", "warded stairwell"],
+      "secrets": ["hidden lift to the observatory", "bloodstained survey notes"],
+      "connections": ["cliff path", "town road"]
+    },
+    {
+      "name": "Seafog Cliffs",
+      "description": "Wind-bent grass and a shoreline that swallows footpaths after dusk.",
+      "features": ["watchpost ruin", "sharp basalt steps"],
+      "secrets": ["faint sigils carved into the rock"],
+      "connections": ["manor grounds", "old lighthouse"]
+    },
+    {
+      "name": "Town Square",
+      "description": "Salt-stained shops and a church bell that tolls unevenly.",
+      "features": ["notice board", "closed inn"],
+      "secrets": ["missing-person posters removed nightly"],
+      "connections": ["church", "manor road"]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "arrival",
+      "title": "Gates of the Manor",
+      "summary": "The players confront the warm iron gate and the caretakers' first warning.",
+      "beats": ["strange warmth on the iron", "Elena tests their intent", "a distant bell in the fog"],
+      "required_clues": [],
+      "outcomes": ["invited inside", "forced to seek town records"]
+    },
+    {
+      "scene_id": "observatory",
+      "title": "The Broken Seal",
+      "summary": "The hidden observatory reveals a half-finished ritual circle.",
+      "beats": ["cold light from the lens", "ritual ash still warm", "seal rune split"],
+      "required_clues": ["clue_rune_layout"],
+      "outcomes": ["seal can be restored", "ritual surges"]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_rune_layout",
+      "description": "A hand-copied diagram of the observatory rune sequence.",
+      "location": "Hollow Sun Manor",
+      "linked_to": ["seal_restored"],
+      "reveal": "The ritual must be restarted in reverse order."
+    },
+    {
+      "clue_id": "clue_staged_evidence",
+      "description": "Deputy Harrow's altered logbook with mismatched dates.",
+      "location": "Town Square",
+      "linked_to": ["Deputy Harrow"],
+      "reveal": "The disappearances spiked after the deputy closed the cliff path."
+    }
+  ],
+  "events": [
+    {
+      "event_id": "bell_waver",
+      "trigger": "First night in town",
+      "description": "The church bell tolls thirteen times and stops abruptly.",
+      "consequences": ["fog thickens", "locals refuse to speak"]
+    },
+    {
+      "event_id": "seal_pulse",
+      "trigger": "Players enter the observatory",
+      "description": "A pulse of light warps the air and strains sanity.",
+      "consequences": ["temporary disorientation", "mark left on skin"]
+    }
+  ],
+  "items": [
+    {
+      "name": "Surveyor's Compass",
+      "description": "Always points toward the cliff edge rather than north.",
+      "effect": "Leads to the hidden stairwell.",
+      "location": "Hollow Sun Manor"
+    },
+    {
+      "name": "Salt-Warped Ledger",
+      "description": "Town records with pages stuck by brine.",
+      "effect": "Reveals the first missing family.",
+      "location": "Town Square"
+    }
+  ],
+  "factions": [
+    {
+      "name": "Old Tide Circle",
+      "goal": "Keep the seal intact and the town quiet.",
+      "resources": ["silent watchers", "ritual lore"],
+      "methods": ["misdirection", "sealed archives"],
+      "attitude": "Wary, will bargain to avoid catastrophe."
+    }
+  ],
+  "threats": [
+    {
+      "name": "The Hollow Sun",
+      "nature": "A void-like presence feeding through the broken seal.",
+      "signs": ["warm iron", "cold light in the fog"],
+      "escalation": ["missing birds", "muffled voices", "living shadows"],
+      "weakness": "Seal restoration or ritual inversion."
+    }
+  ],
+  "timeline": [
+    {"time": "5 years ago", "event": "Observatory sealed after a failed rite."},
+    {"time": "3 months ago", "event": "First disappearances at the cliffs."},
+    {"time": "Present", "event": "Seal breaks and the manor grows warm."}
   ]
 }

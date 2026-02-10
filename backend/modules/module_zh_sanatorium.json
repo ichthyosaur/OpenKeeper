@@ -1,0 +1,180 @@
+{
+  "module_name": "白墙疗养院",
+  "introduction": "海边断崖上的白墙疗养院在十年前一场火灾后被封闭，如今却有人声称夜里仍能听见病房铃声。你们受托前往调查，一封匿名信在字里行间反复提到“不要信医生”。",
+  "entry_narration": "灰色的海雾贴着崖壁爬升，疗养院的白墙在暮色里泛着病态的冷光。铁门半掩，风穿过走廊发出空旷的回声，仿佛有人在远处缓慢拖动病床。",
+  "key_characters": [
+    {
+      "name": "谢礼安",
+      "public_info": "前院长的侄子，自称在看护遗留档案，言辞温和却回避细节。",
+      "hidden_secrets": "他掌握火灾当天的值班表，刻意隐去一名“外科顾问”的名字。"
+    },
+    {
+      "name": "陆知夏",
+      "public_info": "附近镇上的护士，曾在疗养院实习，愿意提供旧日记忆。",
+      "hidden_secrets": "她见过地下病区的铁门被人从内部锁上。"
+    },
+    {
+      "name": "杜克医生",
+      "public_info": "档案中多次出现的主治医生名字，留下大量诊疗记录。",
+      "hidden_secrets": "他研究一种“记忆剥离疗法”，实验对象多为孤儿与无家者。"
+    }
+  ],
+  "core_secrets": [
+    "疗养院地下病区并非被火灾摧毁，而是被人为封存。",
+    "火灾发生当晚，病房里出现了无法解释的“集体安静”，铃声被某种力量压制。",
+    "所谓治疗其实是一种以记忆为燃料的仪式，目的是唤醒疗养院下方的存在。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "records_exposed",
+      "description": "档案被公开，疗养院的真相曝光，镇民终于面对过去的罪行。",
+      "conditions": "玩家找到完整实验记录并将其公开。"
+    },
+    {
+      "ending_id": "silenced_ward",
+      "description": "地下病区被永远封存，铃声停止，但幸存者的记忆也被抹去。",
+      "conditions": "玩家选择封锁地下并破坏仪式装置。"
+    },
+    {
+      "ending_id": "white_wall_awake",
+      "description": "白墙下的存在醒来，疗养院再次被雾吞没，所有调查员失踪。",
+      "conditions": "玩家未能阻止仪式或在地下病区迷失。"
+    }
+  ],
+  "ending_triggers": [
+    "完整实验记录被公开或交给媒体。",
+    "地下病区被封存且仪式装置被毁。",
+    "仪式完成或调查员被困地下。",
+    "所有调查员死亡或疯狂。"
+  ],
+  "locations": [
+    {
+      "name": "主楼大厅",
+      "description": "破碎的接待台与泛黄的宣传板，空气中仍有消毒水的残味。",
+      "features": ["旧访客名册", "空荡的候诊椅"],
+      "secrets": ["墙后隐藏的电缆通道"],
+      "connections": ["病房区", "档案室"]
+    },
+    {
+      "name": "病房走廊",
+      "description": "长廊尽头的灯忽明忽暗，病房门牌多被划花。",
+      "features": ["断开的铃线", "破碎床栏"],
+      "secrets": ["一间病房内地板被撬开"],
+      "connections": ["护理站", "地下入口"]
+    },
+    {
+      "name": "档案室",
+      "description": "铁柜倾倒，散落的记录卡片带着焦痕。",
+      "features": ["病例索引", "值班表"],
+      "secrets": ["被撕掉的“外科顾问”页"],
+      "connections": ["主楼大厅"]
+    },
+    {
+      "name": "地下病区",
+      "description": "低矮的白瓷墙壁，湿冷的空气像在吞咽呼吸。",
+      "features": ["封闭手术间", "仪式圆环"],
+      "secrets": ["墙后传出的低语"],
+      "connections": ["病房走廊"]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "arrival",
+      "title": "白墙门前",
+      "summary": "初到疗养院，感受到诡异的安静与被抹去的过去。",
+      "beats": ["铁门半掩", "空旷铃声", "海雾压顶"],
+      "required_clues": [],
+      "outcomes": ["进入主楼", "绕到后庭"]
+    },
+    {
+      "scene_id": "archive",
+      "title": "档案的空白",
+      "summary": "档案室揭示实验记录与被删改的姓名。",
+      "beats": ["烧焦的卡片", "被撕页角", "旧照片"],
+      "required_clues": ["clue_shift_roster"],
+      "outcomes": ["追查外科顾问", "下探地下病区"]
+    },
+    {
+      "scene_id": "ward",
+      "title": "地下病区",
+      "summary": "玩家直面仪式圆环与记忆剥离装置。",
+      "beats": ["低语逼近", "冰冷器械", "灯光失真"],
+      "required_clues": ["clue_ritual_notes"],
+      "outcomes": ["封存病区", "仪式失控"]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_shift_roster",
+      "description": "火灾当晚的值班表，医生名字被刮去。",
+      "location": "档案室",
+      "linked_to": ["杜克医生"],
+      "reveal": "一名外科顾问在火灾后消失。"
+    },
+    {
+      "clue_id": "clue_ritual_notes",
+      "description": "手术记录夹层中夹着的仪式图纸。",
+      "location": "地下病区",
+      "linked_to": ["white_wall_awake"],
+      "reveal": "仪式需要病人的记忆作为燃料。"
+    },
+    {
+      "clue_id": "clue_broken_bell",
+      "description": "断开的铃线与被压扁的铃箱。",
+      "location": "病房走廊",
+      "linked_to": ["silenced_ward"],
+      "reveal": "有人刻意阻止铃声传出。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "bell_echo",
+      "trigger": "进入病房走廊",
+      "description": "远处传来断续铃声，仿佛有人在呼救。",
+      "consequences": ["SAN 压力", "引导进入地下入口"]
+    },
+    {
+      "event_id": "memory_drift",
+      "trigger": "触碰仪式装置",
+      "description": "玩家短暂失去一段个人记忆。",
+      "consequences": ["SAN 损失", "产生幻觉"]
+    }
+  ],
+  "items": [
+    {
+      "name": "旧病历夹",
+      "description": "夹层内有被刻意折起的页角。",
+      "effect": "指向地下病区入口。",
+      "location": "档案室"
+    },
+    {
+      "name": "医用镇静剂",
+      "description": "未过期的玻璃药瓶，标签模糊。",
+      "effect": "可短暂压制恐慌。",
+      "location": "护理站"
+    }
+  ],
+  "factions": [
+    {
+      "name": "旧疗养院管理层",
+      "goal": "掩盖实验与火灾真相。",
+      "resources": ["档案权限", "镇上关系"],
+      "methods": ["删改记录", "威胁目击者"],
+      "attitude": "礼貌但充满防备。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "记忆剥离者",
+      "nature": "以记忆为食的无形存在，藏于白墙之下。",
+      "signs": ["记忆空白", "铃声消失"],
+      "escalation": ["群体失忆", "意识崩塌", "整座疗养院被吞没"],
+      "weakness": "破坏仪式装置并封存地下病区。"
+    }
+  ],
+  "timeline": [
+    {"time": "12年前", "event": "疗养院扩建地下病区。"},
+    {"time": "10年前", "event": "火灾发生，疗养院关闭。"},
+    {"time": "现在", "event": "匿名信寄出，铃声再度出现。"}
+  ]
+}
