@@ -9,3 +9,14 @@ backend/data/
 *.sqlite
 *.sqlite3
 data/db/
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dump/
+*.bson
+*.archive
