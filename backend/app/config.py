@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -34,6 +35,50 @@ DEFAULT_CONFIG = {
     "llm_parse_retries": 3,
 }
 
+ENV_KEY_MAP = {
+    "OPENKEEPER_API_KEY": "api_key",
+    "OPENKEEPER_BASE_URL": "base_url",
+    "OPENKEEPER_MODEL": "model",
+    "API_KEY": "api_key",
+    "BASE_URL": "base_url",
+    "MODEL": "model",
+}
+
+
+def _load_dotenv(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    env: dict[str, str] = {}
+    with path.open("r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("export "):
+                line = line[len("export ") :].strip()
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            if (value.startswith('"') and value.endswith('"')) or (
+                value.startswith("'") and value.endswith("'")
+            ):
+                value = value[1:-1]
+            env[key] = value
+    return env
+
+
+def _apply_env(data: dict[str, Any], env: dict[str, str]) -> None:
+    for env_key, config_key in ENV_KEY_MAP.items():
+        value = env.get(env_key)
+        if value is None:
+            continue
+        value = value.strip()
+        if value == "":
+            continue
+        data[config_key] = value
+
 
 def load_config(path: Union[str, Path]) -> AppConfig:
     data: dict[str, Any] = dict(DEFAULT_CONFIG)
@@ -44,6 +89,13 @@ def load_config(path: Union[str, Path]) -> AppConfig:
         if not isinstance(loaded, dict):
             raise ValueError("config.yaml must be a mapping")
         data.update(loaded)
+    dotenv_paths = [
+        cfg_path.parent.parent / ".env",
+        cfg_path.parent / ".env",
+    ]
+    for dotenv_path in dotenv_paths:
+        _apply_env(data, _load_dotenv(dotenv_path))
+    _apply_env(data, os.environ)
     return AppConfig(
         mongo_uri=str(data.get("mongo_uri")),
         mongo_db=str(data.get("mongo_db")),
