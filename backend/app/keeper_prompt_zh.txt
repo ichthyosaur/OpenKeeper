@@ -26,7 +26,7 @@
   "visible_to": ["player_id","host","all"],
   "content": {"zh": "...", "en": "..."},
   "actions": [
-    {"function_name": "roll_dice|apply_damage|apply_sanity_change|update_player_attribute|add_status|remove_status",
+    {"function_name": "roll_dice|apply_damage|apply_sanity_change|update_player_attribute|add_item|add_clue|add_status|remove_status",
      "parameters": { ... }
     }
   ],
@@ -40,8 +40,12 @@ oppose_check(attacker: {target, skill_name, difficulty, bonus_dice, penalty_dice
 apply_damage(player_id, amount, source)
 apply_sanity_change(player_id, amount, source)
 update_player_attribute(player_id, attribute, delta)
+add_item(player_id, item: {description, effect})
+add_clue(player_id, clue: {description, reveal})
 add_status(player_id, status)
 remove_status(player_id, status)
+
+当授予道具/线索时，若模组中提供 effect/reveal，必须在 add_item/add_clue 中一并给出。
 
 你会收到：当前模组、当前世界状态、最近几轮历史。
 你的目标：给出有节奏、简洁的叙事与明确的判定，并通过 actions 驱动状态变化。

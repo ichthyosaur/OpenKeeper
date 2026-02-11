@@ -212,6 +212,28 @@
       .card-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
       .chip { padding: 6px 10px; border-radius: 999px; font-size: 12px; color: #0b0f1a; font-weight: 700; box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
       .stats, .attributes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; }
+      .info-list { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+      .info-item { position: relative; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.12); background: rgba(9, 14, 27, 0.6); }
+      .info-item:hover .info-reveal { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .info-text { white-space: pre-wrap; }
+      .info-reveal {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        top: calc(100% + 6px);
+        background: rgba(12, 18, 34, 0.95);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        padding: 8px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--text);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+        z-index: 10;
+      }
       .players { display: flex; flex-direction: column; gap: 8px; }
       .player { display: flex; align-items: center; gap: 10px; font-size: 14px; }
       .dot { width: 10px; height: 10px; border-radius: 50%; }
@@ -338,18 +360,6 @@
           <div class="notice">手机与电脑在同一 Wi‑Fi 时可用。</div>
         </div>
 
-        <div class="card">
-          <div class="card-title">存档</div>
-          <div class="grid">
-            <label>存档名称<input id="saveName" placeholder="模组-时间" /></label>
-          </div>
-          <div class="actions">
-            <button id="saveSnapshot">保存</button>
-            <button id="refreshSaves">刷新列表</button>
-          </div>
-          <div id="saveNotice" class="notice"></div>
-          <div id="saveList" class="save-list"></div>
-        </div>
       </section>
 
       <section id="game" class="room hidden">
@@ -382,6 +392,20 @@
             <div class="panel-title">判定面板</div>
             <div id="rollPanel" class="roll">
               <div class="muted">暂无判定</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">物品</div>
+            <div id="itemList" class="info-list">
+              <div class="muted">暂无物品</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">线索</div>
+            <div id="clueList" class="info-list">
+              <div class="muted">暂无线索</div>
             </div>
           </div>
 
@@ -420,8 +444,9 @@
         moduleIntroText: "",
         activeStreamIds: new Set(),
         toastCache: new Map(),
-        saves: [],
         lastModuleName: "",
+        items: [],
+        clues: [],
       };
 
       const serverUrl = window.location.origin;
@@ -486,9 +511,6 @@
         .then((data) => setLanInfo(data))
         .catch(() => setLanInfo(null));
 
-      fetchSaves();
-      ensureSaveName();
-
       function renderHistory() {
         const container = el("history");
         container.innerHTML = "";
@@ -521,6 +543,168 @@
         container.scrollTop = container.scrollHeight;
       }
 
+      function normalizeFinding(raw) {
+        if (!raw) return null;
+        if (typeof raw === "string") {
+          return { description: raw, reveal: "", effect: "", name: "" };
+        }
+        if (typeof raw === "object") {
+          const description =
+            raw.description ||
+            raw.name ||
+            raw.clue_id ||
+            raw.item_id ||
+            raw.id ||
+            "";
+          const name = raw.name || raw.clue_id || raw.item_id || raw.id || "";
+          const reveal = raw.reveal || raw.details || "";
+          const effect = raw.effect || "";
+          return { description, reveal, effect, name };
+        }
+        return null;
+      }
+
+      function extractFindings(params, type) {
+        const list = [];
+        if (!params || typeof params !== "object") return list;
+        const plural = `${type}s`;
+        if (Array.isArray(params[plural])) {
+          params[plural].forEach((entry) => {
+            const normalized = normalizeFinding(entry);
+            if (normalized?.description) list.push(normalized);
+          });
+        }
+        if (params[type]) {
+          const normalized = normalizeFinding(params[type]);
+          if (normalized?.description) list.push(normalized);
+        }
+        if (!list.length) {
+          const normalized = normalizeFinding(params);
+          if (normalized?.description) list.push(normalized);
+        }
+        return list;
+      }
+
+      function mergeFinding(list, next) {
+        if (!next?.description) return;
+        const exists = list.some((item) => item.description === next.description);
+        if (!exists) list.push(next);
+      }
+
+      function parseFindingFromStatus(statusText) {
+        if (!statusText) return null;
+        const text = String(statusText).trim();
+        const itemPrefix = "持有道具：";
+        const cluePrefix = "持有线索：";
+        if (text.startsWith(itemPrefix)) {
+          return { type: "item", value: text.slice(itemPrefix.length).trim() };
+        }
+        if (text.startsWith(cluePrefix)) {
+          return { type: "clue", value: text.slice(cluePrefix.length).trim() };
+        }
+        return null;
+      }
+
+      function applyFindingAction(action) {
+        const params = action?.parameters || {};
+        const target = params.player_id || params.playerId || params.player || "";
+        if (target && target !== playerId) return;
+        if (action.function_name === "add_item") {
+          extractFindings(params, "item").forEach((normalized) => {
+            mergeFinding(state.items, normalized);
+          });
+          return;
+        }
+        if (action.function_name === "add_clue") {
+          extractFindings(params, "clue").forEach((normalized) => {
+            mergeFinding(state.clues, normalized);
+          });
+          return;
+        }
+        if (action.function_name === "add_status") {
+          const statusText = params.status || params.status_text || params.text || "";
+          const parsed = parseFindingFromStatus(statusText);
+          if (!parsed?.value) return;
+          if (parsed.type === "item") {
+            mergeFinding(state.items, { description: parsed.value, reveal: "" });
+          } else if (parsed.type === "clue") {
+            mergeFinding(state.clues, { description: parsed.value, reveal: "" });
+          }
+        }
+      }
+
+      function syncFindingsFromState() {
+        const player = state.stateView.players?.[playerId] || {};
+        const items = (player.items || []).map(normalizeFinding).filter(Boolean);
+        const clues = (player.clues || []).map(normalizeFinding).filter(Boolean);
+        const statuses = (player.statuses || [])
+          .map((status) => parseFindingFromStatus(status))
+          .filter(Boolean);
+        statuses.forEach((entry) => {
+          if (entry.type === "item") {
+            items.push({ description: entry.value, reveal: "" });
+          } else if (entry.type === "clue") {
+            clues.push({ description: entry.value, reveal: "" });
+          }
+        });
+        if (items.length) state.items = items;
+        if (clues.length) state.clues = clues;
+      }
+
+      function rebuildFindingsFromHistory() {
+        state.items = [];
+        state.clues = [];
+        state.history.forEach((entry) => {
+          (entry.actions || []).forEach((action) => {
+            if (["add_item", "add_clue", "add_status"].includes(action.function_name)) {
+              applyFindingAction(action);
+            }
+          });
+        });
+      }
+
+      function renderFindings() {
+        const itemList = el("itemList");
+        const clueList = el("clueList");
+        if (!itemList || !clueList) return;
+        if (!state.items.length) {
+          itemList.innerHTML = "<div class=\"muted\">暂无物品</div>";
+        } else {
+          itemList.innerHTML = "";
+          state.items.forEach((item) => {
+            const desc = item.description || "—";
+            const name = item.name || desc;
+            const effect = item.effect || item.reveal || "";
+            const revealText = `描述：${desc}\n效果：${effect || "无"}`;
+            const line = document.createElement("div");
+            line.className = "info-item";
+            line.innerHTML = `
+              <div class="info-text">- ${name}</div>
+              <div class="info-reveal">${revealText.replace(/\n/g, "<br />")}</div>
+            `;
+            itemList.appendChild(line);
+          });
+        }
+        if (!state.clues.length) {
+          clueList.innerHTML = "<div class=\"muted\">暂无线索</div>";
+        } else {
+          clueList.innerHTML = "";
+          state.clues.forEach((clue) => {
+            const desc = clue.description || "—";
+            const name = clue.name || desc;
+            const reveal = clue.reveal || "";
+            const revealText = `描述：${desc}\n揭示：${reveal || "无"}`;
+            const line = document.createElement("div");
+            line.className = "info-item";
+            line.innerHTML = `
+              <div class="info-text">- ${name}</div>
+              <div class="info-reveal">${revealText.replace(/\n/g, "<br />")}</div>
+            `;
+            clueList.appendChild(line);
+          });
+        }
+      }
+
       function toastIcon(type) {
         if (type === "apply_damage") {
           return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z'/></svg>";
@@ -531,7 +715,7 @@
         return "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M12 3v18'/><path d='M5 12h14'/></svg>";
       }
 
-      function showToast(text, type) {
+      function showToast(text, type, durationMs = 5200) {
         const stack = el("toastStack");
         if (!stack) return;
         const item = document.createElement("div");
@@ -540,7 +724,7 @@
         stack.appendChild(item);
         setTimeout(() => {
           item.remove();
-        }, 5200);
+        }, durationMs);
       }
 
       function toastFromEntry(entry) {
@@ -583,7 +767,25 @@
               showToast(`${attr} ${sign}${delta}`, fn);
               return;
             }
+            if (fn === "add_status") {
+              const statusText = action.parameters?.status || action.parameters?.status_text || action.parameters?.text || "";
+              const parsed = parseFindingFromStatus(statusText);
+              if (parsed?.value) {
+                const label = parsed.type === "item" ? `获得物品：${parsed.value}` : `获得线索：${parsed.value}`;
+                showToast(label, "add_status", 3000);
+                return;
+              }
+            }
             return;
+          }
+          if (fn === "add_item" || fn === "add_clue") {
+            const raw = action.parameters?.item || action.parameters?.clue || action.parameters || {};
+            const normalized = normalizeFinding(raw);
+            if (normalized?.description) {
+              const label = fn === "add_item" ? `获得物品：${normalized.description}` : `获得线索：${normalized.description}`;
+              showToast(label, fn, 3000);
+              return;
+            }
           }
         }
         if (entry?.action_type === "state_update" && entry?.state_diff?.players) {
@@ -701,6 +903,7 @@
         renderRoomPlayers();
         updateActionLock();
         renderRollPanel();
+        renderFindings();
       }
 
       function isActionEntry(entry) {
@@ -730,6 +933,7 @@
         });
         renderHistory();
         renderRollPanel();
+        renderFindings();
       }
 
       function renderRollPanel() {
@@ -922,120 +1126,6 @@
         el("notice").textContent = text;
       }
 
-      function setSaveNotice(text) {
-        const target = el("saveNotice");
-        if (target) target.textContent = text || "";
-      }
-
-      function ensureSaveName(moduleName) {
-        const input = el("saveName");
-        if (!input) return;
-        const name = moduleName || state.sessionInfo?.module_name || "";
-        const placeholder = defaultSaveName(name);
-        input.placeholder = placeholder;
-        if (!input.value.trim()) {
-          input.value = placeholder;
-        }
-      }
-
-      function renderSaveList() {
-        const list = el("saveList");
-        if (!list) return;
-        list.innerHTML = "";
-        if (!state.saves.length) {
-          list.innerHTML = "<div class=\"muted\">暂无存档</div>";
-          return;
-        }
-        state.saves.forEach((save) => {
-          const item = document.createElement("div");
-          item.className = "save-item";
-          item.innerHTML = `
-            <div>
-              <div>${save.name || save.save_id}</div>
-              <div class="muted">${save.module_name || ""}</div>
-            </div>
-          `;
-          const btn = document.createElement("button");
-          btn.textContent = "加载";
-          btn.addEventListener("click", () => loadSnapshot(save.save_id));
-          item.appendChild(btn);
-          list.appendChild(item);
-        });
-      }
-
-      async function fetchSaves() {
-        setSaveNotice("");
-        try {
-          const res = await fetch(`${window.location.origin}/saves`);
-          const data = await res.json();
-          state.saves = data.saves || [];
-        } catch (e) {
-          state.saves = [];
-          setSaveNotice("无法获取存档列表。");
-        }
-        renderSaveList();
-      }
-
-      async function saveSnapshot(options = {}) {
-        const moduleName = state.sessionInfo?.module_name || "";
-        const input = el("saveName");
-        const name = (options.name || input?.value || "").trim() || defaultSaveName(moduleName);
-        setSaveNotice("");
-        try {
-          const res = await fetch(`${window.location.origin}/saves/save`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              save_name: name,
-              overwrite: options.overwrite || false,
-            }),
-          });
-          const data = await res.json();
-          if (!data.ok && data.error === "exists") {
-            const overwrite = window.confirm("存档已存在，是否覆盖？取消则另存为。");
-            if (overwrite) {
-              await saveSnapshot({ name, overwrite: true });
-              return;
-            }
-            const altName = window.prompt("请输入新的存档名", `${name}-copy`);
-            if (altName) {
-              await saveSnapshot({ name: altName, overwrite: false });
-            }
-            return;
-          }
-          if (!data.ok) {
-            setSaveNotice(data.error || "保存失败。");
-            return;
-          }
-          if (input) input.value = name;
-          await fetchSaves();
-        } catch (e) {
-          setSaveNotice("保存失败。");
-        }
-      }
-
-      async function loadSnapshot(saveId) {
-        if (!saveId) return;
-        const ok = window.confirm("加载存档将清空当前记录并覆盖状态，确定继续吗？");
-        if (!ok) return;
-        setSaveNotice("");
-        try {
-          const res = await fetch(`${window.location.origin}/saves/load`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ save_id: saveId }),
-          });
-          const data = await res.json();
-          if (!data.ok) {
-            setSaveNotice(data.error || "加载失败。");
-            return;
-          }
-          await fetchSaves();
-        } catch (e) {
-          setSaveNotice("加载失败。");
-        }
-      }
-
       el("create").addEventListener("click", async () => {
         const serverUrl = window.location.origin;
         const profession = el("profession").value;
@@ -1111,14 +1201,6 @@
         }
       });
 
-      el("saveSnapshot").addEventListener("click", () => {
-        saveSnapshot();
-      });
-
-      el("refreshSaves").addEventListener("click", () => {
-        fetchSaves();
-      });
-
       function connect() {
         if (state.ws) state.ws.close();
         state.ws = new WebSocket(wsUrl);
@@ -1137,7 +1219,6 @@
             state.history = message.payload.latest_history || [];
             state.stateView = message.payload.visible_state || { players: {} };
             state.onlineIds = message.payload.online_player_ids || [];
-            ensureSaveName(message.payload.module_name);
             if (message.payload.module_introduction) {
               state.moduleIntroText = message.payload.module_introduction;
             }
@@ -1152,6 +1233,8 @@
             } else {
               introEl.classList.add("hidden");
             }
+            rebuildFindingsFromHistory();
+            syncFindingsFromState();
             renderAll();
             return;
           }
@@ -1160,16 +1243,23 @@
             const streamId = message.payload.stream_id;
             if (Array.isArray(entry)) {
               state.history = entry;
+              rebuildFindingsFromHistory();
             } else {
               if (state.streamingCount > 0 && (!streamId || !state.activeStreamIds.has(streamId))) {
                 state.pendingEntries.push({ entry, streamId });
               } else {
                 pushHistoryEntry(entry, streamId);
                 toastFromEntry(entry);
+                (entry.actions || []).forEach((action) => {
+                  if (["add_item", "add_clue", "add_status"].includes(action.function_name)) {
+                    applyFindingAction(action);
+                  }
+                });
               }
             }
             renderHistory();
             renderRollPanel();
+            renderFindings();
             if (entry?.state_diff?.ending_id) {
               showEndingModal(entry);
             }
@@ -1206,9 +1296,11 @@
           if (message.type === "server.state_update") {
             state.stateView = message.payload.state_diff || { players: {} };
             state.onlineIds = message.payload.online_player_ids || state.onlineIds;
+            syncFindingsFromState();
             renderPlayerCard();
             renderRoomPlayers();
             updateActionLock();
+            renderFindings();
           }
           if (message.type === "server.module_info") {
             state.moduleIntroText = message.payload.module_introduction || "";
@@ -1231,9 +1323,12 @@
             state.pendingEntries = [];
             state.activeStreamIds.clear();
             state.moduleIntroText = "";
+            state.items = [];
+            state.clues = [];
             el("moduleIntro").classList.add("hidden");
             renderHistory();
             renderRollPanel();
+            renderFindings();
             return;
           }
           if (message.type === "server.keeper_stream_end") {
@@ -1293,6 +1388,8 @@
         state.pendingEntries = [];
         state.activeStreamIds.clear();
         state.moduleIntroText = "";
+        state.items = [];
+        state.clues = [];
         el("moduleIntro").classList.add("hidden");
         document.documentElement.setAttribute("data-theme", "archive");
         el("game").classList.add("hidden");
@@ -1300,6 +1397,7 @@
         el("backToLobby").classList.add("hidden");
         await loadPlayers();
         renderLobbyPlayers();
+        renderFindings();
       });
 
       loadProfessions();

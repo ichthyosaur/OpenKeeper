@@ -33,6 +33,15 @@ def validate_keeper_output(output: KeeperOutput) -> List[str]:
                 errors.append(f"{action.function_name} requires amount")
             elif not isinstance(params.get("amount"), int):
                 errors.append(f"{action.function_name} amount must be int")
+        if action.function_name in ("add_item", "add_clue"):
+            if "player_id" not in params:
+                errors.append(f"{action.function_name} requires player_id")
+            has_payload = any(
+                key in params
+                for key in ("item", "items", "clue", "clues", "description", "name")
+            )
+            if not has_payload:
+                errors.append(f"{action.function_name} requires item/clue payload")
         if action.function_name == "update_player_attribute":
             if "delta" not in params:
                 errors.append("update_player_attribute requires delta")

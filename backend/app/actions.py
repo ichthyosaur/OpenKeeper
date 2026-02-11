@@ -179,6 +179,10 @@ def dispatch_action(action: ActionCall, state: dict[str, Any]) -> dict[str, Any]
         return _apply_sanity_change(state, params)
     if fn == "update_player_attribute":
         return _update_player_attribute(state, params)
+    if fn == "add_item":
+        return _add_item(state, params)
+    if fn == "add_clue":
+        return _add_clue(state, params)
     if fn == "add_status":
         return _add_status(state, params)
     if fn == "remove_status":
@@ -284,3 +288,70 @@ def _remove_status(state: dict[str, Any], params: dict[str, Any]) -> dict[str, A
     if status in statuses:
         statuses.remove(status)
     return {"players": {params["player_id"]: {"statuses": statuses}}}
+
+
+def _normalize_finding(raw: Any) -> dict[str, Any]:
+    if isinstance(raw, str):
+        return {"description": raw}
+    if isinstance(raw, dict):
+        description = (
+            raw.get("description")
+            or raw.get("name")
+            or raw.get("clue_id")
+            or raw.get("item_id")
+            or raw.get("id")
+            or ""
+        )
+        result = {"description": description}
+        if raw.get("reveal"):
+            result["reveal"] = raw.get("reveal")
+        if raw.get("effect"):
+            result["effect"] = raw.get("effect")
+        return result
+    return {"description": ""}
+
+
+def _extract_entries(params: dict[str, Any], key: str) -> list[dict[str, Any]]:
+    entries: list[Any] = []
+    plural = f"{key}s"
+    if isinstance(params.get(plural), list):
+        entries.extend(params.get(plural, []))
+    if key in params:
+        entries.append(params.get(key))
+    if not entries and any(k in params for k in ("description", "name", "reveal", "effect", "details")):
+        entries.append(params)
+    normalized: list[dict[str, Any]] = []
+    for entry in entries:
+        item = _normalize_finding(entry)
+        if item.get("description"):
+            normalized.append(item)
+    return normalized
+
+
+def _merge_findings(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    known = {item.get("description") for item in existing if item.get("description")}
+    for entry in incoming:
+        desc = entry.get("description")
+        if not desc or desc in known:
+            continue
+        existing.append(entry)
+        known.add(desc)
+    return existing
+
+
+def _add_item(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
+    player = _get_player(state, params["player_id"])
+    items = player.setdefault("items", [])
+    incoming = _extract_entries(params, "item")
+    items = _merge_findings(items, incoming)
+    player["items"] = items
+    return {"players": {params["player_id"]: {"items": items}}}
+
+
+def _add_clue(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
+    player = _get_player(state, params["player_id"])
+    clues = player.setdefault("clues", [])
+    incoming = _extract_entries(params, "clue")
+    clues = _merge_findings(clues, incoming)
+    player["clues"] = clues
+    return {"players": {params["player_id"]: {"clues": clues}}}

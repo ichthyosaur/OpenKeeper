@@ -38,6 +38,8 @@ class ActionCall(BaseModel):
         "apply_damage",
         "apply_sanity_change",
         "update_player_attribute",
+        "add_item",
+        "add_clue",
         "add_status",
         "remove_status",
         "oppose_check",

@@ -475,6 +475,24 @@ class SessionManager:
                 zh=f"为 {name} 添加状态 {status}。",
                 en=f"Added status {status} to {name}.",
             )
+        if action.function_name == "add_item":
+            pid = action.parameters.get("player_id", "")
+            raw = action.parameters.get("item") or action.parameters
+            description = raw.get("description") or raw.get("name") or ""
+            name = self.state.current_state.get("players", {}).get(pid, {}).get("name", pid)
+            return I18NText(
+                zh=f"为 {name} 添加物品 {description}。",
+                en=f"Added item {description} to {name}.",
+            )
+        if action.function_name == "add_clue":
+            pid = action.parameters.get("player_id", "")
+            raw = action.parameters.get("clue") or action.parameters
+            description = raw.get("description") or raw.get("clue_id") or raw.get("name") or ""
+            name = self.state.current_state.get("players", {}).get(pid, {}).get("name", pid)
+            return I18NText(
+                zh=f"为 {name} 添加线索 {description}。",
+                en=f"Added clue {description} to {name}.",
+            )
         if action.function_name == "remove_status":
             pid = action.parameters.get("player_id", "")
             status = action.parameters.get("status", "")
@@ -609,13 +627,19 @@ class SessionManager:
             f"- {scene.title}: {scene.summary}" for scene in module.scenes
         )
         clues_text = "\n".join(
-            f"- {clue.clue_id} @ {clue.location}: {clue.description}" for clue in module.clues
+            f"- {clue.clue_id} @ {clue.location}: {clue.description}（揭示：{clue.reveal}）"
+            if clue.reveal
+            else f"- {clue.clue_id} @ {clue.location}: {clue.description}"
+            for clue in module.clues
         )
         events_text = "\n".join(
             f"- {event.event_id}: {event.description}" for event in module.events
         )
         items_text = "\n".join(
-            f"- {item.name}: {item.description}" for item in module.items
+            f"- {item.name}: {item.description}（效果：{item.effect}）"
+            if item.effect
+            else f"- {item.name}: {item.description}"
+            for item in module.items
         )
         factions_text = "\n".join(
             f"- {faction.name}: {faction.goal}" for faction in module.factions
