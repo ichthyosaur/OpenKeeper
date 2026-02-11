@@ -21,15 +21,30 @@ class KeeperLLM:
     last_usage: dict[str, Any] | None = None
     _lock: Lock = Lock()
 
+    def _split_context(self, context_text: str) -> tuple[str, str]:
+        if not context_text:
+            return "", ""
+        text = context_text.strip()
+        if "\n\n[History]\n" in text:
+            system_part, history_part = text.split("\n\n[History]\n", 1)
+            system_part = system_part.replace("[System]\n", "", 1).strip()
+            return system_part, history_part.strip()
+        if text.startswith("[History]\n"):
+            return "", text.replace("[History]\n", "", 1).strip()
+        return text, ""
+
     def generate(self, action_text: I18NText, player_id: str, context_text: str = "") -> KeeperOutput:
         prompt = self.prompt_path.read_text(encoding="utf-8") if self.prompt_path.exists() else ""
         user_text = action_text.zh or action_text.en or ""
+        system_context, history_text = self._split_context(context_text)
+        system_prompt = prompt if not system_context else f"{prompt}\n\n{system_context}"
+        user_parts = []
+        if history_text:
+            user_parts.append(f"[History]\n{history_text}")
+        user_parts.append(f"[Player {player_id}]\n{user_text}")
         messages = [
-            {"role": "system", "content": prompt},
-            {
-                "role": "user",
-                "content": f"[Context]\n{context_text}\n\n[Player {player_id}]\n{user_text}",
-            },
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": "\n\n".join(user_parts)},
         ]
         attempts = max(1, int(self.config.llm_parse_retries or 0) + 1)
         last_err: str | None = None
@@ -64,9 +79,15 @@ class KeeperLLM:
 
     def generate_text(self, prompt_text: str, context_text: str = "") -> str:
         prompt = self.prompt_path.read_text(encoding="utf-8") if self.prompt_path.exists() else ""
+        system_context, history_text = self._split_context(context_text)
+        system_prompt = prompt if not system_context else f"{prompt}\n\n{system_context}"
+        user_parts = []
+        if history_text:
+            user_parts.append(f"[History]\n{history_text}")
+        user_parts.append(prompt_text)
         messages = [
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": f"[Context]\n{context_text}\n\n{prompt_text}"},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": "\n\n".join(user_parts)},
         ]
         content = self._call_llm(messages)
         self.last_raw = content

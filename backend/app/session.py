@@ -181,7 +181,9 @@ class SessionManager:
         await self._record_history(player_entry)
         entries.append(player_entry)
 
-        context_text = self.build_llm_context_text(self.history_count, online_ids)
+        system_text = self.build_llm_context_text(self.history_count, online_ids)
+        history_text = self.build_llm_history_text(self.history_count)
+        context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
         try:
             keeper_output = self.keeper.generate(action_text, player_id, context_text)
             self._accumulate_token_usage()
@@ -291,7 +293,9 @@ class SessionManager:
             if not self._is_player_active(player_id):
                 break
             followups += 1
-            context_text = self.build_llm_context_text(self.history_count, online_ids)
+            system_text = self.build_llm_context_text(self.history_count, online_ids)
+            history_text = self.build_llm_history_text(self.history_count)
+            context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
             follow_text = I18NText(
                 zh="请基于刚刚的叙事与动作结果继续叙事，必须输出JSON。如果仍需要新的判定/动作，可以在 actions 中给出；否则 actions 留空。",
                 en="Continue the narration based on the latest narration and action results. Output JSON only. If further actions are needed, include them in actions; otherwise keep actions empty.",
@@ -603,7 +607,6 @@ class SessionManager:
     def build_llm_context_text(
         self, limit: int = 100, online_ids: Optional[list[str]] = None
     ) -> str:
-        history_text = self.build_llm_history_text(limit)
         module = self.module
         state_lines: list[str] = []
         id_lines: list[str] = []
@@ -616,44 +619,96 @@ class SessionManager:
             san = stats.get("san", 0)
             san_max = stats.get("san_max", san)
             name = pdata.get("name", pid)
-            state_lines.append(f"{name}: HP {hp}/{hp_max}, SAN {san}/{san_max}")
+            statuses = pdata.get("statuses", [])
+            items = pdata.get("items", [])
+            clues = pdata.get("clues", [])
+            state_lines.append(
+                f"{name}: HP {hp}/{hp_max}, SAN {san}/{san_max}, "
+                f"状态 {statuses or []}, 道具 {items or []}, 线索 {clues or []}"
+            )
             id_lines.append(f"- {name} (player_id: {pid})")
         state_text = "\n".join(state_lines)
         id_text = "\n".join(id_lines)
         locations_text = "\n".join(
-            f"- {loc.name}: {loc.description}" for loc in module.locations
+            (
+                f"- {loc.name}: {loc.description}\n"
+                f"  特征: {loc.features or []}\n"
+                f"  秘密: {loc.secrets or []}\n"
+                f"  连接: {loc.connections or []}"
+            )
+            for loc in module.locations
         )
         scenes_text = "\n".join(
-            f"- {scene.title}: {scene.summary}" for scene in module.scenes
+            (
+                f"- {scene.title}: {scene.summary}\n"
+                f"  节拍: {scene.beats or []}\n"
+                f"  需要线索: {scene.required_clues or []}\n"
+                f"  结果: {scene.outcomes or []}"
+            )
+            for scene in module.scenes
         )
         clues_text = "\n".join(
-            f"- {clue.clue_id} @ {clue.location}: {clue.description}（揭示：{clue.reveal}）"
-            if clue.reveal
-            else f"- {clue.clue_id} @ {clue.location}: {clue.description}"
+            (
+                f"- {clue.clue_id} @ {clue.location}: {clue.description}\n"
+                f"  关联: {clue.linked_to or []}\n"
+                f"  揭示: {clue.reveal}"
+            )
             for clue in module.clues
         )
         events_text = "\n".join(
-            f"- {event.event_id}: {event.description}" for event in module.events
+            (
+                f"- {event.event_id}: {event.description}\n"
+                f"  触发: {event.trigger}\n"
+                f"  后果: {event.consequences or []}"
+            )
+            for event in module.events
         )
         items_text = "\n".join(
-            f"- {item.name}: {item.description}（效果：{item.effect}）"
-            if item.effect
-            else f"- {item.name}: {item.description}"
+            (
+                f"- {item.name}: {item.description}\n"
+                f"  效果: {item.effect}\n"
+                f"  位置: {item.location}"
+            )
             for item in module.items
         )
         factions_text = "\n".join(
-            f"- {faction.name}: {faction.goal}" for faction in module.factions
+            (
+                f"- {faction.name}: {faction.goal}\n"
+                f"  资源: {faction.resources or []}\n"
+                f"  手段: {faction.methods or []}\n"
+                f"  态度: {faction.attitude}"
+            )
+            for faction in module.factions
         )
         threats_text = "\n".join(
-            f"- {threat.name}: {threat.nature}" for threat in module.threats
+            (
+                f"- {threat.name}: {threat.nature}\n"
+                f"  征兆: {threat.signs or []}\n"
+                f"  升级: {threat.escalation or []}\n"
+                f"  弱点: {threat.weakness}"
+            )
+            for threat in module.threats
         )
         timeline_text = "\n".join(
             f"- {entry.time}: {entry.event}" for entry in module.timeline
         )
         ending_triggers_text = "\n".join(f"- {t}" for t in module.ending_triggers)
+        characters_text = "\n".join(
+            f"- {ch.name}: {ch.public_info}\n  隐藏: {ch.hidden_secrets}"
+            for ch in module.key_characters
+        )
+        secrets_text = "\n".join(f"- {s}" for s in module.core_secrets)
+        endings_text = "\n".join(
+            f"- {e.ending_id}: {e.description}\n  条件: {e.conditions}"
+            for e in module.possible_endings
+        )
         return (
             f"模组: {module.module_name}\n"
             f"简介: {module.introduction}\n"
+            f"开场叙事: {module.entry_narration}\n"
+            f"关键人物:\n{characters_text}\n"
+            f"核心秘密:\n{secrets_text}\n"
+            f"可能结局:\n{endings_text}\n"
             f"玩家ID列表:\n{id_text}\n"
             f"地点:\n{locations_text}\n"
             f"场景:\n{scenes_text}\n"
@@ -664,8 +719,7 @@ class SessionManager:
             f"威胁:\n{threats_text}\n"
             f"时间线:\n{timeline_text}\n"
             f"结局触发条件:\n{ending_triggers_text}\n"
-            f"当前状态:\n{state_text}\n"
-            f"历史:\n{history_text}"
+            f"当前状态:\n{state_text}"
         )
 
     def _entry_to_text(self, entry: HistoryEntry) -> str:
@@ -733,7 +787,9 @@ class SessionManager:
         )
         entries: list[HistoryEntry] = []
 
-        context_text = self.build_llm_context_text(self.history_count, online_ids)
+        system_text = self.build_llm_context_text(self.history_count, online_ids)
+        history_text = self.build_llm_history_text(self.history_count)
+        context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
         follow_text = I18NText(
             zh="所有玩家已死亡或疯狂。请立刻输出结局叙事并调用 end_module，选择最符合的 ending_id。",
             en="All players are dead or insane. Immediately output an ending and call end_module with the best ending_id.",
