@@ -214,9 +214,6 @@ def _persist_config() -> None:
     data = {
         "mongo_uri": app.state.config.mongo_uri,
         "mongo_db": app.state.config.mongo_db,
-        "api_key": app.state.config.api_key,
-        "base_url": app.state.config.base_url,
-        "model": app.state.config.model,
         "history_count": app.state.config.history_count,
         "max_followups": app.state.config.max_followups,
         "stream_cps": app.state.config.stream_cps,
