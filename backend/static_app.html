@@ -154,6 +154,18 @@
       }
       button:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(34, 197, 94, 0.3); }
       .actions { margin-top: 12px; display: flex; gap: 8px; }
+      .save-list { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+      .save-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(12, 18, 34, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        font-size: 12px;
+      }
       .lan-tip { margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px dashed rgba(245, 158, 11, 0.35); background: rgba(12, 18, 34, 0.9); display: grid; gap: 8px; }
       .lan-title { font-weight: 600; font-size: 13px; }
       .lan-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; word-break: break-all; }
@@ -325,6 +337,19 @@
           </div>
           <div class="notice">手机与电脑在同一 Wi‑Fi 时可用。</div>
         </div>
+
+        <div class="card">
+          <div class="card-title">存档</div>
+          <div class="grid">
+            <label>存档名称<input id="saveName" placeholder="模组-时间" /></label>
+          </div>
+          <div class="actions">
+            <button id="saveSnapshot">保存</button>
+            <button id="refreshSaves">刷新列表</button>
+          </div>
+          <div id="saveNotice" class="notice"></div>
+          <div id="saveList" class="save-list"></div>
+        </div>
       </section>
 
       <section id="game" class="room hidden">
@@ -395,6 +420,8 @@
         moduleIntroText: "",
         activeStreamIds: new Set(),
         toastCache: new Map(),
+        saves: [],
+        lastModuleName: "",
       };
 
       const serverUrl = window.location.origin;
@@ -411,6 +438,21 @@
         bytes[8] = (bytes[8] & 0x3f) | 0x80;
         const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
         return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      }
+
+      function formatDateStamp(date = new Date()) {
+        const pad = (num) => String(num).padStart(2, "0");
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hour = pad(date.getHours());
+        const minute = pad(date.getMinutes());
+        return `${year}${month}${day}-${hour}${minute}`;
+      }
+
+      function defaultSaveName(moduleName) {
+        const safeModule = moduleName || "module";
+        return `${safeModule}-${formatDateStamp()}`;
       }
       let playerId = makeUUID();
       state.machineId = localStorage.getItem("openkeeper_machine_id");
@@ -443,6 +485,9 @@
         .then((res) => res.json())
         .then((data) => setLanInfo(data))
         .catch(() => setLanInfo(null));
+
+      fetchSaves();
+      ensureSaveName();
 
       function renderHistory() {
         const container = el("history");
@@ -877,6 +922,120 @@
         el("notice").textContent = text;
       }
 
+      function setSaveNotice(text) {
+        const target = el("saveNotice");
+        if (target) target.textContent = text || "";
+      }
+
+      function ensureSaveName(moduleName) {
+        const input = el("saveName");
+        if (!input) return;
+        const name = moduleName || state.sessionInfo?.module_name || "";
+        const placeholder = defaultSaveName(name);
+        input.placeholder = placeholder;
+        if (!input.value.trim()) {
+          input.value = placeholder;
+        }
+      }
+
+      function renderSaveList() {
+        const list = el("saveList");
+        if (!list) return;
+        list.innerHTML = "";
+        if (!state.saves.length) {
+          list.innerHTML = "<div class=\"muted\">暂无存档</div>";
+          return;
+        }
+        state.saves.forEach((save) => {
+          const item = document.createElement("div");
+          item.className = "save-item";
+          item.innerHTML = `
+            <div>
+              <div>${save.name || save.save_id}</div>
+              <div class="muted">${save.module_name || ""}</div>
+            </div>
+          `;
+          const btn = document.createElement("button");
+          btn.textContent = "加载";
+          btn.addEventListener("click", () => loadSnapshot(save.save_id));
+          item.appendChild(btn);
+          list.appendChild(item);
+        });
+      }
+
+      async function fetchSaves() {
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${window.location.origin}/saves`);
+          const data = await res.json();
+          state.saves = data.saves || [];
+        } catch (e) {
+          state.saves = [];
+          setSaveNotice("无法获取存档列表。");
+        }
+        renderSaveList();
+      }
+
+      async function saveSnapshot(options = {}) {
+        const moduleName = state.sessionInfo?.module_name || "";
+        const input = el("saveName");
+        const name = (options.name || input?.value || "").trim() || defaultSaveName(moduleName);
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${window.location.origin}/saves/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              save_name: name,
+              overwrite: options.overwrite || false,
+            }),
+          });
+          const data = await res.json();
+          if (!data.ok && data.error === "exists") {
+            const overwrite = window.confirm("存档已存在，是否覆盖？取消则另存为。");
+            if (overwrite) {
+              await saveSnapshot({ name, overwrite: true });
+              return;
+            }
+            const altName = window.prompt("请输入新的存档名", `${name}-copy`);
+            if (altName) {
+              await saveSnapshot({ name: altName, overwrite: false });
+            }
+            return;
+          }
+          if (!data.ok) {
+            setSaveNotice(data.error || "保存失败。");
+            return;
+          }
+          if (input) input.value = name;
+          await fetchSaves();
+        } catch (e) {
+          setSaveNotice("保存失败。");
+        }
+      }
+
+      async function loadSnapshot(saveId) {
+        if (!saveId) return;
+        const ok = window.confirm("加载存档将清空当前记录并覆盖状态，确定继续吗？");
+        if (!ok) return;
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${window.location.origin}/saves/load`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ save_id: saveId }),
+          });
+          const data = await res.json();
+          if (!data.ok) {
+            setSaveNotice(data.error || "加载失败。");
+            return;
+          }
+          await fetchSaves();
+        } catch (e) {
+          setSaveNotice("加载失败。");
+        }
+      }
+
       el("create").addEventListener("click", async () => {
         const serverUrl = window.location.origin;
         const profession = el("profession").value;
@@ -952,6 +1111,14 @@
         }
       });
 
+      el("saveSnapshot").addEventListener("click", () => {
+        saveSnapshot();
+      });
+
+      el("refreshSaves").addEventListener("click", () => {
+        fetchSaves();
+      });
+
       function connect() {
         if (state.ws) state.ws.close();
         state.ws = new WebSocket(wsUrl);
@@ -970,6 +1137,7 @@
             state.history = message.payload.latest_history || [];
             state.stateView = message.payload.visible_state || { players: {} };
             state.onlineIds = message.payload.online_player_ids || [];
+            ensureSaveName(message.payload.module_name);
             if (message.payload.module_introduction) {
               state.moduleIntroText = message.payload.module_introduction;
             }

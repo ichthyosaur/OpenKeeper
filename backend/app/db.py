@@ -19,6 +19,7 @@ class MongoStore:
         self.history = self.db["history"]
         self.snapshots = self.db["snapshots"]
         self.players = self.db["players"]
+        self.saves = self.db["saves"]
 
     async def ping(self) -> None:
         await self.client.admin.command("ping")
@@ -82,8 +83,10 @@ class MemoryStore:
         self.snapshots = MemoryCollection()
         if base_path is None:
             self.players = MemoryCollection()
+            self.saves = MemoryCollection()
         else:
             self.players = FileBackedCollection(base_path / "players.json")
+            self.saves = FileBackedCollection(base_path / "saves.json")
         self.is_memory = True
 
 
@@ -103,6 +106,10 @@ class FileBackedCollection(MemoryCollection):
 
     async def update_one(self, query: dict[str, Any], update: dict[str, Any], upsert: bool = False) -> None:
         await super().update_one(query, update, upsert=upsert)
+        self._flush()
+
+    async def delete_many(self, query: dict[str, Any]) -> None:
+        await super().delete_many(query)
         self._flush()
 
     def _flush(self) -> None:

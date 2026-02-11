@@ -127,6 +127,25 @@ button.ghost {
   gap: 8px;
 }
 
+.save-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.save-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #101a2d;
+  border: 1px solid #24314f;
+  font-size: 13px;
+}
+
 .room {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
@@ -358,5 +377,51 @@ button.ghost {
   .player {
     flex-wrap: wrap;
     gap: 6px 10px;
+  }
+}
+
+.toast-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.toast-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(560px, 90vw);
+}
+
+.toast {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid #32405f;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 14px 40px rgba(3, 7, 18, 0.5);
+  animation: toastFade 3s ease forwards;
+}
+
+@keyframes toastFade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
   }
 }

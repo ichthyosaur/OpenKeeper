@@ -75,7 +75,29 @@ export default function App() {
   const [inputText, setInputText] = useState("");
   const [lanInfo, setLanInfo] = useState(null);
   const [lanError, setLanError] = useState("");
+  const [saves, setSaves] = useState([]);
+  const [saveName, setSaveName] = useState("");
+  const [saveError, setSaveError] = useState("");
+  const [toasts, setToasts] = useState([]);
   const wsRef = useRef(null);
+  const lastStateRef = useRef(null);
+  const didInitStateRef = useRef(false);
+  const lastModuleRef = useRef("");
+
+  function formatDateStamp(date = new Date()) {
+    const pad = (num) => String(num).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hour = pad(date.getHours());
+    const minute = pad(date.getMinutes());
+    return `${year}${month}${day}-${hour}${minute}`;
+  }
+
+  function defaultSaveName(moduleName) {
+    const safeModule = moduleName || "module";
+    return `${safeModule}-${formatDateStamp()}`;
+  }
 
   const playerCard = useMemo(() => {
     return stateView.players?.[playerId] || {
@@ -90,6 +112,152 @@ export default function App() {
     };
   }, [stateView, playerId, name, gender, color, profession]);
 
+  function pushToast(message) {
+    const id = makeUUID();
+    setToasts((prev) => [...prev, { id, message }]);
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    }, 3000);
+  }
+
+  function collectNumericChanges(prevSection = {}, nextSection = {}, labels = {}, prefix = "") {
+    const deltas = [];
+    Object.keys(nextSection || {}).forEach((key) => {
+      const prevValue = prevSection?.[key];
+      const nextValue = nextSection?.[key];
+      if (prevValue === undefined || nextValue === undefined) return;
+      const prevNum = Number(prevValue);
+      const nextNum = Number(nextValue);
+      if (!Number.isFinite(prevNum) || !Number.isFinite(nextNum)) return;
+      const diff = nextNum - prevNum;
+      if (diff === 0) return;
+      const label = labels[key] || key.toUpperCase();
+      const sign = diff > 0 ? "+" : "";
+      const name = prefix ? `${prefix}${label}` : label;
+      deltas.push(`${name} ${sign}${diff}`);
+    });
+    return deltas;
+  }
+
+  function handleStateUpdate(nextState) {
+    const prevState = lastStateRef.current;
+    const nextPlayers = nextState?.players || {};
+    if (prevState && didInitStateRef.current) {
+      const prevPlayers = prevState.players || {};
+      const playerIds = role === "host" ? Object.keys(nextPlayers) : [playerId];
+      const statLabels = {
+        hp: "HP",
+        hp_max: "HP上限",
+        san: "SAN",
+        san_max: "SAN上限",
+        mp: "MP",
+        luck: "幸运",
+      };
+      const attrLabels = {
+        str: "STR",
+        dex: "DEX",
+        int: "INT",
+        con: "CON",
+        app: "APP",
+        pow: "POW",
+        siz: "SIZ",
+        edu: "EDU",
+      };
+      const changes = [];
+      playerIds.forEach((pid) => {
+        const prevPlayer = prevPlayers?.[pid];
+        const nextPlayer = nextPlayers?.[pid];
+        if (!prevPlayer || !nextPlayer) return;
+        const deltas = [
+          ...collectNumericChanges(prevPlayer.stats, nextPlayer.stats, statLabels),
+          ...collectNumericChanges(prevPlayer.attributes, nextPlayer.attributes, attrLabels),
+          ...collectNumericChanges(prevPlayer.skills, nextPlayer.skills, {}, "技能 "),
+        ];
+        if (deltas.length === 0) return;
+        const displayName = nextPlayer.name || pid;
+        changes.push(`${displayName} ${deltas.join(" · ")}`);
+      });
+      changes.forEach((message) => pushToast(message));
+    }
+    setStateView(nextState || {});
+    lastStateRef.current = nextState;
+    if (!didInitStateRef.current) {
+      didInitStateRef.current = true;
+    }
+  }
+
+  async function fetchSaves() {
+    setSaveError("");
+    try {
+      const res = await fetch(`${serverUrl}/saves`);
+      const data = await res.json();
+      setSaves(data.saves || []);
+    } catch (err) {
+      setSaveError("无法获取存档列表");
+      setSaves([]);
+    }
+  }
+
+  async function saveSnapshot(options = {}) {
+    const name =
+      (options.name || saveName).trim() ||
+      defaultSaveName(sessionInfo?.module_name);
+    setSaveError("");
+    try {
+      const res = await fetch(`${serverUrl}/saves/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          save_name: name,
+          overwrite: options.overwrite || false,
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok && data.error === "exists") {
+        const overwrite = window.confirm("存档已存在，是否覆盖？取消则另存为。");
+        if (overwrite) {
+          await saveSnapshot({ name, overwrite: true });
+          return;
+        }
+        const altName = window.prompt("请输入新的存档名", `${name}-copy`);
+        if (altName) {
+          await saveSnapshot({ name: altName, overwrite: false });
+        }
+        return;
+      }
+      if (!data.ok) {
+        setSaveError(data.error || "保存失败");
+        return;
+      }
+      setSaveName(name);
+      await fetchSaves();
+    } catch (err) {
+      setSaveError("保存失败");
+    }
+  }
+
+  async function loadSnapshot(saveId) {
+    if (!saveId) return;
+    const confirmed = window.confirm("加载存档将清空当前记录并覆盖状态，确定继续吗？");
+    if (!confirmed) return;
+    setSaveError("");
+    try {
+      const res = await fetch(`${serverUrl}/saves/load`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ save_id: saveId }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setSaveError(data.error || "加载失败");
+        return;
+      }
+      await fetchSaves();
+    } catch (err) {
+      setSaveError("加载失败");
+    }
+  }
+
   useEffect(() => {
     fetch(`${serverUrl}/professions`)
       .then((res) => res.json())
@@ -102,6 +270,18 @@ export default function App() {
       })
       .catch(() => {});
   }, [serverUrl]);
+
+  useEffect(() => {
+    fetchSaves();
+  }, [serverUrl]);
+
+  useEffect(() => {
+    const moduleName = sessionInfo?.module_name || "";
+    if (moduleName && moduleName !== lastModuleRef.current && !saveName.trim()) {
+      setSaveName(defaultSaveName(moduleName));
+    }
+    lastModuleRef.current = moduleName;
+  }, [sessionInfo, saveName]);
 
   useEffect(() => {
     setLanError("");
@@ -157,7 +337,7 @@ export default function App() {
       if (message.type === "server.session_state") {
         setSessionInfo(message.payload);
         setHistory(message.payload.latest_history || []);
-        setStateView(message.payload.visible_state || {});
+        handleStateUpdate(message.payload.visible_state || {});
         return;
       }
       if (message.type === "server.history_append") {
@@ -169,8 +349,14 @@ export default function App() {
         }
         return;
       }
+      if (message.type === "server.history_clear") {
+        setHistory([]);
+        lastStateRef.current = null;
+        didInitStateRef.current = false;
+        return;
+      }
       if (message.type === "server.state_update") {
-        setStateView(message.payload.state_diff || {});
+        handleStateUpdate(message.payload.state_diff || {});
         return;
       }
     };
@@ -203,6 +389,15 @@ export default function App() {
 
   return (
     <div className="app">
+      <div className="toast-layer" aria-live="polite">
+        <div className="toast-stack">
+          {toasts.map((toast) => (
+            <div className="toast" key={toast.id}>
+              {toast.message}
+            </div>
+          ))}
+        </div>
+      </div>
       <header className="topbar">
         <div>
           <div className="title">OpenKeeper</div>
@@ -300,6 +495,44 @@ export default function App() {
               )
             ) : (
               <div className="muted">{lanError || "尚未获取局域网地址"}</div>
+            )}
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-title">存档</div>
+          <div className="grid">
+            <label>
+              存档名称
+              <input
+                value={saveName}
+                onChange={(e) => setSaveName(e.target.value)}
+                placeholder={defaultSaveName(sessionInfo?.module_name)}
+              />
+            </label>
+          </div>
+          <div className="actions">
+            <button onClick={() => saveSnapshot()}>保存</button>
+            <button className="ghost" onClick={fetchSaves}>
+              刷新列表
+            </button>
+          </div>
+          {saveError ? <div className="muted">{saveError}</div> : null}
+          <div className="save-list">
+            {(saves || []).length === 0 ? (
+              <div className="muted">暂无存档</div>
+            ) : (
+              (saves || []).map((save) => (
+                <div className="save-item" key={save.save_id || save.name}>
+                  <div>
+                    <div>{save.name || save.save_id}</div>
+                    <div className="muted">{save.module_name || ""}</div>
+                  </div>
+                  <button className="ghost" onClick={() => loadSnapshot(save.save_id)}>
+                    加载
+                  </button>
+                </div>
+              ))
             )}
           </div>
         </div>

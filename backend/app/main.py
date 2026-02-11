@@ -5,6 +5,7 @@ import socket
 import uuid
 import json
 import yaml
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +17,17 @@ from fastapi.staticfiles import StaticFiles
 from app.config import load_config
 from app.constants import PROFESSIONS
 from app.db import MemoryStore, MongoStore
-from app.models import I18NText, PlayerProfile, ActorType, ActionType, MessageType, KeeperOutput
+from app.models import (
+    I18NText,
+    PlayerProfile,
+    ActorType,
+    ActionType,
+    MessageType,
+    KeeperOutput,
+    HistoryEntry,
+    Module,
+    SessionPlayer,
+)
 from app.module_loader import load_module
 from app.keeper import KeeperStub
 from app.keeper_llm import KeeperLLM
@@ -224,6 +235,27 @@ def _persist_config() -> None:
         yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
 
 
+def _normalize_player_stats(player: dict[str, Any]) -> dict[str, Any]:
+    stats = player.get("stats") or {}
+    if "hp_max" not in stats:
+        stats["hp_max"] = stats.get("hp", 10)
+    if "san_max" not in stats:
+        stats["san_max"] = stats.get("san", 60)
+    player["stats"] = stats
+    return player
+
+
+def _build_session_players(state: dict[str, Any]) -> list[SessionPlayer]:
+    players: list[SessionPlayer] = []
+    for pid, pdata in (state.get("players") or {}).items():
+        name = pdata.get("name", "Unknown")
+        color = pdata.get("color", "#64748b")
+        players.append(
+            SessionPlayer(player_id=pid, name=name, role="player", color=color)
+        )
+    return players
+
+
 @app.on_event("startup")
 async def startup() -> None:
     module = load_module(MODULE_PATH)
@@ -399,6 +431,159 @@ async def list_modules() -> dict[str, Any]:
 async def current_module() -> dict[str, Any]:
     module = app.state.module
     return {"module": module.model_dump()}
+
+
+@app.get("/saves")
+async def list_saves() -> dict[str, Any]:
+    store = app.state.store
+    cursor = store.saves.find({}).sort("updated_at", -1)
+    saves: list[dict[str, Any]] = []
+    async for doc in cursor:
+        saves.append(
+            {
+                "save_id": doc.get("_id"),
+                "name": doc.get("name") or doc.get("_id"),
+                "module_name": doc.get("module_name"),
+                "created_at": doc.get("created_at"),
+                "updated_at": doc.get("updated_at"),
+            }
+        )
+    return {"saves": saves}
+
+
+@app.post("/saves/save")
+async def save_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
+    save_name = (payload.get("save_name") or payload.get("name") or "").strip()
+    if not save_name:
+        return {"ok": False, "error": "save_name required"}
+    save_id = (payload.get("save_id") or save_name).strip()
+    overwrite = bool(payload.get("overwrite"))
+    store = app.state.store
+    existing = await store.saves.find_one({"_id": save_id})
+    if existing and not overwrite:
+        return {
+            "ok": False,
+            "error": "exists",
+            "save_id": save_id,
+            "name": existing.get("name") or save_name,
+        }
+    session = app.state.session
+    history = await session.get_history()
+    current_state = json.loads(json.dumps(session.state.current_state))
+    for pid, pdata in (current_state.get("players") or {}).items():
+        if isinstance(pdata, dict):
+            pdata["player_id"] = pdata.get("player_id") or pid
+            _normalize_player_stats(pdata)
+    now = datetime.utcnow().isoformat()
+    doc = {
+        "_id": save_id,
+        "name": save_name,
+        "module_name": session.module.module_name,
+        "created_at": existing.get("created_at") if existing else now,
+        "updated_at": now,
+        "module": session.module.model_dump(),
+        "players": [p.model_dump() for p in session.state.players],
+        "current_state": current_state,
+        "history": [h.model_dump(mode="json") for h in history],
+    }
+    await store.saves.update_one({"_id": save_id}, {"$set": doc}, upsert=True)
+    return {"ok": True, "save_id": save_id, "name": save_name}
+
+
+@app.post("/saves/load")
+async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
+    save_id = (payload.get("save_id") or "").strip()
+    if not save_id:
+        return {"ok": False, "error": "save_id required"}
+    store = app.state.store
+    doc = await store.saves.find_one({"_id": save_id})
+    if not doc:
+        return {"ok": False, "error": "save not found"}
+    module_data = doc.get("module") or {}
+    module = Module(**module_data)
+
+    session = app.state.session
+    current_state = doc.get("current_state") or {"players": {}, "npcs": {}, "notes": {}}
+    for pid, pdata in (current_state.get("players") or {}).items():
+        if isinstance(pdata, dict):
+            pdata["player_id"] = pdata.get("player_id") or pid
+            _normalize_player_stats(pdata)
+    current_state["phase"] = "active"
+
+    saved_players = doc.get("players") or []
+    if saved_players:
+        session.state.players = [SessionPlayer(**p) for p in saved_players]
+    else:
+        session.state.players = _build_session_players(current_state)
+
+    session.module = module
+    session.state.module_name = module.module_name
+    session.state.current_state = current_state
+    session.state.active = True
+    session.round_id = str(uuid.uuid4())
+    session.state.round_id = session.round_id
+    app.state.module = module
+
+    await store.sessions.update_one(
+        {"_id": session.session_id},
+        {
+            "$set": {
+                "module_name": module.module_name,
+                "players": [p.model_dump() for p in session.state.players],
+                "current_state": session.state.current_state,
+                "round_id": session.round_id,
+                "active": True,
+                "module_snapshot": module.model_dump(),
+            }
+        },
+    )
+
+    saved_ids = {pid for pid in (current_state.get("players") or {}).keys()}
+    existing_players: list[dict[str, Any]] = []
+    if hasattr(store.players, "items"):
+        existing_players = list(store.players.items)
+    else:
+        existing_players = [p async for p in store.players.find({})]
+    for doc_player in existing_players:
+        pid = doc_player.get("player_id") or doc_player.get("_id")
+        if pid and pid not in saved_ids:
+            await store.players.delete_many({"_id": pid})
+    for pid, pdata in (current_state.get("players") or {}).items():
+        if isinstance(pdata, dict):
+            await store.players.update_one(
+                {"_id": pid},
+                {"$set": pdata},
+                upsert=True,
+            )
+
+    raw_history = doc.get("history") or []
+    entries: list[HistoryEntry] = []
+    for item in raw_history:
+        if not isinstance(item, dict):
+            continue
+        record = dict(item)
+        record["session_id"] = session.session_id
+        record.setdefault("round_id", session.round_id)
+        entries.append(HistoryEntry(**record))
+    await store.history.delete_many({"session_id": session.session_id})
+    for entry in entries:
+        await store.history.insert_one(entry.model_dump())
+    session.history_cache = entries
+
+    await connections.broadcast(
+        {"type": "server.history_clear", "payload": {"reason": "load_save"}}
+    )
+    await connections.broadcast(
+        {
+            "type": "server.module_info",
+            "payload": {"module_introduction": module.introduction},
+        }
+    )
+    if entries:
+        await connections.broadcast_filtered(entries, session)
+    else:
+        await connections.broadcast_state(session)
+    return {"ok": True, "save_id": save_id}
 
 
 @app.post("/session/reset")

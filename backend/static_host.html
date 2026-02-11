@@ -110,6 +110,18 @@
       .status.off { background: #7c2d12; }
       .status.warn { background: #b45309; }
       .grid { display: grid; gap: 10px; }
+      .save-list { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+      .save-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(12, 18, 34, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        font-size: 12px;
+      }
       .badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: rgba(12, 18, 34, 0.9); color: var(--muted); font-size: 12px; border: 1px solid var(--stroke); }
       select { padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.2); background: rgba(9, 14, 27, 0.7); color: var(--text); }
       select[multiple] { min-height: 120px; background: rgba(15, 81, 50, 0.2); border-color: rgba(20, 83, 45, 0.6); }
@@ -254,6 +266,20 @@
           <div class="muted" id="hostNotice" style="margin-top:6px;"></div>
         </div>
         <div class="panel">
+          <div class="panel-title">存档</div>
+          <div class="grid">
+            <label>存档名称
+              <input id="saveName" placeholder="模组-时间" />
+            </label>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button id="saveSnapshot">保存</button>
+            <button id="refreshSaves">刷新列表</button>
+          </div>
+          <div class="muted" id="saveNotice" style="margin-top:6px;"></div>
+          <div id="saveList" class="save-list"></div>
+        </div>
+        <div class="panel">
           <div class="panel-title">Host 消息</div>
           <div class="grid">
             <label>类型
@@ -321,6 +347,9 @@
         pendingEntries: [],
         activeStreamIds: new Set(),
         toastCache: new Map(),
+        sessionInfo: null,
+        saves: [],
+        lastModuleName: "",
       };
       const serverUrl = window.location.origin;
       const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
@@ -331,8 +360,137 @@
       el("hostInfo").insertAdjacentHTML("afterend", "<div class=\"badge\" id=\"phaseInfo\"></div>");
       el("phaseInfo").textContent = "Phase: lobby";
 
+      function formatDateStamp(date = new Date()) {
+        const pad = (num) => String(num).padStart(2, "0");
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hour = pad(date.getHours());
+        const minute = pad(date.getMinutes());
+        return `${year}${month}${day}-${hour}${minute}`;
+      }
+
+      function defaultSaveName(moduleName) {
+        const safeModule = moduleName || "module";
+        return `${safeModule}-${formatDateStamp()}`;
+      }
+
       function setNotice(text) {
         el("hostNotice").textContent = text || "";
+      }
+
+      function setSaveNotice(text) {
+        const target = el("saveNotice");
+        if (target) target.textContent = text || "";
+      }
+
+      function ensureSaveName(moduleName) {
+        const input = el("saveName");
+        if (!input) return;
+        const name = moduleName || state.sessionInfo?.module_name || el("moduleSelect")?.value || "";
+        const placeholder = defaultSaveName(name);
+        input.placeholder = placeholder;
+        if (!input.value.trim()) {
+          input.value = placeholder;
+        }
+      }
+
+      function renderSaveList() {
+        const list = el("saveList");
+        if (!list) return;
+        list.innerHTML = "";
+        if (!state.saves.length) {
+          list.innerHTML = "<div class=\"muted\">暂无存档</div>";
+          return;
+        }
+        state.saves.forEach((save) => {
+          const item = document.createElement("div");
+          item.className = "save-item";
+          item.innerHTML = `
+            <div>
+              <div>${save.name || save.save_id}</div>
+              <div class="muted">${save.module_name || ""}</div>
+            </div>
+          `;
+          const btn = document.createElement("button");
+          btn.textContent = "加载";
+          btn.addEventListener("click", () => loadSnapshot(save.save_id));
+          item.appendChild(btn);
+          list.appendChild(item);
+        });
+      }
+
+      async function fetchSaves() {
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${serverUrl}/saves`);
+          const data = await res.json();
+          state.saves = data.saves || [];
+        } catch (e) {
+          state.saves = [];
+          setSaveNotice("无法获取存档列表。");
+        }
+        renderSaveList();
+      }
+
+      async function saveSnapshot(options = {}) {
+        const moduleName = state.sessionInfo?.module_name || el("moduleSelect")?.value || "";
+        const input = el("saveName");
+        const name = (options.name || input?.value || "").trim() || defaultSaveName(moduleName);
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${serverUrl}/saves/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              save_name: name,
+              overwrite: options.overwrite || false,
+            }),
+          });
+          const data = await res.json();
+          if (!data.ok && data.error === "exists") {
+            const overwrite = window.confirm("存档已存在，是否覆盖？取消则另存为。");
+            if (overwrite) {
+              await saveSnapshot({ name, overwrite: true });
+              return;
+            }
+            const altName = window.prompt("请输入新的存档名", `${name}-copy`);
+            if (altName) {
+              await saveSnapshot({ name: altName, overwrite: false });
+            }
+            return;
+          }
+          if (!data.ok) {
+            setSaveNotice(data.error || "保存失败。");
+            return;
+          }
+          if (input) input.value = name;
+          await fetchSaves();
+        } catch (e) {
+          setSaveNotice("保存失败。");
+        }
+      }
+
+      async function loadSnapshot(saveId) {
+        if (!saveId) return;
+        const ok = window.confirm("加载存档将清空当前记录并覆盖状态，确定继续吗？");
+        if (!ok) return;
+        setSaveNotice("");
+        try {
+          const res = await fetch(`${serverUrl}/saves/load`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ save_id: saveId }),
+          });
+          const data = await res.json();
+          if (!data.ok) {
+            setSaveNotice(data.error || "加载失败。");
+            return;
+          }
+          await fetchSaves();
+        } catch (e) {
+          setSaveNotice("加载失败。");
+        }
       }
 
       function textFromI18n(content) {
@@ -715,6 +873,7 @@
         const data = await res.json();
         if (data.ok) {
           setNotice(`模组已开始：${data.module_name}`);
+          ensureSaveName(data.module_name);
         } else {
           setNotice(data.error || "开始失败");
         }
@@ -884,6 +1043,8 @@
         await loadModules();
         await loadPlayers();
         await loadConfig();
+        await fetchSaves();
+        ensureSaveName(el("moduleSelect")?.value);
         try {
           const res = await fetch(`${serverUrl}/keeper`);
           const data = await res.json();
@@ -904,9 +1065,11 @@
         state.ws.onmessage = (evt) => {
           const message = JSON.parse(evt.data);
           if (message.type === "server.session_state") {
+            state.sessionInfo = message.payload;
             state.history = message.payload.latest_history || [];
             state.stateView = message.payload.visible_state || { players: {} };
             state.onlineIds = message.payload.online_player_ids || [];
+            ensureSaveName(message.payload.module_name);
             el("phaseInfo").textContent = `Phase: ${state.stateView.phase || "lobby"}`;
             if (message.payload.theme) {
               el("themeSelect").value = message.payload.theme;
@@ -1002,6 +1165,8 @@
 
       el("startModule").addEventListener("click", startModule);
       el("resetGame").addEventListener("click", resetGame);
+      el("saveSnapshot").addEventListener("click", () => saveSnapshot());
+      el("refreshSaves").addEventListener("click", fetchSaves);
       el("sendHostMsg").addEventListener("click", sendHostMessage);
       el("hostMsgType").addEventListener("change", toggleSecretSelect);
       el("historyCount").addEventListener("change", updateHistoryCount);
@@ -1011,6 +1176,7 @@
       el("llmRetry").addEventListener("change", updateLlmRetry);
       el("themeSelect").addEventListener("change", updateTheme);
       el("keeperSelect").addEventListener("change", updateKeeper);
+      el("moduleSelect").addEventListener("change", () => ensureSaveName(el("moduleSelect").value));
       el("refreshRaw").addEventListener("click", refreshRaw);
       toggleSecretSelect();
       connect();
