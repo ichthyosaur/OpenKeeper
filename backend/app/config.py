@@ -45,6 +45,13 @@ ENV_KEY_MAP = {
 }
 
 
+def _user_config_path() -> Path:
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        return Path(appdata) / "OpenKeeper" / "config.yaml"
+    return Path.home() / ".openkeeper" / "config.yaml"
+
+
 def _load_dotenv(path: Path) -> dict[str, str]:
     if not path.exists():
         return {}
@@ -82,13 +89,31 @@ def _apply_env(data: dict[str, Any], env: dict[str, str]) -> None:
 
 def load_config(path: Union[str, Path]) -> AppConfig:
     data: dict[str, Any] = dict(DEFAULT_CONFIG)
-    cfg_path = Path(path)
+    env_path = os.environ.get("OPENKEEPER_CONFIG_PATH")
+    cfg_path = Path(env_path) if env_path else Path(path)
+    fallback_path = _user_config_path()
     if cfg_path.exists():
-        with cfg_path.open("r", encoding="utf-8") as f:
-            loaded = yaml.safe_load(f) or {}
-        if not isinstance(loaded, dict):
-            raise ValueError("config.yaml must be a mapping")
-        data.update(loaded)
+        try:
+            with cfg_path.open("r", encoding="utf-8") as f:
+                loaded = yaml.safe_load(f) or {}
+            if not isinstance(loaded, dict):
+                raise ValueError("config.yaml must be a mapping")
+            data.update(loaded)
+        except PermissionError:
+            cfg_path = fallback_path
+    elif env_path:
+        cfg_path = fallback_path
+    if cfg_path != fallback_path and not cfg_path.exists() and fallback_path.exists():
+        cfg_path = fallback_path
+    if cfg_path.exists() and cfg_path != Path(path):
+        try:
+            with cfg_path.open("r", encoding="utf-8") as f:
+                loaded = yaml.safe_load(f) or {}
+            if not isinstance(loaded, dict):
+                raise ValueError("config.yaml must be a mapping")
+            data.update(loaded)
+        except PermissionError:
+            pass
     dotenv_paths = [
         cfg_path.parent.parent / ".env",
         cfg_path.parent / ".env",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 import shutil
 import socket
 import uuid
@@ -42,12 +43,22 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _resolve_config_path() -> Path:
+    env_path = os.environ.get("OPENKEEPER_CONFIG_PATH")
+    if env_path:
+        return Path(env_path)
     default_path = APP_ROOT / "config.yaml"
-    if default_path.exists() and os.access(default_path, os.W_OK):
+    if default_path.exists() and os.access(default_path, os.R_OK | os.W_OK) and not getattr(sys, "frozen", False):
         return default_path
-    data_dir = APP_ROOT / "data"
-    data_dir.mkdir(parents=True, exist_ok=True)
-    data_path = data_dir / "config.yaml"
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.argv[0]).resolve().parent
+        data_path = exe_dir / "config.yaml"
+    else:
+        data_dir = Path.home() / ".openkeeper"
+        try:
+            data_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            data_dir = Path.home()
+        data_path = data_dir / "config.yaml"
     if not data_path.exists() and default_path.exists():
         try:
             shutil.copy2(default_path, data_path)
