@@ -59,11 +59,11 @@ body {
 }
 
 .status.on {
-  background: #0f766e;
+  background: #cfe9d6;
 }
 
 .status.off {
-  background: #7c2d12;
+  background: #f2c9c5;
 }
 
 .setup {

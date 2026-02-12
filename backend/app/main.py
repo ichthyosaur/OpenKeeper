@@ -503,6 +503,7 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     module = Module(**module_data)
 
     session = app.state.session
+    await session.reset_session()
     current_state = doc.get("current_state") or {"players": {}, "npcs": {}, "notes": {}}
     for pid, pdata in (current_state.get("players") or {}).items():
         if isinstance(pdata, dict):
@@ -581,8 +582,7 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     )
     if entries:
         await connections.broadcast_filtered(entries, session)
-    else:
-        await connections.broadcast_state(session)
+    await connections.broadcast_state(session)
     return {"ok": True, "save_id": save_id}
 
 
