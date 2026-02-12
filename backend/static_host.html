@@ -299,20 +299,8 @@
       .history-item.keeper { border-left: 4px solid rgba(107, 15, 15, 0.6); }
       .history-item.system { border-left: 4px solid rgba(92, 64, 51, 0.7); }
       .history-item.secret {
-        background: rgba(52, 44, 30, 0.85);
-        border: 2px solid rgba(152, 94, 44, 0.6);
-        box-shadow: inset 0 0 0 2px rgba(152, 94, 44, 0.2);
-      }
-      .history-item.secret::before {
-        content: "CLASSIFIED";
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        font-size: 9px;
-        letter-spacing: 0.3em;
-        color: rgba(152, 94, 44, 0.6);
-        text-transform: uppercase;
-        pointer-events: none;
+        background: rgba(234, 240, 226, 0.92);
+        outline-color: rgba(92, 110, 84, 0.4);
       }
       .modal { position: fixed; inset: 0; background: rgba(10, 5, 0, 0.78); display: flex; align-items: center; justify-content: center; z-index: 50; }
       .modal.hidden { display: none; }
@@ -352,7 +340,23 @@
       .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; font-family: "Cinzel Decorative", serif; color: var(--title-ink); }
       .modal-body { white-space: pre-wrap; line-height: 1.6; color: var(--ink); font-size: 14px; }
       .modal-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
-      .history-meta { font-size: 11px; color: rgba(42, 26, 14, 0.6); display: flex; gap: 12px; margin-bottom: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+      .history-meta { font-size: 11px; color: rgba(42, 26, 14, 0.6); display: flex; align-items: center; gap: 12px; margin-bottom: 6px; letter-spacing: 0.12em; text-transform: uppercase; }
+      .meta-label { font-weight: 700; color: var(--title-ink); }
+      .meta-badge {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(92, 64, 51, 0.45);
+        background: rgba(244, 228, 193, 0.9);
+        color: rgba(42, 26, 14, 0.7);
+        letter-spacing: 0.14em;
+        font-size: 10px;
+      }
+      .meta-badge.secret {
+        background: rgba(234, 240, 226, 0.95);
+        border-color: rgba(92, 110, 84, 0.45);
+        color: rgba(62, 88, 58, 0.78);
+        text-shadow: 0 0 1px rgba(62, 88, 58, 0.2);
+      }
       .actor-stack { display: flex; flex-direction: column; line-height: 1.2; }
       .actor-name { font-size: 12px; color: var(--ink); }
       .actor-prof { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -608,6 +612,8 @@
         sessionInfo: null,
         saves: [],
         lastModuleName: "",
+        historyPinned: true,
+        historyScrollReady: false,
       };
       const serverUrl = window.location.origin;
       const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
@@ -758,6 +764,15 @@
 
       function renderHistory() {
         const container = el("history");
+        if (!state.historyScrollReady && container) {
+          container.addEventListener("scroll", () => {
+            const distance = container.scrollHeight - container.scrollTop - container.clientHeight;
+            state.historyPinned = distance < 24;
+          });
+          state.historyScrollReady = true;
+        }
+        const preserveFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+        const shouldPin = preserveFromBottom < 24 || state.historyPinned;
         container.innerHTML = "";
         state.history.forEach((entry) => {
           const item = document.createElement("div");
@@ -783,9 +798,11 @@
                 state.professions[profKey]?.label ||
                 profKey
               : "";
-          const secretTag =
+          const keeperTag =
             entry.message_type === "secret" && entry.actor_type === "keeper"
-              ? " Secret"
+              ? "<span class=\"meta-badge secret\">SECRET</span>"
+              : entry.actor_type === "keeper"
+              ? "<span class=\"meta-badge\">REVEALING</span>"
               : "";
           const stamp = new Date(entry.timestamp || Date.now()).toLocaleDateString("en-US", {
             month: "short",
@@ -796,16 +813,22 @@
           item.innerHTML = `
             <div class="history-meta">
               ${
-                entry.actor_type === "player"
-                  ? `<div class="actor-stack"><div class="actor-name">${actor}</div><div class="actor-prof">${profLabel || ""}</div></div>`
-                  : `<div class="actor-name">${actor}${secretTag}</div>`
+                entry.actor_type === "keeper"
+                  ? `<span class="meta-label">KEEPER</span>${keeperTag}`
+                  : entry.actor_type === "player"
+                  ? `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-stack"><div class="actor-name">${actor}</div><div class="actor-prof">${profLabel || ""}</div></div>`
+                  : `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-name">${actor}</div>`
               }
             </div>
             <div class="history-content">${textFromI18n(entry.content)}</div>
           `;
           container.appendChild(item);
         });
-        container.scrollTop = container.scrollHeight;
+        if (shouldPin) {
+          container.scrollTop = container.scrollHeight;
+        } else {
+          container.scrollTop = Math.max(0, container.scrollHeight - preserveFromBottom - container.clientHeight);
+        }
       }
 
       function renderSummary() {
@@ -1361,6 +1384,8 @@
           }
         } catch (e) {}
         if (state.ws) state.ws.close();
+        el("status").className = "status warn";
+        el("status").textContent = "CONNECTING";
         state.ws = new WebSocket(wsUrl);
         state.ws.onopen = () => {
           el("status").className = "status on";
