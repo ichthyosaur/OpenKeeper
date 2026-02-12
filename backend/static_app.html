@@ -635,13 +635,12 @@
               <option value="occult_researcher">神秘学研究者</option>
               <option value="engineer">工程师</option>
               <option value="archaeologist">考古学家</option>
-              <option value="lawyer">律师</option>
               <option value="nurse">护士</option>
-              <option value="photojournalist">摄影记者</option>
               <option value="librarian">图书馆员</option>
               <option value="antiquarian">古董商</option>
-              <option value="stage_magician">舞台魔术师</option>
-              <option value="pilot">飞行员</option>
+              <option value="author">作家</option>
+              <option value="painter">画家</option>
+              <option value="sculptor">雕塑家</option>
               <option value="dockworker">码头工人</option>
               <option value="chemist">化学师</option>
             </select></label>
@@ -1524,13 +1523,12 @@
           occult_researcher: "神秘学研究者",
           engineer: "工程师",
           archaeologist: "考古学家",
-          lawyer: "律师",
           nurse: "护士",
-          photojournalist: "摄影记者",
           librarian: "图书馆员",
           antiquarian: "古董商",
-          stage_magician: "舞台魔术师",
-          pilot: "飞行员",
+          author: "作家",
+          painter: "画家",
+          sculptor: "雕塑家",
           dockworker: "码头工人",
           chemist: "化学师",
         };
@@ -1544,13 +1542,12 @@
           "occult_researcher",
           "engineer",
           "archaeologist",
-          "lawyer",
           "nurse",
-          "photojournalist",
           "librarian",
           "antiquarian",
-          "stage_magician",
-          "pilot",
+          "author",
+          "painter",
+          "sculptor",
           "dockworker",
           "chemist",
         ];
@@ -1588,6 +1585,16 @@
         const serverUrl = window.location.origin;
         const profession = el("profession").value;
         const skills = state.professions[profession]?.skills || {};
+        const attributes = {
+          str: 50, dex: 50, int: 50, con: 50, app: 50, pow: 50, siz: 50, edu: 50,
+          ...(state.professions[profession]?.attributes || {}),
+        };
+        const stats = {
+          hp: 10, hp_max: 10, san: 60, san_max: 60, mp: 10, luck: 50,
+          ...(state.professions[profession]?.stats || {}),
+        };
+        if (stats.hp_max == null) stats.hp_max = stats.hp;
+        if (stats.san_max == null) stats.san_max = stats.san;
         playerId = makeUUID();
         const payload = {
           player_id: playerId,
@@ -1597,8 +1604,8 @@
           profession,
           machine_id: state.machineId,
           background: state.professions[profession]?.background_zh || "",
-          attributes: { str:50, dex:50, int:50, con:50, app:50, pow:50, siz:50, edu:50 },
-          stats: { hp:10, hp_max:10, san:60, san_max:60, mp:10, luck:50 },
+          attributes,
+          stats,
           skills,
           statuses: [],
         };

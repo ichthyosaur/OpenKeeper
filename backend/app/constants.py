@@ -55,23 +55,23 @@ PROFESSIONS = {
         "background_zh": "你在尘土与遗迹中寻找被遗忘的故事。每一件碎片都可能是通往过去的钥匙，也可能是被封存的诅咒。你对古文明的敬畏早已超过学术兴趣。",
         "skills": {"archaeology": 65, "history": 55, "spot_hidden": 40, "navigate": 30, "library_use": 35, "persuade": 25},
     },
-    "lawyer": {
-        "label": "Lawyer",
-        "label_zh": "律师",
-        "background_zh": "你熟悉文字如何改变命运，也知道规则可以被不同方式解读。你总能在混乱中找到可以利用的条文。只是这一次，规则可能并不能保护任何人。",
-        "skills": {"law": 75, "persuade": 50, "credit_rating": 55, "psychology": 30, "fast_talk": 35, "research": 35},
-    },
     "nurse": {
         "label": "Nurse",
         "label_zh": "护士",
         "background_zh": "你习惯安抚惊恐的病人，也懂得在混乱中保持冷静。你看过太多无声的绝望，因此更愿意伸手帮助他人。某些伤口并不在皮肤之上，这一点你比任何人都清楚。",
         "skills": {"first_aid": 70, "medicine": 45, "psychology": 40, "persuade": 30, "spot_hidden": 25, "fast_talk": 20},
     },
-    "photojournalist": {
-        "label": "Photojournalist",
-        "label_zh": "摄影记者",
-        "background_zh": "你用镜头记录真相，知道光线与角度能改变故事的意义。混乱时刻反而让你更专注，因为你总能捕捉到旁人忽略的细节。你不害怕走进危险，只害怕无人记住。",
-        "skills": {"photography": 75, "spot_hidden": 45, "sneak": 40, "persuade": 35, "research": 35, "fast_talk": 30},
+    "painter": {
+        "label": "Painter",
+        "label_zh": "画家",
+        "background_zh": "你以色彩与光影谋生，能从细微差别里捕捉情绪与异常。你见过的东西太多，常常怀疑现实是否不过是一层薄薄的颜料。",
+        "skills": {"art": 70, "spot_hidden": 45, "psychology": 35, "persuade": 25, "history": 25, "library_use": 20},
+    },
+    "sculptor": {
+        "label": "Sculptor",
+        "label_zh": "雕塑家",
+        "background_zh": "你习惯在石与金属中寻找形体，理解结构的微妙平衡。你知道某些古老雕像藏着不该存在的细节。",
+        "skills": {"art": 70, "craft": 55, "spot_hidden": 30, "history": 30, "persuade": 20, "mechanical_repair": 20},
     },
     "librarian": {
         "label": "Librarian",
@@ -85,17 +85,11 @@ PROFESSIONS = {
         "background_zh": "你在旧物与传闻之间周旋，懂得如何辨别真伪。每一件古董背后都藏着故事，有些故事会咬人。你能从锈迹与灰尘里嗅出危险的味道。",
         "skills": {"credit_rating": 60, "appraisal": 60, "history": 45, "persuade": 35, "occult": 30, "spot_hidden": 25},
     },
-    "stage_magician": {
-        "label": "Stage Magician",
-        "label_zh": "舞台魔术师",
-        "background_zh": "你擅长误导与转移视线，让观众相信不可能的事情。你知道真相往往比幻术更残酷。面对真正的异常，你必须分清这是戏法还是现实。",
-        "skills": {"sleight_of_hand": 70, "fast_talk": 55, "psychology": 35, "spot_hidden": 30, "persuade": 30, "sneak": 25},
-    },
-    "pilot": {
-        "label": "Pilot",
-        "label_zh": "飞行员",
-        "background_zh": "你习惯在高空与仪表为伴，知道风向与天气的细微变化。天空让你自由，也让你更清楚自己的渺小。你见过云层中的怪影，却无人相信。",
-        "skills": {"pilot": 75, "navigate": 55, "mechanical_repair": 45, "spot_hidden": 30, "survival": 30, "firearms": 20},
+    "author": {
+        "label": "Author",
+        "label_zh": "作家",
+        "background_zh": "你靠文字谋生，习惯从琐碎细节里拼出真相。你知道故事会吞噬写作者，也知道某些故事不该被写下。可当异常逼近，你仍会拿起笔记录一切。",
+        "skills": {"library_use": 60, "research": 60, "persuade": 40, "psychology": 35, "history": 30, "spot_hidden": 25},
     },
     "dockworker": {
         "label": "Dockworker",

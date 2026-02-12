@@ -73,6 +73,76 @@ FRONTEND_DIST = APP_ROOT.parent / "frontend" / "dist"
 STATIC_APP = APP_ROOT / "static_app.html"
 STATIC_HOST = APP_ROOT / "static_host.html"
 
+PROFESSION_DEFAULTS = {
+    "retired_soldier": {
+        "attributes": {"str": 65, "dex": 55, "int": 45, "con": 65, "app": 40, "pow": 45, "siz": 60, "edu": 45},
+        "stats": {"hp": 12, "san": 50, "mp": 9, "luck": 45},
+    },
+    "police": {
+        "attributes": {"str": 55, "dex": 55, "int": 50, "con": 55, "app": 45, "pow": 50, "siz": 55, "edu": 50},
+        "stats": {"hp": 11, "san": 55, "mp": 10, "luck": 50},
+    },
+    "doctor": {
+        "attributes": {"str": 45, "dex": 45, "int": 60, "con": 50, "app": 45, "pow": 55, "siz": 50, "edu": 70},
+        "stats": {"hp": 10, "san": 62, "mp": 11, "luck": 45},
+    },
+    "professor": {
+        "attributes": {"str": 40, "dex": 45, "int": 65, "con": 45, "app": 45, "pow": 60, "siz": 50, "edu": 75},
+        "stats": {"hp": 9, "san": 65, "mp": 12, "luck": 45},
+    },
+    "private_detective": {
+        "attributes": {"str": 50, "dex": 55, "int": 55, "con": 50, "app": 50, "pow": 55, "siz": 50, "edu": 50},
+        "stats": {"hp": 10, "san": 60, "mp": 11, "luck": 50},
+    },
+    "journalist": {
+        "attributes": {"str": 45, "dex": 50, "int": 55, "con": 50, "app": 55, "pow": 50, "siz": 50, "edu": 55},
+        "stats": {"hp": 10, "san": 58, "mp": 10, "luck": 55},
+    },
+    "occult_researcher": {
+        "attributes": {"str": 40, "dex": 45, "int": 60, "con": 45, "app": 40, "pow": 65, "siz": 50, "edu": 55},
+        "stats": {"hp": 9, "san": 65, "mp": 13, "luck": 45},
+    },
+    "engineer": {
+        "attributes": {"str": 50, "dex": 50, "int": 60, "con": 50, "app": 45, "pow": 50, "siz": 55, "edu": 55},
+        "stats": {"hp": 10, "san": 55, "mp": 10, "luck": 50},
+    },
+    "archaeologist": {
+        "attributes": {"str": 50, "dex": 50, "int": 55, "con": 55, "app": 45, "pow": 50, "siz": 55, "edu": 60},
+        "stats": {"hp": 11, "san": 55, "mp": 10, "luck": 50},
+    },
+    "nurse": {
+        "attributes": {"str": 45, "dex": 50, "int": 50, "con": 55, "app": 50, "pow": 50, "siz": 50, "edu": 50},
+        "stats": {"hp": 11, "san": 58, "mp": 10, "luck": 50},
+    },
+    "librarian": {
+        "attributes": {"str": 40, "dex": 45, "int": 60, "con": 45, "app": 45, "pow": 55, "siz": 50, "edu": 60},
+        "stats": {"hp": 9, "san": 62, "mp": 11, "luck": 50},
+    },
+    "antiquarian": {
+        "attributes": {"str": 40, "dex": 45, "int": 55, "con": 45, "app": 55, "pow": 50, "siz": 50, "edu": 55},
+        "stats": {"hp": 9, "san": 60, "mp": 10, "luck": 55},
+    },
+    "author": {
+        "attributes": {"str": 40, "dex": 45, "int": 60, "con": 45, "app": 55, "pow": 55, "siz": 50, "edu": 55},
+        "stats": {"hp": 9, "san": 62, "mp": 11, "luck": 50},
+    },
+    "painter": {
+        "attributes": {"str": 40, "dex": 55, "int": 50, "con": 45, "app": 65, "pow": 50, "siz": 50, "edu": 45},
+        "stats": {"hp": 9, "san": 58, "mp": 10, "luck": 55},
+    },
+    "sculptor": {
+        "attributes": {"str": 60, "dex": 45, "int": 45, "con": 55, "app": 50, "pow": 45, "siz": 60, "edu": 45},
+        "stats": {"hp": 11, "san": 52, "mp": 9, "luck": 45},
+    },
+    "dockworker": {
+        "attributes": {"str": 65, "dex": 45, "int": 40, "con": 60, "app": 40, "pow": 45, "siz": 60, "edu": 40},
+        "stats": {"hp": 12, "san": 50, "mp": 9, "luck": 45},
+    },
+    "chemist": {
+        "attributes": {"str": 40, "dex": 45, "int": 65, "con": 45, "app": 45, "pow": 50, "siz": 50, "edu": 60},
+        "stats": {"hp": 9, "san": 58, "mp": 10, "luck": 45},
+    },
+}
 
 app = FastAPI()
 app.add_middleware(
@@ -502,8 +572,21 @@ async def get_history() -> dict[str, Any]:
 
 @app.get("/professions")
 async def get_professions() -> dict[str, Any]:
+    merged: dict[str, Any] = {}
+    for key, value in PROFESSIONS.items():
+        item = dict(value)
+        defaults = PROFESSION_DEFAULTS.get(key)
+        if defaults:
+            stats = dict(defaults.get("stats", {}))
+            if "hp" in stats:
+                stats.setdefault("hp_max", stats["hp"])
+            if "san" in stats:
+                stats.setdefault("san_max", stats["san"])
+            item["attributes"] = defaults.get("attributes", {})
+            item["stats"] = stats
+        merged[key] = item
     return JSONResponse(
-        content={"professions": PROFESSIONS},
+        content={"professions": merged},
         media_type="application/json; charset=utf-8",
     )
 

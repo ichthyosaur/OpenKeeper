@@ -10,13 +10,12 @@ const fallbackProfessions = [
   "occult_researcher",
   "engineer",
   "archaeologist",
-  "lawyer",
   "nurse",
-  "photojournalist",
   "librarian",
   "antiquarian",
-  "stage_magician",
-  "pilot",
+  "author",
+  "painter",
+  "sculptor",
   "dockworker",
   "chemist",
 ];
@@ -298,6 +297,16 @@ export default function App() {
 
   async function createCharacter() {
     const skills = professionMap[profession]?.skills || {};
+    const attributes = {
+      ...defaultAttributes,
+      ...(professionMap[profession]?.attributes || {}),
+    };
+    const stats = {
+      ...defaultStats,
+      ...(professionMap[profession]?.stats || {}),
+    };
+    if (stats.hp_max == null) stats.hp_max = stats.hp;
+    if (stats.san_max == null) stats.san_max = stats.san;
     const payload = {
       player_id: playerId,
       name,
@@ -305,8 +314,8 @@ export default function App() {
       color,
       profession,
       background: "",
-      attributes: defaultAttributes,
-      stats: defaultStats,
+      attributes,
+      stats,
       skills,
       statuses: [],
     };
