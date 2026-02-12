@@ -137,19 +137,6 @@
         mix-blend-mode: soft-light;
         z-index: 0;
       }
-      .ornament {
-        position: fixed;
-        left: 50%;
-        width: min(620px, 90vw);
-        height: 28px;
-        transform: translateX(-50%);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='28' viewBox='0 0 620 28'%3E%3Cpath d='M10 14 Q60 4 110 14 T210 14 T310 14 T410 14 T510 14 T610 14' fill='none' stroke='%238b7355' stroke-width='2'/%3E%3Ccircle cx='310' cy='14' r='6' fill='none' stroke='%236b0f0f' stroke-width='2'/%3E%3Cpath d='M290 14 Q300 4 310 14 T330 14' fill='none' stroke='%236b0f0f' stroke-width='2'/%3E%3C/svg%3E");
-        opacity: 0.7;
-        z-index: 1;
-        pointer-events: none;
-      }
-      .ornament.top { top: 10px; }
-      .ornament.bottom { bottom: 10px; transform: translateX(-50%) rotate(180deg); }
       .topbar {
         display: flex;
         justify-content: space-between;
@@ -602,8 +589,6 @@
   </head>
   <body>
     <div class="paper-fog"></div>
-    <div class="ornament top"></div>
-    <div class="ornament bottom"></div>
     <div class="app">
       <header class="topbar">
         <div>
@@ -1040,16 +1025,26 @@
 
       function syncFindingsFromState() {
         const player = state.stateView.players?.[playerId] || {};
-        const items = (player.items || []).map(normalizeFinding).filter(Boolean);
-        const clues = (player.clues || []).map(normalizeFinding).filter(Boolean);
+        const shared = state.stateView.shared_findings || {};
+        const items = [];
+        const clues = [];
+        const addFindings = (source, target) => {
+          (source || []).map(normalizeFinding).filter(Boolean).forEach((entry) => {
+            mergeFinding(target, entry);
+          });
+        };
+        addFindings(shared.items, items);
+        addFindings(shared.clues, clues);
+        addFindings(player.items, items);
+        addFindings(player.clues, clues);
         const statuses = (player.statuses || [])
           .map((status) => parseFindingFromStatus(status))
           .filter(Boolean);
         statuses.forEach((entry) => {
           if (entry.type === "item") {
-            items.push({ description: entry.value, reveal: "" });
+            mergeFinding(items, { description: entry.value, reveal: "" });
           } else if (entry.type === "clue") {
-            clues.push({ description: entry.value, reveal: "" });
+            mergeFinding(clues, { description: entry.value, reveal: "" });
           }
         });
         state.items = items;

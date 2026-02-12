@@ -19,6 +19,7 @@ def filter_state(state: dict, viewer_id: str, viewer_role: str) -> dict:
     if viewer_role == "host":
         return state
     filtered = dict(state)
+    filtered["shared_findings"] = state.get("shared_findings", {"items": [], "clues": []})
     players = filtered.get("players", {})
     summarized: dict[str, dict] = {}
     for pid, pdata in players.items():

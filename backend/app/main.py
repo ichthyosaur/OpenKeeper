@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import load_config
 from app.constants import PROFESSIONS
+from app.actions import dispatch_action
 from app.db import MemoryStore, MongoStore
 from app.models import (
     I18NText,
@@ -256,6 +257,65 @@ def _build_session_players(state: dict[str, Any]) -> list[SessionPlayer]:
     return players
 
 
+def _hydrate_shared_findings(state: dict[str, Any]) -> dict[str, Any]:
+    shared = state.get("shared_findings") or {}
+    items: list[dict[str, Any]] = []
+    clues: list[dict[str, Any]] = []
+
+    def _add_entries(entries: list[dict[str, Any]] | None, target: list[dict[str, Any]]) -> None:
+        if not entries:
+            return
+        seen = {item.get("description") for item in target if isinstance(item, dict)}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            desc = entry.get("description")
+            if not desc or desc in seen:
+                continue
+            target.append(entry)
+            seen.add(desc)
+
+    _add_entries(shared.get("items"), items)
+    _add_entries(shared.get("clues"), clues)
+    for pdata in (state.get("players") or {}).values():
+        if not isinstance(pdata, dict):
+            continue
+        _add_entries(pdata.get("items"), items)
+        _add_entries(pdata.get("clues"), clues)
+
+    state["shared_findings"] = {"items": items, "clues": clues}
+    return state
+
+
+def _has_findings(state: dict[str, Any]) -> bool:
+    shared = state.get("shared_findings") or {}
+    if shared.get("items") or shared.get("clues"):
+        return True
+    for pdata in (state.get("players") or {}).values():
+        if not isinstance(pdata, dict):
+            continue
+        if pdata.get("items") or pdata.get("clues"):
+            return True
+    return False
+
+
+def _rehydrate_findings_from_history(
+    state: dict[str, Any], entries: list[HistoryEntry]
+) -> None:
+    if _has_findings(state):
+        return
+    for entry in entries:
+        actions = entry.actions or []
+        for action in actions:
+            if action.function_name not in ("add_item", "add_clue"):
+                continue
+            try:
+                dispatch_action(action, state)
+            except Exception:
+                continue
+    _hydrate_shared_findings(state)
+
+
 @app.on_event("startup")
 async def startup() -> None:
     module = load_module(MODULE_PATH)
@@ -439,10 +499,11 @@ async def list_saves() -> dict[str, Any]:
     cursor = store.saves.find({}).sort("updated_at", -1)
     saves: list[dict[str, Any]] = []
     async for doc in cursor:
+        raw_id = doc.get("_id") or doc.get("save_id") or doc.get("name")
         saves.append(
             {
-                "save_id": doc.get("_id"),
-                "name": doc.get("name") or doc.get("_id"),
+                "save_id": str(raw_id) if raw_id is not None else None,
+                "name": doc.get("name") or raw_id,
                 "module_name": doc.get("module_name"),
                 "created_at": doc.get("created_at"),
                 "updated_at": doc.get("updated_at"),
@@ -477,6 +538,7 @@ async def save_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     now = datetime.utcnow().isoformat()
     doc = {
         "_id": save_id,
+        "save_id": save_id,
         "name": save_name,
         "module_name": session.module.module_name,
         "created_at": existing.get("created_at") if existing else now,
@@ -492,23 +554,34 @@ async def save_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
 
 @app.post("/saves/load")
 async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
-    save_id = (payload.get("save_id") or "").strip()
+    save_id = (payload.get("save_id") or payload.get("name") or "").strip()
     if not save_id:
         return {"ok": False, "error": "save_id required"}
     store = app.state.store
     doc = await store.saves.find_one({"_id": save_id})
     if not doc:
+        doc = await store.saves.find_one({"save_id": save_id})
+    if not doc:
+        doc = await store.saves.find_one({"name": save_id})
+    if not doc:
         return {"ok": False, "error": "save not found"}
-    module_data = doc.get("module") or {}
+    module_data = doc.get("module") or doc.get("module_snapshot") or {}
     module = Module(**module_data)
 
     session = app.state.session
     await session.reset_session()
     current_state = doc.get("current_state") or {"players": {}, "npcs": {}, "notes": {}}
-    for pid, pdata in (current_state.get("players") or {}).items():
+    if not isinstance(current_state, dict):
+        current_state = {"players": {}, "npcs": {}, "notes": {}}
+    players_state = current_state.get("players") or {}
+    if not isinstance(players_state, dict):
+        players_state = {}
+    current_state["players"] = players_state
+    for pid, pdata in players_state.items():
         if isinstance(pdata, dict):
             pdata["player_id"] = pdata.get("player_id") or pid
             _normalize_player_stats(pdata)
+    _hydrate_shared_findings(current_state)
     current_state["phase"] = "active"
 
     saved_players = doc.get("players") or []
@@ -525,6 +598,18 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
     session.state.round_id = session.round_id
     app.state.module = module
 
+    raw_history = doc.get("history") or []
+    entries: list[HistoryEntry] = []
+    for item in raw_history:
+        if not isinstance(item, dict):
+            continue
+        record = dict(item)
+        record["session_id"] = session.session_id
+        record.setdefault("round_id", session.round_id)
+        entries.append(HistoryEntry(**record))
+
+    _rehydrate_findings_from_history(current_state, entries)
+
     await store.sessions.update_one(
         {"_id": session.session_id},
         {
@@ -539,7 +624,7 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         },
     )
 
-    saved_ids = {pid for pid in (current_state.get("players") or {}).keys()}
+    saved_ids = {pid for pid in players_state.keys()}
     existing_players: list[dict[str, Any]] = []
     if hasattr(store.players, "items"):
         existing_players = list(store.players.items)
@@ -549,7 +634,8 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         pid = doc_player.get("player_id") or doc_player.get("_id")
         if pid and pid not in saved_ids:
             await store.players.delete_many({"_id": pid})
-    for pid, pdata in (current_state.get("players") or {}).items():
+            await store.players.delete_many({"player_id": pid})
+    for pid, pdata in players_state.items():
         if isinstance(pdata, dict):
             await store.players.update_one(
                 {"_id": pid},
@@ -557,15 +643,6 @@ async def load_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
                 upsert=True,
             )
 
-    raw_history = doc.get("history") or []
-    entries: list[HistoryEntry] = []
-    for item in raw_history:
-        if not isinstance(item, dict):
-            continue
-        record = dict(item)
-        record["session_id"] = session.session_id
-        record.setdefault("round_id", session.round_id)
-        entries.append(HistoryEntry(**record))
     await store.history.delete_many({"session_id": session.session_id})
     for entry in entries:
         await store.history.insert_one(entry.model_dump())

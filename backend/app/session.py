@@ -43,11 +43,13 @@ class SessionManager:
         self.round_id = str(uuid.uuid4())
         self.history_count = history_count
         self.max_followups = max_followups
+        base_state = current_state or {"players": {}, "npcs": {}, "notes": {}}
+        base_state.setdefault("shared_findings", {"items": [], "clues": []})
         self.state = SessionState(
             session_id=self.session_id,
             module_name=module.module_name,
             players=players or [],
-            current_state=current_state or {"players": {}, "npcs": {}, "notes": {}},
+            current_state=base_state,
             round_id=self.round_id,
             created_at=datetime.utcnow(),
             active=True,
@@ -63,6 +65,7 @@ class SessionManager:
         if existing:
             return
         self.state.current_state["phase"] = "lobby"
+        self.state.current_state.setdefault("shared_findings", {"items": [], "clues": []})
         await self.store.sessions.insert_one(
             {
                 "_id": self.session_id,
@@ -836,6 +839,7 @@ class SessionManager:
                 {"$set": pdata},
                 upsert=True,
             )
+        self.state.current_state["shared_findings"] = {"items": [], "clues": []}
         await self.store.history.delete_many({"session_id": self.session_id})
         await self.store.sessions.update_one(
             {"_id": self.session_id},

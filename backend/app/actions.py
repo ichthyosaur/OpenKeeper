@@ -345,7 +345,11 @@ def _add_item(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
     incoming = _extract_entries(params, "item")
     items = _merge_findings(items, incoming)
     player["items"] = items
-    return {"players": {params["player_id"]: {"items": items}}}
+    shared = state.setdefault("shared_findings", {"items": [], "clues": []})
+    shared_items = shared.setdefault("items", [])
+    shared_items = _merge_findings(shared_items, incoming)
+    shared["items"] = shared_items
+    return {"players": {params["player_id"]: {"items": items}}, "shared_findings": {"items": shared_items}}
 
 
 def _add_clue(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
@@ -354,4 +358,8 @@ def _add_clue(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
     incoming = _extract_entries(params, "clue")
     clues = _merge_findings(clues, incoming)
     player["clues"] = clues
-    return {"players": {params["player_id"]: {"clues": clues}}}
+    shared = state.setdefault("shared_findings", {"items": [], "clues": []})
+    shared_clues = shared.setdefault("clues", [])
+    shared_clues = _merge_findings(shared_clues, incoming)
+    shared["clues"] = shared_clues
+    return {"players": {params["player_id"]: {"clues": clues}}, "shared_findings": {"clues": shared_clues}}
