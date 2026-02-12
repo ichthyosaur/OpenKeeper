@@ -42,10 +42,10 @@ if (Test-Path "build") { Remove-Item "build" -Recurse -Force }
   --add-data "backend/app;backend/app" `
   --add-data "backend/modules;backend/modules" `
   --add-data "backend/data;backend/data" `
-  --add-data "backend/config.yaml;backend/config.yaml" `
-  --add-data "backend/config.yaml;config.yaml" `
-  --add-data "backend/static_app.html;backend/static_app.html" `
-  --add-data "backend/static_host.html;backend/static_host.html" `
-  --add-data "backend/static_placeholder.html;backend/static_placeholder.html"
+  --add-data "backend/config.yaml;backend" `
+  --add-data "backend/config.yaml;." `
+  --add-data "backend/static_app.html;backend" `
+  --add-data "backend/static_host.html;backend" `
+  --add-data "backend/static_placeholder.html;backend"
 
 Write-Host "Build complete: dist\\OpenKeeper\\OpenKeeper.exe"
