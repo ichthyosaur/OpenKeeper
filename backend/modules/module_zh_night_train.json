@@ -1,6 +1,6 @@
 {
   "module_name": "夜行列车",
-  "introduction": "一列只在夜半经过的加班车被传言为“幽灵列车”。近来有乘客在终点站消失，铁路公司秘而不宣。你们被雇来查明真相。",
+  "introduction": "1927年的美国东北部，一列只在夜半经过的加班车被传言为“幽灵列车”。近来有乘客在终点站消失，铁路公司秘而不宣。你们被雇来查明真相。",
   "entry_narration": "汽笛划破黑夜，车厢的煤烟味混着雨水涌来。列车员递给你们旧式硬纸票，窗外的站灯像疲惫的眼睛一盏盏退后。",
   "key_characters": [
     {
@@ -51,23 +51,76 @@
     {
       "name": "夜行列车",
       "description": "深夜仍在运行的列车，车厢内灯光总是略暗。",
-      "features": ["三等车厢", "餐车", "车顶检修口"],
-      "secrets": ["车厢编号与时刻表不一致"],
-      "connections": ["黑段轨道", "终点站"]
+      "features": [
+        "三等车厢",
+        "餐车",
+        "车顶检修口"
+      ],
+      "secrets": [
+        "车厢编号与时刻表不一致"
+      ],
+      "connections": [
+        "黑段轨道",
+        "终点站"
+      ]
     },
     {
       "name": "黑段轨道",
       "description": "被公司标为“检修封闭”的路段，夜间仍可通行。",
-      "features": ["矿井塌陷口", "旧信号灯"],
-      "secrets": ["符号刻痕与消失点"],
-      "connections": ["信号塔", "不存在的站台"]
+      "features": [
+        "矿井塌陷口",
+        "旧信号灯"
+      ],
+      "secrets": [
+        "符号刻痕与消失点"
+      ],
+      "connections": [
+        "信号塔",
+        "不存在的站台"
+      ]
     },
     {
       "name": "不存在的站台",
       "description": "煤烟与尘埃凝成静止的黑色月台。",
-      "features": ["废弃售票口", "停摆钟表"],
-      "secrets": ["时间几乎停滞"],
-      "connections": ["黑段轨道"]
+      "features": [
+        "废弃售票口",
+        "停摆钟表"
+      ],
+      "secrets": [
+        "时间几乎停滞"
+      ],
+      "connections": [
+        "黑段轨道"
+      ]
+    },
+    {
+      "name": "废弃信号塔",
+      "description": "锈蚀的铁塔立在荒地，内部仍残留旧式控制台。",
+      "features": [
+        "信号控制台",
+        "断裂电缆",
+        "工会涂鸦"
+      ],
+      "secrets": [
+        "控制台可切断黑段线路"
+      ],
+      "connections": [
+        "黑段轨道"
+      ]
+    },
+    {
+      "name": "终点站站厅",
+      "description": "灯光昏暗的站厅，广播反复播放过期时刻表。",
+      "features": [
+        "旧售票窗",
+        "封锁出口"
+      ],
+      "secrets": [
+        "隐藏的旧时刻表"
+      ],
+      "connections": [
+        "夜行列车"
+      ]
     }
   ],
   "scenes": [
@@ -75,17 +128,65 @@
       "scene_id": "boarding",
       "title": "夜半上车",
       "summary": "玩家在雨夜登车，面对异常规矩与诡异乘客。",
-      "beats": ["硬纸票", "车长警告", "煤烟味"],
+      "beats": [
+        "硬纸票",
+        "车长警告",
+        "煤烟味"
+      ],
       "required_clues": [],
-      "outcomes": ["开始调查列车", "与乘客交谈"]
+      "outcomes": [
+        "开始调查列车",
+        "与乘客交谈"
+      ]
     },
     {
       "scene_id": "black_segment",
       "title": "黑段消失",
       "summary": "列车短暂脱离现实轨道，进入被遗忘站台。",
-      "beats": ["车厢灯熄", "耳鸣与静默", "站台阴影"],
-      "required_clues": ["clue_union_badge"],
-      "outcomes": ["救出被困者", "列车失控"]
+      "beats": [
+        "车厢灯熄",
+        "耳鸣与静默",
+        "站台阴影"
+      ],
+      "required_clues": [
+        "clue_union_badge"
+      ],
+      "outcomes": [
+        "救出被困者",
+        "列车失控"
+      ]
+    },
+    {
+      "scene_id": "signal_tower",
+      "title": "信号塔修复",
+      "summary": "玩家在风雨中修复信号塔，尝试切断黑段。",
+      "beats": [
+        "雷鸣震动",
+        "接线修复",
+        "旧工会标记"
+      ],
+      "required_clues": [
+        "clue_union_badge"
+      ],
+      "outcomes": [
+        "黑段被切断",
+        "塔内异象暴露"
+      ]
+    },
+    {
+      "scene_id": "terminal_echo",
+      "title": "终点回声",
+      "summary": "站厅广播与回声透露列车异常时间表。",
+      "beats": [
+        "错乱时刻表",
+        "空站广播",
+        "脚步回声"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "获得路线线索",
+        "触发黑段预兆"
+      ]
     }
   ],
   "clues": [
@@ -93,15 +194,37 @@
       "clue_id": "clue_union_badge",
       "description": "古旧铜徽与工会铭牌，对应废弃信号塔。",
       "location": "车厢",
-      "linked_to": ["signal_restored"],
+      "linked_to": [
+        "signal_restored"
+      ],
       "reveal": "信号塔曾被工会守护。"
     },
     {
       "clue_id": "clue_metal_shard",
       "description": "车底金属碎屑，带有矿井记号。",
       "location": "夜行列车",
-      "linked_to": ["black_segment"],
+      "linked_to": [
+        "black_segment"
+      ],
       "reveal": "黑段轨道与矿井塌陷有关。"
+    },
+    {
+      "clue_id": "clue_signal_manual",
+      "description": "信号塔维修手册，标注黑段应急切断程序。",
+      "location": "废弃信号塔",
+      "linked_to": [
+        "signal_restored"
+      ],
+      "reveal": "切断需同步三处控制杆。"
+    },
+    {
+      "clue_id": "clue_terminal_schedule",
+      "description": "被遮住的旧时刻表，显示列车在某时段“未到站”。",
+      "location": "终点站站厅",
+      "linked_to": [
+        "station_claims"
+      ],
+      "reveal": "黑段发生在固定时间窗口。"
     }
   ],
   "events": [
@@ -109,13 +232,28 @@
       "event_id": "signal_flicker",
       "trigger": "列车进入黑段前",
       "description": "车窗外信号灯闪烁，车内温度骤降。",
-      "consequences": ["SAN 压力", "列车速度变慢"]
+      "consequences": [
+        "SAN 压力",
+        "列车速度变慢"
+      ]
     },
     {
       "event_id": "door_lock",
       "trigger": "玩家试图离开车厢",
       "description": "车门自动锁死，传来低沉广播。",
-      "consequences": ["触发警觉", "与车长冲突"]
+      "consequences": [
+        "触发警觉",
+        "与车长冲突"
+      ]
+    },
+    {
+      "event_id": "time_stutter",
+      "trigger": "列车进入黑段前十分钟",
+      "description": "车厢灯光断续，乘客话语出现延迟。",
+      "consequences": [
+        "SAN 压力",
+        "时间错位感"
+      ]
     }
   ],
   "items": [
@@ -130,36 +268,80 @@
       "description": "无署名的纸片，写着“不要回头”。",
       "effect": "抵御站台的精神拖拽。",
       "location": "不存在的站台"
+    },
+    {
+      "name": "旧时刻表",
+      "description": "边角被烧焦的时刻表，标注了禁行时段。",
+      "effect": "揭示黑段触发窗口。",
+      "location": "终点站站厅"
     }
   ],
   "factions": [
     {
       "name": "铁路公司",
       "goal": "维持线路运营，掩盖黑段事故。",
-      "resources": ["车组人员", "封闭档案"],
-      "methods": ["封口协议", "误导乘客"],
+      "resources": [
+        "车组人员",
+        "封闭档案"
+      ],
+      "methods": [
+        "封口协议",
+        "误导乘客"
+      ],
       "attitude": "表面合作，实际阻挠。"
     },
     {
       "name": "失踪者残留意志",
       "goal": "离开站台，重返现实。",
-      "resources": ["微弱求救声"],
-      "methods": ["低语引导"],
+      "resources": [
+        "微弱求救声"
+      ],
+      "methods": [
+        "低语引导"
+      ],
       "attitude": "恳求但不稳定。"
+    },
+    {
+      "name": "铁路工会旧派",
+      "goal": "守护信号塔与事故真相。",
+      "resources": [
+        "旧手册",
+        "工会符号"
+      ],
+      "methods": [
+        "隐藏线索",
+        "默默守望"
+      ],
+      "attitude": "愿意协助但要求谨慎。"
     }
   ],
   "threats": [
     {
       "name": "黑段重叠",
       "nature": "现实与不存在轨道的短暂叠加。",
-      "signs": ["信号灯失真", "时间错位"],
-      "escalation": ["列车失控", "整列消失"],
+      "signs": [
+        "信号灯失真",
+        "时间错位"
+      ],
+      "escalation": [
+        "列车失控",
+        "整列消失"
+      ],
       "weakness": "修复信号与切断重叠路径。"
     }
   ],
   "timeline": [
-    {"time": "30年前", "event": "矿井塌陷，事故被掩盖。"},
-    {"time": "7年前", "event": "夜行列车首次出现异象。"},
-    {"time": "最近", "event": "乘客在终点站消失。"}
+    {
+      "time": "30年前",
+      "event": "矿井塌陷，事故被掩盖。"
+    },
+    {
+      "time": "7年前",
+      "event": "夜行列车首次出现异象。"
+    },
+    {
+      "time": "最近",
+      "event": "乘客在终点站消失。"
+    }
   ]
 }

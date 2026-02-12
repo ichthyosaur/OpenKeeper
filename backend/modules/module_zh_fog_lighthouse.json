@@ -1,15 +1,15 @@
 {
   "module_name": "雾港灯塔",
-  "introduction": "北海岸的雾港常年潮湿，灯塔自三周前熄灭后，渔船频频失踪。当地教区与港务局彼此推诿，一封匿名求助信把你们带到了此地。",
+  "introduction": "1925年的美国缅因州北海岸，雾港常年潮湿，灯塔自三周前熄灭后，渔船频频失踪。当地教区与港务局彼此推诿，一封匿名求助信把你们带到了此地。",
   "entry_narration": "你们踏上满是盐霜的石堤，潮雾把灯塔的轮廓吞吐。远处码头传来空洞的铃响，像是有人在雾里敲击铁链。",
   "key_characters": [
     {
-      "name": "玛琳·克劳",
+      "name": "玛琳·克罗",
       "public_info": "港务局女文员，疲惫而焦虑，负责灯塔物资记录。",
       "hidden_secrets": "她篡改了补给账目，掩盖灯塔守卫失踪前的异常采购。"
     },
     {
-      "name": "鲁本·凯尔",
+      "name": "鲁本·凯勒",
       "public_info": "灯塔看守的弟弟，脾气暴躁，坚称哥哥还活着。",
       "hidden_secrets": "他曾在灯塔地窖里看到发光的海藻，隐瞒了这一点。"
     },
@@ -51,23 +51,63 @@
     {
       "name": "灯塔主塔",
       "description": "潮湿的石塔内回响着风声与残破的机械声。",
-      "features": ["熄灭的透镜室", "锈蚀齿轮", "守卫卧室"],
-      "secrets": ["暗门通向旧仓库"],
-      "connections": ["码头", "石堤"]
+      "features": [
+        "熄灭的透镜室",
+        "锈蚀齿轮",
+        "守卫卧室"
+      ],
+      "secrets": [
+        "暗门通向旧仓库"
+      ],
+      "connections": [
+        "码头",
+        "石堤"
+      ]
     },
     {
       "name": "雾港码头",
       "description": "潮汐堆积的木栈道与空荡的渔网棚。",
-      "features": ["空船残骸", "缺口的缆绳"],
-      "secrets": ["某条船的航海日志被人取走"],
-      "connections": ["港务局", "石堤"]
+      "features": [
+        "空船残骸",
+        "缺口的缆绳"
+      ],
+      "secrets": [
+        "某条船的航海日志被人取走"
+      ],
+      "connections": [
+        "港务局",
+        "石堤"
+      ]
     },
     {
       "name": "教区地窖",
       "description": "微光烛台映照古旧木架，灰尘如盐雾凝结。",
-      "features": ["旧卷宗", "破损地图"],
-      "secrets": ["关于“歌声”的记录册"],
-      "connections": ["教堂", "巷道"]
+      "features": [
+        "旧卷宗",
+        "破损地图"
+      ],
+      "secrets": [
+        "关于“歌声”的记录册"
+      ],
+      "connections": [
+        "教堂",
+        "巷道"
+      ]
+    },
+    {
+      "name": "港务局办公室",
+      "description": "堆满账本与潮湿公文的狭小房间，墙上挂着潮汐表。",
+      "features": [
+        "补给账本",
+        "潮汐表",
+        "封存柜"
+      ],
+      "secrets": [
+        "账目中有被涂改的航线"
+      ],
+      "connections": [
+        "雾港码头"
+      ]
     }
   ],
   "scenes": [
@@ -75,17 +115,65 @@
       "scene_id": "harbor_arrival",
       "title": "雾港初见",
       "summary": "玩家抵达雾港并感受异常的潮雾与冷意。",
-      "beats": ["空洞铃响", "潮雾吞吐", "渔民避让"],
+      "beats": [
+        "空洞铃响",
+        "潮雾吞吐",
+        "渔民避让"
+      ],
       "required_clues": [],
-      "outcomes": ["调查码头", "询问港务局"]
+      "outcomes": [
+        "调查码头",
+        "询问港务局"
+      ]
     },
     {
       "scene_id": "tower_descent",
       "title": "塔下暗门",
       "summary": "发现通往旧仓库与海蚀洞的暗门。",
-      "beats": ["潮湿石墙", "油灯忽明", "潮声逼近"],
-      "required_clues": ["clue_supply_record"],
-      "outcomes": ["进入洞穴", "返回找神父"]
+      "beats": [
+        "潮湿石墙",
+        "油灯忽明",
+        "潮声逼近"
+      ],
+      "required_clues": [
+        "clue_supply_record"
+      ],
+      "outcomes": [
+        "进入洞穴",
+        "返回找神父"
+      ]
+    },
+    {
+      "scene_id": "ledger_audit",
+      "title": "账目疑云",
+      "summary": "核对补给账目，发现异常采购与航线涂改。",
+      "beats": [
+        "墨迹重叠",
+        "油料异常",
+        "潮汐对照"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "锁定灯塔地窖",
+        "逼问玛琳"
+      ]
+    },
+    {
+      "scene_id": "cave_threshold",
+      "title": "海蚀洞口",
+      "summary": "在涨潮前找到被封堵的洞口与残留刻痕。",
+      "beats": [
+        "潮声逼近",
+        "石刻残纹",
+        "盐雾凝结"
+      ],
+      "required_clues": [
+        "clue_glow_algae"
+      ],
+      "outcomes": [
+        "进入洞穴",
+        "寻求神父协助封堵"
+      ]
     }
   ],
   "clues": [
@@ -93,15 +181,37 @@
       "clue_id": "clue_supply_record",
       "description": "篡改的补给账目，记录了异常的油料消耗。",
       "location": "港务局",
-      "linked_to": ["玛琳·克劳"],
+      "linked_to": [
+        "玛琳·克罗"
+      ],
       "reveal": "守卫在故意让灯塔熄灭以封锁海路。"
     },
     {
       "clue_id": "clue_glow_algae",
       "description": "发光海藻样本，带有未知盐分结晶。",
       "location": "灯塔旧仓库",
-      "linked_to": ["song_claims_all"],
+      "linked_to": [
+        "song_claims_all"
+      ],
       "reveal": "海中存在的踪迹靠近洞穴。"
+    },
+    {
+      "clue_id": "clue_priest_record",
+      "description": "教区旧记录册，记载“海中歌声”与封存仪式。",
+      "location": "教区地窖",
+      "linked_to": [
+        "light_rekindled"
+      ],
+      "reveal": "必须用旧圣铃封闭洞口共鸣。"
+    },
+    {
+      "clue_id": "clue_tide_log",
+      "description": "潮汐记录与失踪时间吻合，标注了危险时段。",
+      "location": "港务局办公室",
+      "linked_to": [
+        "song_claims_all"
+      ],
+      "reveal": "歌声最强在大雾涨潮时。"
     }
   ],
   "events": [
@@ -109,13 +219,28 @@
       "event_id": "fog_surge",
       "trigger": "玩家在码头久留",
       "description": "潮雾骤浓，视野骤减。",
-      "consequences": ["导航困难", "听见低沉歌声"]
+      "consequences": [
+        "导航困难",
+        "听见低沉歌声"
+      ]
     },
     {
       "event_id": "chain_bell",
       "trigger": "夜晚进入灯塔",
       "description": "铁链铃声从无风处响起。",
-      "consequences": ["SAN 压力", "吸引守卫残影"]
+      "consequences": [
+        "SAN 压力",
+        "吸引守卫残影"
+      ]
+    },
+    {
+      "event_id": "dock_howl",
+      "trigger": "玩家在码头过夜",
+      "description": "雾中传来不似人声的哼唱，灯火摇曳。",
+      "consequences": [
+        "SAN 压力",
+        "引导前往灯塔"
+      ]
     }
   ],
   "items": [
@@ -130,36 +255,84 @@
       "description": "被油浸透的灯芯，仍带微热。",
       "effect": "可用于修复灯塔照明装置。",
       "location": "灯塔主塔"
+    },
+    {
+      "name": "旧圣铃",
+      "description": "教区旧钟铃，表面刻有磨损的护符纹。",
+      "effect": "用于封闭海蚀洞共鸣。",
+      "location": "教区地窖"
     }
   ],
   "factions": [
     {
       "name": "港务局记录组",
       "goal": "维持港口运转与声誉。",
-      "resources": ["账本", "船只登记"],
-      "methods": ["隐瞒事故", "推诿责任"],
+      "resources": [
+        "账本",
+        "船只登记"
+      ],
+      "methods": [
+        "隐瞒事故",
+        "推诿责任"
+      ],
       "attitude": "表面合作，暗藏戒心。"
     },
     {
       "name": "教区守望者",
       "goal": "阻止“歌声”扩散。",
-      "resources": ["旧记录", "避邪仪式"],
-      "methods": ["祈祷", "封存资料"],
+      "resources": [
+        "旧记录",
+        "避邪仪式"
+      ],
+      "methods": [
+        "祈祷",
+        "封存资料"
+      ],
       "attitude": "愿意协助但不愿公开真相。"
+    },
+    {
+      "name": "渔民互助会",
+      "goal": "自保并阻止更多渔船出海。",
+      "resources": [
+        "渔网",
+        "船只",
+        "口耳传闻"
+      ],
+      "methods": [
+        "劝阻出海",
+        "封锁码头"
+      ],
+      "attitude": "愿意提供线索但害怕报复。"
     }
   ],
   "threats": [
     {
       "name": "海中歌声",
       "nature": "模仿人声的深海存在，能引诱靠近礁区。",
-      "signs": ["远处的呼唤", "潮雾具黏性"],
-      "escalation": ["灯塔彻熄", "渔船消失", "港口沉寂"],
+      "signs": [
+        "远处的呼唤",
+        "潮雾具黏性"
+      ],
+      "escalation": [
+        "灯塔彻熄",
+        "渔船消失",
+        "港口沉寂"
+      ],
       "weakness": "封堵海蚀洞并重新点亮灯塔。"
     }
   ],
   "timeline": [
-    {"time": "3个月前", "event": "渔船首次失踪。"},
-    {"time": "3周前", "event": "灯塔突然熄灭。"},
-    {"time": "现在", "event": "匿名信发出，调查开始。"}
+    {
+      "time": "3个月前",
+      "event": "渔船首次失踪。"
+    },
+    {
+      "time": "3周前",
+      "event": "灯塔突然熄灭。"
+    },
+    {
+      "time": "现在",
+      "event": "匿名信发出，调查开始。"
+    }
   ]
 }
