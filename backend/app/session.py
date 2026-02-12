@@ -822,6 +822,15 @@ class SessionManager:
             stats["hp"] = hp_max
             stats["san"] = san_max
             pdata["stats"] = stats
+            pdata["items"] = []
+            pdata["clues"] = []
+            statuses = pdata.get("statuses") or []
+            if statuses:
+                pdata["statuses"] = [
+                    s
+                    for s in statuses
+                    if not (str(s).startswith("持有道具：") or str(s).startswith("持有线索："))
+                ]
             await self.store.players.update_one(
                 {"_id": pid},
                 {"$set": pdata},
