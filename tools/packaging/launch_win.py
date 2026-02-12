@@ -10,6 +10,8 @@ def main() -> None:
     exe_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     backend_dir = os.path.join(exe_dir, "backend")
     if not os.path.isdir(backend_dir):
+        backend_dir = os.path.join(exe_dir, "_internal", "backend")
+    if not os.path.isdir(backend_dir):
         raise RuntimeError(f"backend directory not found: {backend_dir}")
     os.chdir(exe_dir)
     if backend_dir not in sys.path:
