@@ -1,0 +1,598 @@
+{
+  "module_name": "阿什伯里湾潮祭",
+  "introduction": "1926年的美国沿海小镇阿什伯里湾在愈发反常的风暴中勉力维持生计。镇上世代遵循的“潮祭”据说能平息海灾，但近十年名单里的名字不断消失。",
+  "entry_narration": "你们沿着狭窄的堤道抵达小镇，盐风切肤，雾里灯塔空转无光。港口空空如也，潮声里夹着不合时宜的钟铃，像有人在雾中敲击铁链。",
+  "key_characters": [
+    {
+      "name": "埃莉诺·普赖斯",
+      "public_info": "港务局负责人，精干而疲惫，掌控航次与船只登记。",
+      "hidden_secrets": "她篡改潮汐账簿，掩盖仪式真正的时间窗。"
+    },
+    {
+      "name": "托马斯·奥莱利神父",
+      "public_info": "圣布里姬特教堂神父，以布道安抚镇民。",
+      "hidden_secrets": "他保管着潮祭原典，其中明确禁止人祭。"
+    },
+    {
+      "name": "克拉拉·霍尔特",
+      "public_info": "失踪渔民的遗孀，公开质疑镇政。",
+      "hidden_secrets": "她掌握一份被从户籍中删除的名字清单。"
+    },
+    {
+      "name": "西拉斯·沃德",
+      "public_info": "灯塔看守，沉默寡言，声称听见海里的低语。",
+      "hidden_secrets": "他见过人影在潮汐洞中消失。"
+    },
+    {
+      "name": "哈罗德·基恩博士",
+      "public_info": "受雇的气象学者，正在调查异常风暴。",
+      "hidden_secrets": "他怀疑风暴与人为信号同步。"
+    },
+    {
+      "name": "阿比盖尔·肖",
+      "public_info": "镇议会秘书，手持镇政档案钥匙。",
+      "hidden_secrets": "她知道“献祭名单”是谁写下的。"
+    }
+  ],
+  "core_secrets": [
+    "潮祭是一套精密的仪式机器，依赖名字、时辰与潮汐洞中的石质导体。",
+    "数十年前仪式被人为篡改，由供奉转为献祭，海只归还回声与低语。",
+    "若仪式被终止，灾风将于数小时内吞没整座小镇。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "harbor_spared",
+      "description": "潮祭继续执行，小镇得以幸存，但新的名字被海带走。",
+      "conditions": "玩家放任仪式完成或未能阻止镇议会。"
+    },
+    {
+      "ending_id": "storm_unbound",
+      "description": "潮祭被破坏，海灾冲垮阿什伯里湾，幸存者寥寥。",
+      "conditions": "玩家破坏导体或切断仪式时序。"
+    },
+    {
+      "ending_id": "last_name",
+      "description": "玩家主动替代献祭者，换取小镇一季安宁。",
+      "conditions": "玩家自愿站上仪式位置完成替换。"
+    }
+  ],
+  "ending_triggers": [
+    "潮祭完成且献祭名字记入账簿。",
+    "潮祭被打断或导体被毁。",
+    "玩家主动替代献祭者。",
+    "所有调查员死亡或疯狂。"
+  ],
+  "locations": [
+    {
+      "name": "港务局办公室",
+      "description": "潮湿的账本与盐腥味弥漫，墙上挂着潮汐表与旧航线图。",
+      "features": [
+        "航次登记",
+        "潮汐钟",
+        "封存柜"
+      ],
+      "secrets": [
+        "账簿被篡改的墨迹"
+      ],
+      "connections": [
+        "码头",
+        "镇政厅"
+      ]
+    },
+    {
+      "name": "圣布里姬特教堂",
+      "description": "石砌小教堂内透着潮冷，地下室有一只沉重铁箱。",
+      "features": [
+        "地窖卷宗",
+        "铁箱",
+        "旧灯"
+      ],
+      "secrets": [
+        "潮祭原典藏于地窖"
+      ],
+      "connections": [
+        "镇政厅",
+        "旧墓园"
+      ]
+    },
+    {
+      "name": "灯塔峭壁",
+      "description": "灯塔齿轮仍在转动，透镜室却毫无火光。",
+      "features": [
+        "看守日志",
+        "信号滑轮",
+        "空置灯室"
+      ],
+      "secrets": [
+        "日志标注歌声之夜"
+      ],
+      "connections": [
+        "潮汐洞",
+        "码头"
+      ]
+    },
+    {
+      "name": "潮汐洞",
+      "description": "低潮时露出的海蚀洞，洞壁满是古旧刻痕。",
+      "features": [
+        "刻痕符号",
+        "咸水池",
+        "石质导体"
+      ],
+      "secrets": [
+        "导体即仪式核心"
+      ],
+      "connections": [
+        "灯塔峭壁"
+      ]
+    },
+    {
+      "name": "镇政厅档案室",
+      "description": "陈年档案夹满纸屑，抽屉内锁着议会纪要。",
+      "features": [
+        "议会纪要",
+        "户籍名册",
+        "尘封地图"
+      ],
+      "secrets": [
+        "失踪名单被撕走"
+      ],
+      "connections": [
+        "港务局办公室",
+        "圣布里姬特教堂"
+      ]
+    },
+    {
+      "name": "旧信号站",
+      "description": "崖边铁屋风化锈蚀，电报线早已断裂。",
+      "features": [
+        "信号图",
+        "破损线圈",
+        "焦黑地板"
+      ],
+      "secrets": [
+        "这里曾同步潮祭时序"
+      ],
+      "connections": [
+        "灯塔峭壁"
+      ]
+    },
+    {
+      "name": "渔民会馆",
+      "description": "潮腥与烟草味混杂，墙上挂着失踪者名单。",
+      "features": [
+        "出海规约",
+        "求助牌",
+        "旧相册"
+      ],
+      "secrets": [
+        "会议记录暗示被献祭者"
+      ],
+      "connections": [
+        "码头"
+      ]
+    },
+    {
+      "name": "旧墓园",
+      "description": "墓碑向海倾斜，潮雾在墓间停留不散。",
+      "features": [
+        "刻名碑",
+        "枯井",
+        "旧十字架"
+      ],
+      "secrets": [
+        "碑文与户籍名册不一致"
+      ],
+      "connections": [
+        "圣布里姬特教堂"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "causeway_arrival",
+      "title": "雾中堤道",
+      "summary": "调查员进入小镇，感受到潮雾与不合时宜的铃声。",
+      "beats": [
+        "盐风刺面",
+        "空港寂静",
+        "钟铃错拍"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "调查港务局",
+        "前往教堂"
+      ]
+    },
+    {
+      "scene_id": "ledger_scrape",
+      "title": "账簿刮痕",
+      "summary": "账簿显示大量涂改与被覆盖的名字。",
+      "beats": [
+        "墨迹重叠",
+        "潮汐钟滴答",
+        "名册缺口"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "质问埃莉诺",
+        "追查档案室"
+      ]
+    },
+    {
+      "scene_id": "archives_gap",
+      "title": "名册空白",
+      "summary": "档案室中发现被撕掉的失踪名单。",
+      "beats": [
+        "抽屉锁孔",
+        "纸屑残页",
+        "议会纪要"
+      ],
+      "required_clues": [
+        "clue_missing_names"
+      ],
+      "outcomes": [
+        "揭露议会",
+        "寻找墓园线索"
+      ]
+    },
+    {
+      "scene_id": "crypt_text",
+      "title": "原典禁令",
+      "summary": "教堂地窖中的原典说明潮祭不该献祭人命。",
+      "beats": [
+        "铁箱锈锁",
+        "禁忌段落",
+        "冷风倒灌"
+      ],
+      "required_clues": [
+        "clue_rite_pages"
+      ],
+      "outcomes": [
+        "动摇神父立场",
+        "赶往潮汐洞"
+      ]
+    },
+    {
+      "scene_id": "fisherhall_oath",
+      "title": "会馆誓言",
+      "summary": "渔民会馆中找到誓约与被迫签名的记录。",
+      "beats": [
+        "旧相册",
+        "誓约签名",
+        "怒火压抑"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "获得支持",
+        "引发冲突"
+      ]
+    },
+    {
+      "scene_id": "signal_station",
+      "title": "信号的时序",
+      "summary": "旧信号站揭示潮祭与风暴同步的手段。",
+      "beats": [
+        "焦黑地板",
+        "断裂电缆",
+        "海雾电响"
+      ],
+      "required_clues": [
+        "clue_signal_diagram"
+      ],
+      "outcomes": [
+        "切断时序",
+        "触发海潮异常"
+      ]
+    },
+    {
+      "scene_id": "tunnel_conduit",
+      "title": "石质导体",
+      "summary": "潮汐洞内导体发出低鸣，仪式临近。",
+      "beats": [
+        "刻痕符号",
+        "咸水翻涌",
+        "耳鸣压迫"
+      ],
+      "required_clues": [
+        "clue_tide_window"
+      ],
+      "outcomes": [
+        "摧毁导体",
+        "完成仪式"
+      ]
+    },
+    {
+      "scene_id": "grave_mismatch",
+      "title": "墓园错名",
+      "summary": "墓碑姓名与名册不符，揭露虚构的死亡记录。",
+      "beats": [
+        "倾斜墓碑",
+        "刻名差异",
+        "潮雾停滞"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "确认献祭链",
+        "强化动机"
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_tampered_ledger",
+      "description": "港务局账簿上多处涂改，名字被刮去后重写。",
+      "location": "港务局办公室",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "潮祭与固定潮汐时窗和献祭名单绑定。"
+    },
+    {
+      "clue_id": "clue_missing_names",
+      "description": "户籍名册中被撕掉的页角，残留失踪者姓名。",
+      "location": "镇政厅档案室",
+      "linked_to": [
+        "storm_unbound"
+      ],
+      "reveal": "议会长期隐瞒献祭死亡。"
+    },
+    {
+      "clue_id": "clue_rite_pages",
+      "description": "潮祭原典中关于供奉的段落，完全没有献祭条款。",
+      "location": "圣布里姬特教堂",
+      "linked_to": [
+        "last_name"
+      ],
+      "reveal": "人祭是后人强加的篡改。"
+    },
+    {
+      "clue_id": "clue_keeper_log",
+      "description": "灯塔日志记载歌声之夜与潮汐窗口吻合。",
+      "location": "灯塔峭壁",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "每次仪式前海中低语都会增强。"
+    },
+    {
+      "clue_id": "clue_tide_window",
+      "description": "潮汐表上标注仪式开始的确切时刻。",
+      "location": "港务局办公室",
+      "linked_to": [
+        "storm_unbound"
+      ],
+      "reveal": "仪式必须在低潮窗口内启动。"
+    },
+    {
+      "clue_id": "clue_signal_diagram",
+      "description": "信号站图纸显示灯塔信号与钟铃同步节奏。",
+      "location": "旧信号站",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "潮祭通过信号节奏与风暴同步。"
+    },
+    {
+      "clue_id": "clue_conduit_marks",
+      "description": "导体石环上的名字会在触碰后褪色。",
+      "location": "潮汐洞",
+      "linked_to": [
+        "last_name"
+      ],
+      "reveal": "导体绑定下一位献祭者。"
+    },
+    {
+      "clue_id": "clue_storm_letter",
+      "description": "议会内部信件，承认若停止潮祭将遭遇海灾。",
+      "location": "镇政厅档案室",
+      "linked_to": [
+        "storm_unbound"
+      ],
+      "reveal": "镇政早已在牺牲与灾难之间做出选择。"
+    },
+    {
+      "clue_id": "clue_meteorology_notes",
+      "description": "气象笔记显示风暴与信号脉冲出现共振。",
+      "location": "旧信号站",
+      "linked_to": [
+        "storm_unbound"
+      ],
+      "reveal": "切断同步或可削弱海灾。"
+    },
+    {
+      "clue_id": "clue_fisher_oath",
+      "description": "渔民会馆誓约书，记录了轮到谁就沉默。",
+      "location": "渔民会馆",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "献祭名单由镇议会与会馆共同决定。"
+    },
+    {
+      "clue_id": "clue_grave_mismatch",
+      "description": "墓碑姓名与名册不一致，证明有人被虚构死亡。",
+      "location": "旧墓园",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "献祭被伪装成事故或病亡。"
+    },
+    {
+      "clue_id": "clue_council_key",
+      "description": "阿比盖尔携带的钥匙可以打开议会密档。",
+      "location": "镇政厅档案室",
+      "linked_to": [
+        "storm_unbound"
+      ],
+      "reveal": "议会内有明确的牺牲流程与投票记录。"
+    },
+    {
+      "clue_id": "clue_tunnel_chant",
+      "description": "潮汐洞深处的低语与唱诵节奏一致。",
+      "location": "潮汐洞",
+      "linked_to": [
+        "last_name"
+      ],
+      "reveal": "仪式开始后将无法中途停止。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "fog_thickens",
+      "trigger": "玩家在港口久留",
+      "description": "潮雾骤浓，岸边的声音像从水下传来。",
+      "consequences": [
+        "SAN 压力",
+        "迫使玩家调整路线"
+      ]
+    },
+    {
+      "event_id": "bell_out_of_time",
+      "trigger": "玩家夜访教堂",
+      "description": "钟铃敲出不合节拍的短促回声。",
+      "consequences": [
+        "SAN 压力",
+        "神父神情紧张"
+      ]
+    },
+    {
+      "event_id": "tide_surges",
+      "trigger": "潮汐窗口开启",
+      "description": "潮水上涨速度异常，洞内回声加剧。",
+      "consequences": [
+        "时间压力",
+        "可能被困"
+      ]
+    },
+    {
+      "event_id": "signal_glare",
+      "trigger": "玩家触动旧信号站",
+      "description": "刺目的闪光划破海面，随即陷入死寂。",
+      "consequences": [
+        "短暂眩晕",
+        "海潮骤停"
+      ]
+    },
+    {
+      "event_id": "name_called",
+      "trigger": "玩家翻阅献祭名单",
+      "description": "你们在潮声中听见被读出的名字。",
+      "consequences": [
+        "SAN 压力",
+        "玩家被指向仪式核心"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "潮祭灯",
+      "description": "刻有旧仪式符号的油灯，灯芯异常干燥。",
+      "effect": "用于对齐信号节奏并稳定导体。",
+      "location": "灯塔峭壁"
+    },
+    {
+      "name": "封蜡纪要",
+      "description": "议会封存的投票记录，用蜡与麻绳密封。",
+      "effect": "证明议会明确同意献祭。",
+      "location": "镇政厅档案室"
+    },
+    {
+      "name": "盐浸粗绳",
+      "description": "被潮水浸透的粗绳，曾用于固定导体平台。",
+      "effect": "防止坠入咸水池。",
+      "location": "潮汐洞"
+    },
+    {
+      "name": "旧潮汐仪",
+      "description": "布满锈迹的铜制仪表，指针与潮位同步。",
+      "effect": "判断潮祭是否进入不可逆阶段。",
+      "location": "港务局办公室"
+    }
+  ],
+  "factions": [
+    {
+      "name": "镇议会",
+      "goal": "不惜代价保住小镇存续。",
+      "resources": [
+        "封存档案",
+        "港务控制",
+        "地方关系"
+      ],
+      "methods": [
+        "删改记录",
+        "安抚镇民",
+        "威胁外人"
+      ],
+      "attitude": "礼貌而绝望。"
+    },
+    {
+      "name": "渔民家族会",
+      "goal": "终止献祭并为失踪者讨回公道。",
+      "resources": [
+        "证言",
+        "船只",
+        "群体压力"
+      ],
+      "methods": [
+        "停航抗议",
+        "围堵议会"
+      ],
+      "attitude": "愤怒但愿意合作。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "潮音回声",
+      "nature": "海中存在对潮祭的回应，以声音诱导与收割。",
+      "signs": [
+        "低语海潮",
+        "耳鸣",
+        "名字回响"
+      ],
+      "escalation": [
+        "记忆错位",
+        "强迫步入海中",
+        "群体恐慌"
+      ],
+      "weakness": "切断信号节奏或摧毁导体。"
+    },
+    {
+      "name": "灾风前线",
+      "nature": "潮祭失效时出现的超自然风暴前沿。",
+      "signs": [
+        "气压骤降",
+        "黑雨",
+        "潮水倒灌"
+      ],
+      "escalation": [
+        "堤道崩塌",
+        "港口淹没",
+        "小镇覆灭"
+      ],
+      "weakness": "只有潮祭能延缓其到来。"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "1898",
+      "event": "第一次潮祭举行，以供奉平息海灾。"
+    },
+    {
+      "time": "1912",
+      "event": "冬季海灾摧毁船队，潮祭被改为献祭。"
+    },
+    {
+      "time": "1919",
+      "event": "户籍名册开始缺页，镇议会封存记录。"
+    },
+    {
+      "time": "1926",
+      "event": "风暴频发，失踪者激增。"
+    },
+    {
+      "time": "现在",
+      "event": "新一轮潮祭即将开始。"
+    }
+  ]
+}
