@@ -26,6 +26,19 @@ if (Test-Path "build") { Remove-Item "build" -Recurse -Force }
   --onedir `
   --name OpenKeeper `
   tools/packaging/launch_win.py `
+  --collect-all fastapi `
+  --collect-all starlette `
+  --collect-all pydantic `
+  --collect-all pydantic_core `
+  --collect-all anyio `
+  --collect-all uvicorn `
+  --collect-all websockets `
+  --collect-all httpx `
+  --collect-all motor `
+  --collect-all pymongo `
+  --collect-all yaml `
+  --collect-all idna `
+  --collect-all sniffio `
   --add-data "backend/app;backend/app" `
   --add-data "backend/modules;backend/modules" `
   --add-data "backend/data;backend/data" `
