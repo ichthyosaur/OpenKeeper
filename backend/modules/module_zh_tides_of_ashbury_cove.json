@@ -32,6 +32,21 @@
       "name": "阿比盖尔·肖",
       "public_info": "镇议会秘书，手持镇政档案钥匙。",
       "hidden_secrets": "她知道“献祭名单”是谁写下的。"
+    },
+    {
+      "name": "乔纳森·克劳",
+      "public_info": "镇议会主席，言辞稳重，擅长安抚情绪。",
+      "hidden_secrets": "他亲自签署过献祭名单的确认页。"
+    },
+    {
+      "name": "玛莎·格林",
+      "public_info": "镇学校教师，保管旧年鉴与毕业名册。",
+      "hidden_secrets": "她发现学生名册与户籍名册的缺失重合。"
+    },
+    {
+      "name": "维克托·黑尔",
+      "public_info": "船坞木匠，负责修补受损船体。",
+      "hidden_secrets": "他在船底发现与潮祭刻痕相同的刮痕。"
     }
   ],
   "core_secrets": [
@@ -54,13 +69,31 @@
       "ending_id": "last_name",
       "description": "玩家主动替代献祭者，换取小镇一季安宁。",
       "conditions": "玩家自愿站上仪式位置完成替换。"
+    },
+    {
+      "ending_id": "ritual_reformed",
+      "description": "潮祭被修正为原典的供奉仪式，海灾暂缓，但小镇必须交出渔获与收入换取平静。",
+      "conditions": "玩家以原典说服神父与议会，并完成替代供奉流程。"
+    },
+    {
+      "ending_id": "names_exposed",
+      "description": "献祭真相公开，小镇民心崩散，调查员带走证据离开，阿什伯里湾逐渐衰亡。",
+      "conditions": "玩家将证据交给媒体或州政府，仪式被迫停止。"
+    },
+    {
+      "ending_id": "false_pacification",
+      "description": "信号被破坏，风暴暂时削弱，但潮音仍在，灾厄只是延后。",
+      "conditions": "玩家破坏信号站却未触及导体核心。"
     }
   ],
   "ending_triggers": [
     "潮祭完成且献祭名字记入账簿。",
     "潮祭被打断或导体被毁。",
     "玩家主动替代献祭者。",
-    "所有调查员死亡或疯狂。"
+    "所有调查员死亡或疯狂。",
+    "玩家按原典完成供奉流程，替代献祭。",
+    "玩家公开献祭证据并迫使仪式停止。",
+    "玩家只破坏信号站，未能摧毁导体。"
   ],
   "locations": [
     {
@@ -185,6 +218,36 @@
       ],
       "connections": [
         "圣布里姬特教堂"
+      ]
+    },
+    {
+      "name": "镇学校",
+      "description": "一栋木质校舍，黑板仍留着未擦的算式。",
+      "features": [
+        "年鉴柜",
+        "旧教案",
+        "壁炉"
+      ],
+      "secrets": [
+        "名册与户籍重合"
+      ],
+      "connections": [
+        "镇政厅"
+      ]
+    },
+    {
+      "name": "船坞",
+      "description": "潮湿的木料与锈钉堆积，工棚里弥漫机油味。",
+      "features": [
+        "修船平台",
+        "刻痕木板",
+        "工棚"
+      ],
+      "secrets": [
+        "被标记的船体"
+      ],
+      "connections": [
+        "码头"
       ]
     }
   ],
@@ -316,6 +379,57 @@
         "确认献祭链",
         "强化动机"
       ]
+    },
+    {
+      "scene_id": "council_hearing",
+      "title": "议会听证",
+      "summary": "在镇政厅公开质询，引发镇议会与渔民家族会的对峙。",
+      "beats": [
+        "压低的争辩",
+        "投票记录",
+        "镇民骚动"
+      ],
+      "required_clues": [
+        "clue_council_minutes"
+      ],
+      "outcomes": [
+        "逼出乔纳森让步",
+        "遭到驱逐"
+      ]
+    },
+    {
+      "scene_id": "school_rosters",
+      "title": "名册重合",
+      "summary": "在学校年鉴中发现学生名册与失踪名单吻合。",
+      "beats": [
+        "发黄年鉴",
+        "缺页标记",
+        "粉笔灰"
+      ],
+      "required_clues": [
+        "clue_school_roster"
+      ],
+      "outcomes": [
+        "确认献祭链",
+        "说服渔民家族会"
+      ]
+    },
+    {
+      "scene_id": "shipyard_marks",
+      "title": "船坞刮痕",
+      "summary": "船坞木材与船底刮痕揭示潮祭符号被偷偷刻入船体。",
+      "beats": [
+        "潮湿木屑",
+        "刻痕图形",
+        "锈迹钉板"
+      ],
+      "required_clues": [
+        "clue_shipwright_marks"
+      ],
+      "outcomes": [
+        "识别献祭船只",
+        "引发船坞冲突"
+      ]
     }
   ],
   "clues": [
@@ -435,6 +549,42 @@
         "last_name"
       ],
       "reveal": "仪式开始后将无法中途停止。"
+    },
+    {
+      "clue_id": "clue_council_minutes",
+      "description": "议会密档记录了献祭投票与名单排序。",
+      "location": "镇政厅档案室",
+      "linked_to": [
+        "names_exposed"
+      ],
+      "reveal": "献祭并非意外，而是票决后的执行。"
+    },
+    {
+      "clue_id": "clue_school_roster",
+      "description": "学校年鉴名册与失踪名单高度重合。",
+      "location": "镇学校",
+      "linked_to": [
+        "names_exposed"
+      ],
+      "reveal": "献祭目标在多年前已被锁定。"
+    },
+    {
+      "clue_id": "clue_shipwright_marks",
+      "description": "船底刮痕与潮祭符号一致，指向被标记的船只。",
+      "location": "船坞",
+      "linked_to": [
+        "harbor_spared"
+      ],
+      "reveal": "某些船被刻意送往仪式海域。"
+    },
+    {
+      "clue_id": "clue_coastguard_report",
+      "description": "旧海岸警卫报告记录了多起“未解释的无浪损坏”。",
+      "location": "港务局办公室",
+      "linked_to": [
+        "false_pacification"
+      ],
+      "reveal": "风暴并非全部自然，存在固定触发点。"
     }
   ],
   "events": [
