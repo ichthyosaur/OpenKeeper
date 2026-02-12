@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import shutil
 import socket
 import uuid
 import json
@@ -37,7 +39,24 @@ from app.visibility import filter_history, filter_state
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
-CONFIG_PATH = APP_ROOT / "config.yaml"
+
+
+def _resolve_config_path() -> Path:
+    default_path = APP_ROOT / "config.yaml"
+    if default_path.exists() and os.access(default_path, os.W_OK):
+        return default_path
+    data_dir = APP_ROOT / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    data_path = data_dir / "config.yaml"
+    if not data_path.exists() and default_path.exists():
+        try:
+            shutil.copy2(default_path, data_path)
+        except Exception:
+            pass
+    return data_path
+
+
+CONFIG_PATH = _resolve_config_path()
 MODULE_PATH = APP_ROOT / "modules" / "module_zh_example.json"
 FRONTEND_DIST = APP_ROOT.parent / "frontend" / "dist"
 STATIC_APP = APP_ROOT / "static_app.html"
