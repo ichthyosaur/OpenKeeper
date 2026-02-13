@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 import asyncio
 from datetime import datetime
-from typing import Any, Iterable, Optional, List, Dict, Union
+from typing import Any, Iterable, Optional, List, Dict, Union, Callable, Awaitable
 
 from app.actions import dispatch_action
 from app.db import MongoStore
@@ -137,9 +137,16 @@ class SessionManager:
         )
 
     async def handle_player_action(
-        self, player_id: str, action_text: I18NText, online_ids: Optional[list[str]] = None
+        self,
+        player_id: str,
+        action_text: I18NText,
+        online_ids: Optional[list[str]] = None,
+        on_entries: Optional[Callable[[list[HistoryEntry]], Awaitable[None]]] = None,
     ) -> list[HistoryEntry]:
         entries: list[HistoryEntry] = []
+        async def emit(new_entries: list[HistoryEntry]) -> None:
+            if on_entries and new_entries:
+                await on_entries(new_entries)
         if online_ids is not None:
             self.last_online_ids = list(online_ids)
         phase = self.state.current_state.get("phase", "lobby")
@@ -156,6 +163,7 @@ class SessionManager:
                 ),
             )
             await self._record_history(entry)
+            await emit([entry])
             return [entry]
         player = self.state.current_state.get("players", {}).get(player_id, {})
         stats = player.get("stats", {})
@@ -172,6 +180,7 @@ class SessionManager:
                 ),
             )
             await self._record_history(entry)
+            await emit([entry])
             return [entry]
         player_entry = self._make_history_entry(
             actor_type=ActorType.player,
@@ -183,6 +192,7 @@ class SessionManager:
         )
         await self._record_history(player_entry)
         entries.append(player_entry)
+        await emit([player_entry])
 
         system_text = self.build_llm_context_text(self.history_count, online_ids)
         history_text = self.build_llm_history_text(self.history_count)
@@ -190,15 +200,22 @@ class SessionManager:
         try:
             keeper_output = self.keeper.generate(action_text, player_id, context_text)
             self._accumulate_token_usage()
-            entries.extend(await self._handle_keeper_output(keeper_output))
+            keeper_entries = await self._handle_keeper_output(keeper_output)
+            entries.extend(keeper_entries)
+            await emit(keeper_entries)
             if (
                 keeper_output.actions
                 and self.state.current_state.get("phase") != "ended"
                 and self._is_player_active(player_id)
             ):
-                entries.extend(await self._followup_after_actions(player_id, online_ids))
+                follow_entries = await self._followup_after_actions(
+                    player_id, online_ids, on_entries=on_entries
+                )
+                entries.extend(follow_entries)
             if self._should_force_ending(keeper_output.actions, online_ids):
-                entries.extend(await self._force_ending(player_id, online_ids))
+                forced_entries = await self._force_ending(player_id, online_ids)
+                entries.extend(forced_entries)
+                await emit(forced_entries)
         except Exception as exc:
             msg = str(exc)
             if "timed out" in msg.lower():
@@ -216,6 +233,7 @@ class SessionManager:
                 )
                 await self._record_history(public_entry)
                 entries.append(public_entry)
+                await emit([public_entry])
             host_entry = self._make_history_entry(
                 actor_type=ActorType.system,
                 actor_id="system",
@@ -230,6 +248,7 @@ class SessionManager:
             )
             await self._record_history(host_entry)
             entries.append(host_entry)
+            await emit([host_entry])
         return entries
 
     async def _handle_keeper_output(self, output: KeeperOutput) -> list[HistoryEntry]:
@@ -288,10 +307,16 @@ class SessionManager:
         return await self._handle_keeper_output(output)
 
     async def _followup_after_actions(
-        self, player_id: str, online_ids: Optional[list[str]] = None
+        self,
+        player_id: str,
+        online_ids: Optional[list[str]] = None,
+        on_entries: Optional[Callable[[list[HistoryEntry]], Awaitable[None]]] = None,
     ) -> list[HistoryEntry]:
         followups = 0
         all_entries: list[HistoryEntry] = []
+        async def emit(new_entries: list[HistoryEntry]) -> None:
+            if on_entries and new_entries:
+                await on_entries(new_entries)
         while followups < self.max_followups:
             if not self._is_player_active(player_id):
                 break
@@ -332,6 +357,7 @@ class SessionManager:
                 break
             follow_entries = await self._handle_keeper_output(output)
             all_entries.extend(follow_entries)
+            await emit(follow_entries)
 
             if not output.actions or self.state.current_state.get("phase") == "ended":
                 break

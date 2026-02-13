@@ -369,7 +369,12 @@
       }
       .modal-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
       .history { display: flex; flex-direction: column; gap: 12px; }
-      .history-wrap { display: grid; grid-template-columns: minmax(160px, 0.6fr) minmax(0, 2fr); gap: 12px; }
+      .history-wrap {
+        display: grid;
+        grid-template-columns: minmax(160px, 0.6fr) minmax(0, 2fr);
+        gap: 12px;
+        align-items: start;
+      }
       .history-main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
       .summary-card { background: rgba(246, 232, 198, 0.98); outline: 1px solid rgba(92, 64, 51, 0.35); border-radius: 14px; padding: 10px 12px; position: relative; box-shadow: 0 8px 16px rgba(10, 5, 0, 0.2); transform: translateY(-2px); transition: transform 0.35s ease, box-shadow 0.35s ease; }
       .summary-card:hover { transform: translateY(-6px); box-shadow: 0 12px 22px rgba(10, 5, 0, 0.26); }

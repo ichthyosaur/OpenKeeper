@@ -1014,8 +1014,14 @@ async def websocket_endpoint(ws: WebSocket) -> None:
                 session = app.state.session
                 action_text = I18NText(**payload.get("action_text", {}))
                 online_ids = await connections.online_player_ids()
-                entries = await session.handle_player_action(conn.player_id, action_text, online_ids)
-                await connections.broadcast_filtered(entries, session)
+                async def emit(new_entries: list) -> None:
+                    await connections.broadcast_filtered(new_entries, session)
+                await session.handle_player_action(
+                    conn.player_id,
+                    action_text,
+                    online_ids,
+                    on_entries=emit,
+                )
                 continue
 
             if msg_type == "client.request_history":
