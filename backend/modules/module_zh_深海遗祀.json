@@ -1,0 +1,1197 @@
+{
+  "module_name": "深海遗祀",
+  "introduction": "1931年的美国沿海，小镇格拉斯湾在经济萧条中仍能维持表面的安宁。镇民对外来者礼数周全，却刻意回避关于失踪、异味与夜间低语的传闻。你们受一封匿名信所托前来调查，信中只写着“不要听海的回声”。镇上宗教活动异常频繁，但教堂公开记录却简陋空白。过去半年里，多名外地工人失联，旅馆登记簿却显示他们“已经离镇”。镇上将很快举行一年一度的“海恩日”，全体居民被要求参加。你们的任务是在节庆之前厘清真相，并确保自己还能离开。",
+  "entry_narration": "你们从海岸公路驶入格拉斯湾，天空低垂，空气里混着盐与腥甜。镇口的欢迎牌翻新过，旧字迹仍隐约透出。街道干净得过分，窗帘却总在你们经过时轻轻合拢。教堂钟声迟缓而沉重，回响像从水里传来。远处的盐田反射出刺眼的白光，让人眼睛发疼。镇中心的旅馆挂着新牌匾，走廊里却有长期潮湿留下的霉味。广播里反复播报节庆日程，声线平稳得不带情感。你们意识到，这座小镇对“秩序”有一种近乎偏执的执念。",
+  "key_characters": [
+    {
+      "name": "艾琳·格雷",
+      "public_info": "镇图书室管理员，谨慎安静，负责保存旧报与年鉴。",
+      "hidden_secrets": "她藏起了失踪者名单的原件。"
+    },
+    {
+      "name": "路易斯·哈特",
+      "public_info": "教堂执事，负责节庆流程与合唱排练。",
+      "hidden_secrets": "他掌握“深海祷词”的完整版本。"
+    },
+    {
+      "name": "格兰特·沃利斯",
+      "public_info": "镇议会主席，言辞温和但不容质疑。",
+      "hidden_secrets": "他签署了“献名名单”。"
+    },
+    {
+      "name": "玛莎·里德",
+      "public_info": "罐头厂女主管，管理工人排班。",
+      "hidden_secrets": "她把外来工人调往夜班以便处理。"
+    },
+    {
+      "name": "本杰明·凯尔",
+      "public_info": "小镇医生，治疗失眠与皮肤病。",
+      "hidden_secrets": "他记录了异常鳞状病变病例。"
+    },
+    {
+      "name": "乔纳森·纽曼",
+      "public_info": "旅馆老板，消息灵通。",
+      "hidden_secrets": "他知道地下室的封门通向旧通道。"
+    },
+    {
+      "name": "塞拉·道森",
+      "public_info": "电台播音员，声音温和，掌控日程播报。",
+      "hidden_secrets": "她负责在深夜播放一段“不可公开的祷词”。"
+    },
+    {
+      "name": "埃利斯·布鲁克",
+      "public_info": "盐田工头，态度强硬。",
+      "hidden_secrets": "他参与把“献品”运入海崖洞。"
+    }
+  ],
+  "core_secrets": [
+    "格拉斯湾秘密崇拜大衮，信仰以“献名”与“回声祷词”为核心。",
+    "教堂与议会共同维护仪式秩序，外来者被当作可替代的献名。",
+    "海崖洞窟深处有一处古老祭坛，与镇上节庆同步运作。",
+    "部分镇民出现鳞化与失语症状，被解释为“潮恩”。",
+    "仪式分三段：定名（宣读献名名单）、回声（合唱祷词）、封潮（以盐与血封印祭坛）。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "rites_continue",
+      "description": "仪式如期完成，镇上获得短暂安宁，但新的名字被献给深海。",
+      "conditions": "玩家未能阻止节庆夜仪式或选择妥协。"
+    },
+    {
+      "ending_id": "truth_exposed",
+      "description": "你们揭露真相，外界介入，但小镇迅速封锁并报复。",
+      "conditions": "证据被送出镇外且公开。"
+    },
+    {
+      "ending_id": "sacrifice_exchange",
+      "description": "你们以自身或同伴为代价换取镇民生存。",
+      "conditions": "玩家主动献名完成仪式。"
+    },
+    {
+      "ending_id": "false_break",
+      "description": "仪式被打断，灾厄延后而非消失。",
+      "conditions": "玩家破坏仪式但未触及祭坛核心。"
+    },
+    {
+      "ending_id": "covenant_burns",
+      "description": "邪教组织瓦解，镇上陷入暴力与恐慌。",
+      "conditions": "玩家破坏核心组织并引发公开冲突。"
+    },
+    {
+      "ending_id": "silent_town",
+      "description": "镇民集体失语，街道沉寂，深海回应不再清晰。",
+      "conditions": "玩家切断回声祷词却未封祭坛。"
+    },
+    {
+      "ending_id": "marked_escape",
+      "description": "你们逃离小镇，但身心被深海印记缠绕。",
+      "conditions": "玩家携带证据离开且听过完整祷词。"
+    },
+    {
+      "ending_id": "mass_drowning",
+      "description": "仪式失控，镇民集体溺亡，格拉斯湾被封锁为禁区。",
+      "conditions": "仪式被粗暴打断且封潮失败。"
+    },
+    {
+      "ending_id": "devoured_witness",
+      "description": "幸存者被邪教追捕，证据被焚毁，真相沉入海底。",
+      "conditions": "玩家逃离失败或被俘。"
+    }
+  ],
+  "ending_triggers": [
+    "节庆夜仪式完成。",
+    "证据成功送出并公开。",
+    "玩家主动献名。",
+    "仪式被打断但祭坛未毁。",
+    "邪教组织被摧毁。",
+    "回声祷词被切断。",
+    "玩家离镇并带走证据且完整听过祷词。",
+    "所有调查员死亡或疯狂。",
+    "仪式被粗暴打断且封潮失败。",
+    "玩家逃离失败或被俘。"
+  ],
+  "locations": [
+    {
+      "name": "镇议会厅",
+      "description": "木质会议厅，墙上挂着节庆日程与捐赠名录。",
+      "features": [
+        "会议桌",
+        "档案柜",
+        "密封抽屉"
+      ],
+      "secrets": [
+        "献名名单"
+      ],
+      "connections": [
+        "镇图书室",
+        "教堂"
+      ]
+    },
+    {
+      "name": "镇图书室",
+      "description": "旧年鉴与报纸堆积，空气带着霉味。",
+      "features": [
+        "年鉴架",
+        "剪报柜",
+        "索引卡"
+      ],
+      "secrets": [
+        "失踪名单原件"
+      ],
+      "connections": [
+        "镇议会厅",
+        "旅馆"
+      ]
+    },
+    {
+      "name": "教堂",
+      "description": "石砌教堂，唱诗台常年封闭。",
+      "features": [
+        "祭坛",
+        "唱诗台",
+        "钟楼"
+      ],
+      "secrets": [
+        "深海祷词抄本"
+      ],
+      "connections": [
+        "教堂地窖",
+        "镇议会厅"
+      ]
+    },
+    {
+      "name": "教堂地窖",
+      "description": "潮湿地窖，墙面覆着盐晶。",
+      "features": [
+        "铁箱",
+        "旧名册",
+        "封条"
+      ],
+      "secrets": [
+        "完整祷词与仪式记录"
+      ],
+      "connections": [
+        "教堂"
+      ]
+    },
+    {
+      "name": "罐头厂",
+      "description": "机器轰鸣，夜班灯光常亮。",
+      "features": [
+        "冷藏间",
+        "排班表",
+        "装卸道"
+      ],
+      "secrets": [
+        "夜班转运记录"
+      ],
+      "connections": [
+        "盐田",
+        "旅馆"
+      ]
+    },
+    {
+      "name": "盐田",
+      "description": "白色盐池刺眼，风声像低语。",
+      "features": [
+        "盐池",
+        "工棚",
+        "储盐仓"
+      ],
+      "secrets": [
+        "运输清单"
+      ],
+      "connections": [
+        "罐头厂",
+        "海崖古阶"
+      ]
+    },
+    {
+      "name": "旅馆",
+      "description": "走廊潮湿，登记簿厚重。",
+      "features": [
+        "登记簿",
+        "客房",
+        "地下室"
+      ],
+      "secrets": [
+        "离镇记录被伪造"
+      ],
+      "connections": [
+        "镇图书室",
+        "电台"
+      ]
+    },
+    {
+      "name": "电台",
+      "description": "木楼电台，夜间仍播报。",
+      "features": [
+        "播音室",
+        "磁带柜",
+        "天线"
+      ],
+      "secrets": [
+        "深夜祷词频段"
+      ],
+      "connections": [
+        "旅馆",
+        "镇议会厅"
+      ]
+    },
+    {
+      "name": "诊所",
+      "description": "消毒水味混着海腥。",
+      "features": [
+        "病房",
+        "记录架",
+        "药柜"
+      ],
+      "secrets": [
+        "鳞化病例记录"
+      ],
+      "connections": [
+        "旅馆",
+        "教堂"
+      ]
+    },
+    {
+      "name": "公墓",
+      "description": "潮湿墓地，碑文反复被擦改。",
+      "features": [
+        "墓碑",
+        "登记册",
+        "旧祭坛"
+      ],
+      "secrets": [
+        "同一姓氏反复出现"
+      ],
+      "connections": [
+        "教堂",
+        "海崖古阶"
+      ]
+    },
+    {
+      "name": "海崖古阶",
+      "description": "通往海崖的石阶，夜里禁止通行。",
+      "features": [
+        "石阶",
+        "风铃",
+        "封锁栏"
+      ],
+      "secrets": [
+        "通往洞窟的隐门"
+      ],
+      "connections": [
+        "盐田",
+        "海崖洞窟"
+      ]
+    },
+    {
+      "name": "海崖洞窟",
+      "description": "深处潮湿且回声异常。",
+      "features": [
+        "潮水沟",
+        "石壁刻痕",
+        "暗室"
+      ],
+      "secrets": [
+        "祭坛入口"
+      ],
+      "connections": [
+        "海崖古阶",
+        "深海祭坛"
+      ]
+    },
+    {
+      "name": "深海祭坛",
+      "description": "石室中央祭坛，盐与血迹交织。",
+      "features": [
+        "祭坛",
+        "献名槽",
+        "盐封沟"
+      ],
+      "secrets": [
+        "回声核心"
+      ],
+      "connections": [
+        "海崖洞窟"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "arrival",
+      "title": "抵达小镇",
+      "summary": "初步观察镇民态度与节庆氛围。",
+      "beats": [
+        "钟声",
+        "广播",
+        "沉默"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "锁定调查方向",
+        "察觉回避"
+      ]
+    },
+    {
+      "scene_id": "library_records",
+      "title": "失踪记录",
+      "summary": "图书室与年鉴揭示失踪缺页。",
+      "beats": [
+        "年鉴",
+        "剪报",
+        "灰尘"
+      ],
+      "required_clues": [
+        "clue_missing_pages"
+      ],
+      "outcomes": [
+        "发现失踪线索",
+        "锁定议会"
+      ]
+    },
+    {
+      "scene_id": "council_pressure",
+      "title": "议会对峙",
+      "summary": "议会拒绝公开资料。",
+      "beats": [
+        "封存档案",
+        "名单",
+        "施压"
+      ],
+      "required_clues": [
+        "clue_sacrifice_roster"
+      ],
+      "outcomes": [
+        "获得名单",
+        "风险上升"
+      ]
+    },
+    {
+      "scene_id": "guard_ambush",
+      "title": "守卫伏击",
+      "summary": "邪教守卫在巷道设伏。",
+      "beats": [
+        "暗巷",
+        "口哨",
+        "围堵"
+      ],
+      "required_clues": [
+        "clue_guard_route"
+      ],
+      "outcomes": [
+        "战斗爆发",
+        "路线暴露"
+      ]
+    },
+    {
+      "scene_id": "church_whisper",
+      "title": "教堂低语",
+      "summary": "祷词与合唱异常出现。",
+      "beats": [
+        "唱诗台",
+        "低语",
+        "回声"
+      ],
+      "required_clues": [
+        "clue_prayer_fragment"
+      ],
+      "outcomes": [
+        "指向地窖",
+        "心理压力上升"
+      ]
+    },
+    {
+      "scene_id": "church_basement",
+      "title": "地窖抄本",
+      "summary": "完整祷词与仪式记录。",
+      "beats": [
+        "铁箱",
+        "盐晶",
+        "旧名册"
+      ],
+      "required_clues": [
+        "clue_full_prayer"
+      ],
+      "outcomes": [
+        "确认邪教核心",
+        "引发追踪"
+      ]
+    },
+    {
+      "scene_id": "cannery_night",
+      "title": "罐头厂夜班",
+      "summary": "夜间转运与工人失踪。",
+      "beats": [
+        "机器声",
+        "冷藏间",
+        "封箱"
+      ],
+      "required_clues": [
+        "clue_night_transfer"
+      ],
+      "outcomes": [
+        "指向盐田",
+        "触发对峙"
+      ]
+    },
+    {
+      "scene_id": "saltworks_track",
+      "title": "盐田运输",
+      "summary": "运输清单与夜间路径。",
+      "beats": [
+        "盐池",
+        "车辙",
+        "风铃"
+      ],
+      "required_clues": [
+        "clue_salt_manifest"
+      ],
+      "outcomes": [
+        "锁定古阶",
+        "风险上升"
+      ]
+    },
+    {
+      "scene_id": "radio_broadcast",
+      "title": "深夜广播",
+      "summary": "电台播出不可公开祷词。",
+      "beats": [
+        "磁带",
+        "频段",
+        "噪音"
+      ],
+      "required_clues": [
+        "clue_radio_script"
+      ],
+      "outcomes": [
+        "祷词扩散",
+        "精神压力"
+      ]
+    },
+    {
+      "scene_id": "clinic_cases",
+      "title": "鳞化病例",
+      "summary": "诊所记录揭示病变。",
+      "beats": [
+        "记录架",
+        "药柜",
+        "标本"
+      ],
+      "required_clues": [
+        "clue_scale_cases"
+      ],
+      "outcomes": [
+        "确认深海影响",
+        "道德抉择"
+      ]
+    },
+    {
+      "scene_id": "graveyard_list",
+      "title": "墓碑名录",
+      "summary": "墓碑与名册显示循环献名。",
+      "beats": [
+        "墓碑",
+        "刻痕",
+        "旧祭坛"
+      ],
+      "required_clues": [
+        "clue_grave_loop"
+      ],
+      "outcomes": [
+        "确认献名循环",
+        "触发恐惧"
+      ]
+    },
+    {
+      "scene_id": "cliff_stairs",
+      "title": "海崖古阶",
+      "summary": "通往洞窟的封锁通道。",
+      "beats": [
+        "封锁栏",
+        "风铃",
+        "隐门"
+      ],
+      "required_clues": [
+        "clue_hidden_gate"
+      ],
+      "outcomes": [
+        "进入洞窟",
+        "触发追捕"
+      ]
+    },
+    {
+      "scene_id": "sea_cave",
+      "title": "海崖洞窟",
+      "summary": "洞窟回声与刻痕。",
+      "beats": [
+        "潮声",
+        "刻痕",
+        "盐雾"
+      ],
+      "required_clues": [
+        "clue_cave_marks"
+      ],
+      "outcomes": [
+        "定位祭坛",
+        "心理压力"
+      ]
+    },
+    {
+      "scene_id": "cave_chase",
+      "title": "洞窟追逐",
+      "summary": "洞窟内被追捕，必须突破封锁。",
+      "beats": [
+        "潮水回声",
+        "火把",
+        "封门"
+      ],
+      "required_clues": [
+        "clue_cave_chain"
+      ],
+      "outcomes": [
+        "逃脱或被俘",
+        "伤亡增加"
+      ]
+    },
+    {
+      "scene_id": "deep_altar",
+      "title": "深海祭坛",
+      "summary": "仪式核心与献名槽。",
+      "beats": [
+        "祭坛",
+        "盐封沟",
+        "低语"
+      ],
+      "required_clues": [
+        "clue_ritual_core"
+      ],
+      "outcomes": [
+        "尝试封潮或改写仪式",
+        "失败则触发结局倒计时"
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_missing_pages",
+      "description": "年鉴多页被撕掉。",
+      "location": "镇图书室",
+      "linked_to": [
+        "library_records"
+      ],
+      "reveal": "失踪被抹去。"
+    },
+    {
+      "clue_id": "clue_sacrifice_roster",
+      "description": "议会档案柜中有献名名单。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "council_pressure"
+      ],
+      "reveal": "献名由议会批准。"
+    },
+    {
+      "clue_id": "clue_prayer_fragment",
+      "description": "唱诗台下藏有祷词残页。",
+      "location": "教堂",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "祷词指向深海。"
+    },
+    {
+      "clue_id": "clue_full_prayer",
+      "description": "地窖铁箱内保存完整祷词。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "church_basement"
+      ],
+      "reveal": "仪式流程明确。"
+    },
+    {
+      "clue_id": "clue_night_transfer",
+      "description": "夜班排班表被改写。",
+      "location": "罐头厂",
+      "linked_to": [
+        "cannery_night"
+      ],
+      "reveal": "有人被调往夜班。"
+    },
+    {
+      "clue_id": "clue_salt_manifest",
+      "description": "盐田运输清单标注“献品箱”。",
+      "location": "盐田",
+      "linked_to": [
+        "saltworks_track"
+      ],
+      "reveal": "献品经盐田转运。"
+    },
+    {
+      "clue_id": "clue_radio_script",
+      "description": "深夜广播的祷词脚本。",
+      "location": "电台",
+      "linked_to": [
+        "radio_broadcast"
+      ],
+      "reveal": "祷词被扩散。"
+    },
+    {
+      "clue_id": "clue_scale_cases",
+      "description": "鳞化病例记录。",
+      "location": "诊所",
+      "linked_to": [
+        "clinic_cases"
+      ],
+      "reveal": "病变与信仰相关。"
+    },
+    {
+      "clue_id": "clue_grave_loop",
+      "description": "墓碑姓名循环出现。",
+      "location": "公墓",
+      "linked_to": [
+        "graveyard_list"
+      ],
+      "reveal": "献名沿家族循环。"
+    },
+    {
+      "clue_id": "clue_hidden_gate",
+      "description": "古阶封锁栏有可打开暗扣。",
+      "location": "海崖古阶",
+      "linked_to": [
+        "cliff_stairs"
+      ],
+      "reveal": "存在隐门。"
+    },
+    {
+      "clue_id": "clue_cave_marks",
+      "description": "洞壁刻痕呈水生象形符号。",
+      "location": "海崖洞窟",
+      "linked_to": [
+        "sea_cave"
+      ],
+      "reveal": "祭祀对象为海下存在。"
+    },
+    {
+      "clue_id": "clue_ritual_core",
+      "description": "祭坛献名槽残留盐与血迹。",
+      "location": "深海祭坛",
+      "linked_to": [
+        "deep_altar"
+      ],
+      "reveal": "仪式核心在此。"
+    },
+    {
+      "clue_id": "clue_guestbook",
+      "description": "旅馆登记簿出现重复签名。",
+      "location": "旅馆",
+      "linked_to": [
+        "library_records"
+      ],
+      "reveal": "离镇记录被伪造。"
+    },
+    {
+      "clue_id": "clue_radio_tape",
+      "description": "磁带里有被覆盖的旧音轨。",
+      "location": "电台",
+      "linked_to": [
+        "radio_broadcast"
+      ],
+      "reveal": "有人替换内容。"
+    },
+    {
+      "clue_id": "clue_church_key",
+      "description": "执事钥匙可开启唱诗台暗门。",
+      "location": "教堂",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "进入地窖更深处。"
+    },
+    {
+      "clue_id": "clue_salt_symbols",
+      "description": "盐仓墙面刻着水生符号。",
+      "location": "盐田",
+      "linked_to": [
+        "saltworks_track"
+      ],
+      "reveal": "盐田参与仪式。"
+    },
+    {
+      "clue_id": "clue_cannery_freezer",
+      "description": "冷藏间存放不明包裹。",
+      "location": "罐头厂",
+      "linked_to": [
+        "cannery_night"
+      ],
+      "reveal": "有人被临时藏匿。"
+    },
+    {
+      "clue_id": "clue_doctor_note",
+      "description": "医生笔记提及“听海的人”。",
+      "location": "诊所",
+      "linked_to": [
+        "clinic_cases"
+      ],
+      "reveal": "患者出现幻听。"
+    },
+    {
+      "clue_id": "clue_grave_salt",
+      "description": "墓碑基座撒有粗盐。",
+      "location": "公墓",
+      "linked_to": [
+        "graveyard_list"
+      ],
+      "reveal": "盐与祭祀有关。"
+    },
+    {
+      "clue_id": "clue_cave_chain",
+      "description": "洞窟地面有拖拽链痕。",
+      "location": "海崖洞窟",
+      "linked_to": [
+        "sea_cave"
+      ],
+      "reveal": "献名被带入深处。"
+    },
+    {
+      "clue_id": "clue_altar_blood",
+      "description": "祭坛石槽残留新鲜暗斑。",
+      "location": "深海祭坛",
+      "linked_to": [
+        "deep_altar"
+      ],
+      "reveal": "仪式将近。"
+    },
+    {
+      "clue_id": "clue_old_sermon",
+      "description": "旧讲道稿提到“深海父”。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "church_basement"
+      ],
+      "reveal": "信仰早已存在。"
+    },
+    {
+      "clue_id": "clue_civic_donors",
+      "description": "捐赠名录与献名名单高度重合。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "council_pressure"
+      ],
+      "reveal": "权力结构与邪教重合。"
+    },
+    {
+      "clue_id": "clue_radio_schedule",
+      "description": "夜播时间与潮汐同步。",
+      "location": "电台",
+      "linked_to": [
+        "radio_broadcast"
+      ],
+      "reveal": "仪式与潮汐关联。"
+    },
+    {
+      "clue_id": "clue_inn_basement",
+      "description": "旅馆地下室有通道痕迹。",
+      "location": "旅馆",
+      "linked_to": [
+        "cannery_night"
+      ],
+      "reveal": "存在转运通路。"
+    },
+    {
+      "clue_id": "clue_salt_transport",
+      "description": "盐田车辙通向海崖古阶。",
+      "location": "盐田",
+      "linked_to": [
+        "saltworks_track"
+      ],
+      "reveal": "运送路径明确。"
+    },
+    {
+      "clue_id": "clue_chapel_hum",
+      "description": "教堂内低频共鸣。",
+      "location": "教堂",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "祷词回声存在。"
+    },
+    {
+      "clue_id": "clue_tide_calendar",
+      "description": "教堂地窖有潮汐日历。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "church_basement"
+      ],
+      "reveal": "节庆与潮汐同步。"
+    },
+    {
+      "clue_id": "clue_civic_map",
+      "description": "议会地图标注“封闭海崖”。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "council_pressure"
+      ],
+      "reveal": "官方刻意封锁。"
+    },
+    {
+      "clue_id": "clue_cave_chant",
+      "description": "洞窟回声出现固定节拍。",
+      "location": "海崖洞窟",
+      "linked_to": [
+        "sea_cave"
+      ],
+      "reveal": "祷词与洞窟共鸣。"
+    },
+    {
+      "clue_id": "clue_altar_symbol",
+      "description": "祭坛刻有水生象形图。",
+      "location": "深海祭坛",
+      "linked_to": [
+        "deep_altar"
+      ],
+      "reveal": "祭祀对象确定。"
+    },
+    {
+      "clue_id": "clue_guard_route",
+      "description": "守卫巡逻路线图。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "guard_ambush"
+      ],
+      "reveal": "邪教守卫有组织行动。"
+    },
+    {
+      "clue_id": "clue_weapon_cache",
+      "description": "教堂地窖内藏有旧式武器箱。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "cave_chase"
+      ],
+      "reveal": "邪教准备武装冲突。"
+    },
+    {
+      "clue_id": "clue_seal_tide",
+      "description": "祭坛边刻有封潮步骤提示。",
+      "location": "深海祭坛",
+      "linked_to": [
+        "deep_altar"
+      ],
+      "reveal": "封潮必须以盐与血完成。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "cult_watch",
+      "trigger": "公开调查议会或教堂",
+      "description": "镇民尾随并试图劝阻。",
+      "consequences": [
+        "行动暴露",
+        "对峙"
+      ]
+    },
+    {
+      "event_id": "night_chant",
+      "trigger": "夜晚靠近教堂或电台",
+      "description": "低声合唱在街巷回荡。",
+      "consequences": [
+        "SAN 压力",
+        "恐惧上升"
+      ]
+    },
+    {
+      "event_id": "factory_lockdown",
+      "trigger": "深夜进入罐头厂",
+      "description": "厂区封锁，守卫出现。",
+      "consequences": [
+        "战斗",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "salt_storm",
+      "trigger": "盐田调查",
+      "description": "盐尘突起，视线受阻。",
+      "consequences": [
+        "行动受限",
+        "迷失方向"
+      ]
+    },
+    {
+      "event_id": "radio_cut",
+      "trigger": "试图关闭夜播",
+      "description": "电台电源被切断。",
+      "consequences": [
+        "通讯中断",
+        "心理压力"
+      ]
+    },
+    {
+      "event_id": "clinic_isolation",
+      "trigger": "诊所调查异常病例",
+      "description": "医生试图隔离调查员。",
+      "consequences": [
+        "社交对抗",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "grave_guard",
+      "trigger": "夜晚进入公墓",
+      "description": "守墓人出现阻拦。",
+      "consequences": [
+        "对峙",
+        "暴露行踪"
+      ]
+    },
+    {
+      "event_id": "cliff_pursuit",
+      "trigger": "接近海崖古阶",
+      "description": "有人从后方追赶。",
+      "consequences": [
+        "追逐",
+        "战斗"
+      ]
+    },
+    {
+      "event_id": "cave_surge",
+      "trigger": "进入洞窟深处",
+      "description": "潮水忽涨，通道变窄。",
+      "consequences": [
+        "体力检定",
+        "撤退压力"
+      ]
+    },
+    {
+      "event_id": "ritual_alarm",
+      "trigger": "接近深海祭坛",
+      "description": "仪式守卫聚集。",
+      "consequences": [
+        "战斗",
+        "结局倒计时"
+      ]
+    },
+    {
+      "event_id": "armed_mob",
+      "trigger": "在镇中心公开指控邪教",
+      "description": "镇民集结，暴力冲突爆发。",
+      "consequences": [
+        "战斗",
+        "仪式加速"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "祷词抄本",
+      "description": "完整深海祷词。",
+      "effect": "可用于改写或揭露仪式。",
+      "location": "教堂地窖"
+    },
+    {
+      "name": "献名名单",
+      "description": "记录献名与候补者。",
+      "effect": "揭露邪教结构。",
+      "location": "镇议会厅"
+    },
+    {
+      "name": "夜播脚本",
+      "description": "深夜电台脚本。",
+      "effect": "可作为证据。",
+      "location": "电台"
+    },
+    {
+      "name": "失踪名册原件",
+      "description": "原始失踪名单。",
+      "effect": "对外揭露用。",
+      "location": "镇图书室"
+    },
+    {
+      "name": "盐田运输清单",
+      "description": "标注转运路线。",
+      "effect": "定位海崖路径。",
+      "location": "盐田"
+    },
+    {
+      "name": "医生笔记",
+      "description": "记录鳞化与失语病例。",
+      "effect": "证明病变来源。",
+      "location": "诊所"
+    },
+    {
+      "name": "旅馆登记簿",
+      "description": "可查伪造离镇记录。",
+      "effect": "揭露伪装。",
+      "location": "旅馆"
+    },
+    {
+      "name": "海崖隐门钥匙",
+      "description": "开启封锁隐门。",
+      "effect": "进入洞窟。",
+      "location": "教堂"
+    },
+    {
+      "name": "粗盐袋",
+      "description": "用于封印或干扰仪式。",
+      "effect": "削弱回声。",
+      "location": "盐田"
+    },
+    {
+      "name": "旧祭坛银钩",
+      "description": "海崖洞窟内旧祭祀器物。",
+      "effect": "可用作工具或证据。",
+      "location": "海崖洞窟"
+    },
+    {
+      "name": "电台磁带",
+      "description": "夜播录音。",
+      "effect": "用于对外证据。",
+      "location": "电台"
+    },
+    {
+      "name": "教堂潮汐日历",
+      "description": "节庆与潮汐对照。",
+      "effect": "预测仪式时刻。",
+      "location": "教堂地窖"
+    },
+    {
+      "name": "旧式霰弹枪",
+      "description": "可用的旧霰弹枪。",
+      "effect": "战斗中造成高伤害。",
+      "location": "教堂地窖"
+    },
+    {
+      "name": "短柄鱼叉",
+      "description": "沉重的短柄鱼叉。",
+      "effect": "近战武器。",
+      "location": "海崖洞窟"
+    },
+    {
+      "name": "火把束",
+      "description": "用于照明与驱散。",
+      "effect": "可短暂驱离眷属。",
+      "location": "海崖古阶"
+    },
+    {
+      "name": "盐封粉",
+      "description": "磨成粉的粗盐。",
+      "effect": "可用于封潮步骤。",
+      "location": "盐田"
+    }
+  ],
+  "factions": [
+    {
+      "name": "深海会",
+      "goal": "维持对大衮的献名仪式。",
+      "resources": [
+        "教堂",
+        "议会权力",
+        "工厂与盐田"
+      ],
+      "methods": [
+        "封锁",
+        "追捕",
+        "仪式"
+      ],
+      "attitude": "冷酷而有组织。"
+    },
+    {
+      "name": "镇议会与商会",
+      "goal": "维持秩序与对外形象。",
+      "resources": [
+        "档案",
+        "警卫",
+        "经济控制"
+      ],
+      "methods": [
+        "删改记录",
+        "施压",
+        "掩盖"
+      ],
+      "attitude": "表面合作，暗中阻挠。"
+    },
+    {
+      "name": "外来者联盟",
+      "goal": "保护失踪者并揭露真相。",
+      "resources": [
+        "目击证词",
+        "隐秘路线"
+      ],
+      "methods": [
+        "私下调查",
+        "撤离"
+      ],
+      "attitude": "谨慎但愿意协助。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "深海信仰",
+      "nature": "以祷词与献名维系的邪教仪式。",
+      "signs": [
+        "夜间合唱",
+        "盐与血迹",
+        "象形符号"
+      ],
+      "escalation": [
+        "献名扩大",
+        "公开暴力",
+        "仪式完成"
+      ],
+      "weakness": "破坏祭坛或切断祷词。"
+    },
+    {
+      "name": "深海眷属",
+      "nature": "与大衮相关的变异与存在。",
+      "signs": [
+        "鳞化",
+        "低语",
+        "潮汐异常"
+      ],
+      "escalation": [
+        "失语扩散",
+        "集体癔症",
+        "完全献化"
+      ],
+      "weakness": "火与盐能短暂驱离。"
+    },
+    {
+      "name": "邪教守卫",
+      "nature": "组织化清除行动。",
+      "signs": [
+        "尾随",
+        "封锁",
+        "夜间追捕"
+      ],
+      "escalation": [
+        "绑架",
+        "集体围捕",
+        "仪式替换"
+      ],
+      "weakness": "揭露名单与对外曝光。"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "多年以前",
+      "event": "深海信仰在镇上扎根。"
+    },
+    {
+      "time": "1年前",
+      "event": "失踪事件增加，夜播开始。"
+    },
+    {
+      "time": "6个月前",
+      "event": "鳞化病例出现。"
+    },
+    {
+      "time": "两周前",
+      "event": "匿名信寄出。"
+    },
+    {
+      "time": "现在",
+      "event": "海恩日临近。"
+    }
+  ]
+}
