@@ -1,0 +1,1323 @@
+{
+  "module_name": "阈下古唱",
+  "introduction": "1929年的美国内陆，偏僻小镇布莱克伍德夹在盐碱地与废弃矿场之间。表面上它靠谷仓与铁路货运维生，实际上镇民长期祭拜一位被称作“阈下者”的禁忌古神。传说在更早的旱灾年代，镇议会发现地底裂隙中有一种能“交换雨水”的仪式。自那之后，每逢干旱与歉收，镇上就会举行“古唱”，以人名与记忆换取降雨与丰收。信仰的核心是：阈下者只听得到被献给它的名字与声音，名字越多，祂越“靠近”。近一年，旱灾反而加剧，祭祀频率不断提高。几名外来工人失踪，铁路公司却收到“按时交货”的假电报。你们收到一封匿名信，信里夹着一张被血浸过的列车时刻表。信上写着：唱的人越来越多，却没有雨落下。你们被请来调查失踪与祭祀真相，同时必须在下一次古唱之前做出选择。",
+  "entry_narration": "你们沿着干裂的公路驶入布莱克伍德，风里卷着尘土与苦涩的谷壳味。镇口的木牌被太阳灼白，字迹像被磨去的骨头。主街两侧的店铺大多关门，窗纸却透出烛光般的暗红。远处粮仓如同巨大的空壳，铁皮在风中发出缓慢的呻吟。镇议会厅的窗户挂着黑布，门前却摆着新鲜的麦穗束。教堂钟楼没有钟声，反而传来低低的吟唱，像有人在地下喘息。铁路支线尽头停着一节封锁的货车，车门缝里渗出铁锈味。你们经过井口时，看见绳索被磨得发亮，像是经常有人往下放。街角的孩子望着你们，口中哼着相同的调子，却在你们看向他们时立刻噤声。天空压得很低，像一张随时会合拢的灰色幕布。你们意识到，这座小镇的秩序不是靠法律，而是靠一种被迫维持的信仰。",
+  "key_characters": [
+    {
+      "name": "玛丽安·霍普",
+      "public_info": "镇图书室管理员，温和谨慎，掌握旧年鉴与户籍记录。",
+      "hidden_secrets": "她篡改了失踪名册，试图保护一个外乡孩子。"
+    },
+    {
+      "name": "以利亚·科尔曼",
+      "public_info": "镇教堂执事，负责组织集会与礼拜。",
+      "hidden_secrets": "他保管着“古唱”仪式的完整谱页。"
+    },
+    {
+      "name": "乔治·哈斯克尔",
+      "public_info": "镇议会主席，强调秩序与丰收。",
+      "hidden_secrets": "他签署过献祭名单，并决定下一次“古唱”的时刻。"
+    },
+    {
+      "name": "露丝·麦肯纳",
+      "public_info": "镇诊所护士，处理外伤与失眠。",
+      "hidden_secrets": "她的记录里有“不属于人类”的组织样本。"
+    },
+    {
+      "name": "埃德加·布莱特",
+      "public_info": "粮仓管事，精通仓储与货运。",
+      "hidden_secrets": "他夜里将“祭品箱”送往采石场。"
+    },
+    {
+      "name": "塞缪尔·克雷",
+      "public_info": "铁路支线站长，沉默寡言。",
+      "hidden_secrets": "他伪造了外来工人的离镇记录。"
+    },
+    {
+      "name": "艾米丽·沃恩",
+      "public_info": "外乡教师，试图保护学生。",
+      "hidden_secrets": "她收集了孩子们哼唱的旋律与古唱对应表。"
+    },
+    {
+      "name": "诺亚·莱姆",
+      "public_info": "采石场工头，粗鲁但务实。",
+      "hidden_secrets": "他知道裂隙井口在采石场最深处。"
+    }
+  ],
+  "core_secrets": [
+    "布莱克伍德地下存在一处古老裂隙，被称为“阈下井”。",
+    "“古唱”是一套以名字与记忆为代价的共振仪式，用于向阈下者交换降雨。",
+    "失踪者被作为“声源”带走，关押在裂隙下的回音室。",
+    "铁路支线与粮仓被用作运输与掩盖祭品流向。",
+    "古唱分为三段：定名（宣读名册）、回声（合唱共振）、封井（以血与盐封锁裂隙），三段缺一则仪式失控。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "liturgy_broken",
+      "description": "古唱被打断，裂隙震荡，干旱在短期内恶化，镇上秩序崩坏。",
+      "conditions": "玩家破坏仪式节点或摧毁共振器。"
+    },
+    {
+      "ending_id": "liturgy_continues",
+      "description": "仪式继续，短暂的降雨降临，但新的名字被献给阈下者。",
+      "conditions": "玩家未能阻止献祭或选择妥协。"
+    },
+    {
+      "ending_id": "true_reform",
+      "description": "你们重写仪式，以供奉与封锁替代献祭，镇上获得有限的平衡。",
+      "conditions": "玩家取得原典并完成替代流程。"
+    },
+    {
+      "ending_id": "abyss_claimed",
+      "description": "阈下者苏醒，裂隙扩张吞没矿场，调查员失踪或被转化。",
+      "conditions": "仪式失控或玩家被困于回音室。"
+    },
+    {
+      "ending_id": "names_exposed",
+      "description": "献祭真相被公开，外界介入，镇民分裂，信仰崩塌但真相留存。",
+      "conditions": "玩家将证据送出镇外。"
+    },
+    {
+      "ending_id": "hollow_blessing",
+      "description": "你们主动献出自身姓名与记忆，镇上获得一季丰收，但你们被永久遗忘。",
+      "conditions": "玩家选择以自身为代价完成古唱。"
+    },
+    {
+      "ending_id": "rain_of_ashes",
+      "description": "仪式被粗暴中断，降下的不是雨而是灰烬，小镇开始荒废。",
+      "conditions": "玩家破坏仪式但未能封锁裂隙。"
+    },
+    {
+      "ending_id": "witness_bound",
+      "description": "你们带着真相离开，但被古唱标记，永远听见低语。",
+      "conditions": "玩家送出证据却曾参与或完整聆听古唱。"
+    },
+    {
+      "ending_id": "silent_town",
+      "description": "镇民在一夜之间失声，古唱停止，裂隙暂时沉寂。",
+      "conditions": "玩家切断共振节点但未摧毁仪式核心。"
+    },
+    {
+      "ending_id": "names_replaced",
+      "description": "你们用外来名册替换献祭名单，镇民得救，但无辜者被牺牲。",
+      "conditions": "玩家以替换名册完成仪式。"
+    }
+  ],
+  "ending_triggers": [
+    "仪式节点被摧毁或共振器失效。",
+    "献祭在集会夜完成。",
+    "原典仪式完成替代供奉。",
+    "所有调查员死亡或疯狂。",
+    "证据被送出镇外且仪式被迫中止。",
+    "玩家以自身完成古唱并留下记忆代价。",
+    "仪式被粗暴中断且裂隙未被封锁。",
+    "玩家送出证据但完整聆听古唱。",
+    "共振节点被切断但核心未毁。",
+    "玩家替换献祭名册完成仪式。"
+  ],
+  "locations": [
+    {
+      "name": "镇议会厅",
+      "description": "墙上挂着降雨预测图与作物账册，壁炉被人为封死。",
+      "features": [
+        "会议桌",
+        "档案柜",
+        "密封抽屉"
+      ],
+      "secrets": [
+        "献祭名册与签署页"
+      ],
+      "connections": [
+        "镇图书室",
+        "粮仓区",
+        "教堂"
+      ]
+    },
+    {
+      "name": "镇图书室",
+      "description": "旧年鉴与户籍册堆积如山，灰尘带着霉味。",
+      "features": [
+        "年鉴架",
+        "户籍册",
+        "旧剪报"
+      ],
+      "secrets": [
+        "被删改的失踪记录"
+      ],
+      "connections": [
+        "镇议会厅",
+        "学校"
+      ]
+    },
+    {
+      "name": "教堂",
+      "description": "石砌教堂阴冷，长椅上铺着发霉麻布。",
+      "features": [
+        "祭坛",
+        "唱诗台",
+        "钟楼"
+      ],
+      "secrets": [
+        "地下室藏有仪式谱页"
+      ],
+      "connections": [
+        "教堂地窖",
+        "主街"
+      ]
+    },
+    {
+      "name": "教堂地窖",
+      "description": "烛台反射出暗红光泽，墙面贴着旧祷词。",
+      "features": [
+        "旧卷宗",
+        "铁箱",
+        "名册"
+      ],
+      "secrets": [
+        "完整的原典仪式"
+      ],
+      "connections": [
+        "教堂"
+      ]
+    },
+    {
+      "name": "粮仓区",
+      "description": "巨大的谷仓像空壳，铁皮在风中作响。",
+      "features": [
+        "装卸台",
+        "称重台",
+        "仓储账册"
+      ],
+      "secrets": [
+        "夜间运送的“祭品箱”"
+      ],
+      "connections": [
+        "镇议会厅",
+        "铁路支线"
+      ]
+    },
+    {
+      "name": "铁路支线",
+      "description": "一节封锁货车停在尽头，轨道生锈发黑。",
+      "features": [
+        "封锁货车",
+        "旧信号灯",
+        "站长办公室"
+      ],
+      "secrets": [
+        "伪造离镇记录"
+      ],
+      "connections": [
+        "粮仓区",
+        "主街"
+      ]
+    },
+    {
+      "name": "主街与商铺",
+      "description": "店铺紧闭，门板钉着防尘木条。",
+      "features": [
+        "报社",
+        "杂货铺",
+        "告示栏"
+      ],
+      "secrets": [
+        "外来失踪者名单"
+      ],
+      "connections": [
+        "教堂",
+        "诊所",
+        "学校"
+      ]
+    },
+    {
+      "name": "镇诊所",
+      "description": "消毒水味混着尘土，病床上的白布发黄。",
+      "features": [
+        "病房",
+        "手术室",
+        "病例架"
+      ],
+      "secrets": [
+        "异常组织样本记录"
+      ],
+      "connections": [
+        "主街与商铺",
+        "学校"
+      ]
+    },
+    {
+      "name": "镇学校",
+      "description": "教室里仍有粉笔字迹，黑板上写着同一段旋律。",
+      "features": [
+        "教室",
+        "储物间",
+        "操场"
+      ],
+      "secrets": [
+        "孩子们的哼唱与古唱对应"
+      ],
+      "connections": [
+        "镇图书室",
+        "主街与商铺",
+        "水塔"
+      ]
+    },
+    {
+      "name": "水塔",
+      "description": "生锈的水塔高耸，水管里传来空洞回声。",
+      "features": [
+        "水阀",
+        "检修梯",
+        "压力表"
+      ],
+      "secrets": [
+        "水位与仪式同步变化"
+      ],
+      "connections": [
+        "镇学校",
+        "采石场"
+      ]
+    },
+    {
+      "name": "采石场",
+      "description": "岩壁破碎如伤口，风从深处涌出。",
+      "features": [
+        "爆破坑",
+        "升降架",
+        "警戒棚"
+      ],
+      "secrets": [
+        "裂隙井口入口"
+      ],
+      "connections": [
+        "水塔",
+        "裂隙井口"
+      ]
+    },
+    {
+      "name": "裂隙井口",
+      "description": "井壁刻满古老符号，冷风从深处上涌。",
+      "features": [
+        "石质导体",
+        "献祭台",
+        "黑水沟"
+      ],
+      "secrets": [
+        "通往回音室"
+      ],
+      "connections": [
+        "采石场",
+        "回音室"
+      ]
+    },
+    {
+      "name": "回音室",
+      "description": "地下圆形石室，墙体像在缓慢呼吸。",
+      "features": [
+        "共振柱",
+        "回音沟",
+        "古老壁画"
+      ],
+      "secrets": [
+        "存在的低语可回应提问"
+      ],
+      "connections": [
+        "裂隙井口"
+      ]
+    },
+    {
+      "name": "旧矿工宿舍",
+      "description": "木屋破败，床铺上留着干涸泥印。",
+      "features": [
+        "工人日记",
+        "旧工具",
+        "壁龛"
+      ],
+      "secrets": [
+        "早年第一次古唱记录"
+      ],
+      "connections": [
+        "采石场"
+      ]
+    },
+    {
+      "name": "镇外旱地",
+      "description": "龟裂的土地延伸至地平线，风声像在呢喃。",
+      "features": [
+        "枯井",
+        "盐碱地",
+        "风蚀石"
+      ],
+      "secrets": [
+        "古唱后短暂降雨的痕迹"
+      ],
+      "connections": [
+        "主街与商铺"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "arrival",
+      "title": "抵达小镇",
+      "summary": "调查失踪与古唱传闻的初步线索。",
+      "beats": [
+        "迟缓钟声",
+        "尘土味",
+        "灰色天空"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "锁定议会与教堂",
+        "意识到信仰干预镇政"
+      ]
+    },
+    {
+      "scene_id": "ledger_gap",
+      "title": "账册缺页",
+      "summary": "议会与粮仓记录缺失，指向秘密运送。",
+      "beats": [
+        "封存柜",
+        "涂改记录",
+        "签署页"
+      ],
+      "required_clues": [
+        "clue_missing_records"
+      ],
+      "outcomes": [
+        "指向铁路支线",
+        "引发议会警觉"
+      ]
+    },
+    {
+      "scene_id": "school_song",
+      "title": "孩童哼唱",
+      "summary": "学校里出现与仪式相符的旋律。",
+      "beats": [
+        "粉笔旋律",
+        "低声合唱",
+        "空教室"
+      ],
+      "required_clues": [
+        "clue_child_chant"
+      ],
+      "outcomes": [
+        "确认古唱在民间扩散",
+        "触发教师警告"
+      ]
+    },
+    {
+      "scene_id": "church_whisper",
+      "title": "教堂低语",
+      "summary": "原典与禁忌内容浮现。",
+      "beats": [
+        "唱诗台",
+        "旧祷词",
+        "冰冷地窖"
+      ],
+      "required_clues": [
+        "clue_liturgy_fragment"
+      ],
+      "outcomes": [
+        "发现原典禁止献祭",
+        "触发执事对峙"
+      ]
+    },
+    {
+      "scene_id": "railcar",
+      "title": "封锁货车",
+      "summary": "铁路支线藏匿失踪痕迹。",
+      "beats": [
+        "铁锈味",
+        "锁链",
+        "旧票据"
+      ],
+      "required_clues": [
+        "clue_rail_forge"
+      ],
+      "outcomes": [
+        "确认运输链",
+        "引发站长威胁"
+      ]
+    },
+    {
+      "scene_id": "clinic_samples",
+      "title": "异常样本",
+      "summary": "诊所记录揭示非人类组织。",
+      "beats": [
+        "消毒水",
+        "手术记录",
+        "密柜铁锁"
+      ],
+      "required_clues": [
+        "clue_inhuman_tissue"
+      ],
+      "outcomes": [
+        "确认阈下影响人体",
+        "提高危险等级"
+      ]
+    },
+    {
+      "scene_id": "granary_transfer",
+      "title": "粮仓夜运",
+      "summary": "夜间运送祭品箱。",
+      "beats": [
+        "装卸声",
+        "封口木箱",
+        "咒文布条"
+      ],
+      "required_clues": [
+        "clue_cargo_manifest"
+      ],
+      "outcomes": [
+        "定位采石场入口",
+        "触发追踪"
+      ]
+    },
+    {
+      "scene_id": "quarry_access",
+      "title": "采石场入口",
+      "summary": "裂隙井口的入口与守卫。",
+      "beats": [
+        "岩壁裂痕",
+        "升降架",
+        "风洞声"
+      ],
+      "required_clues": [
+        "clue_quarry_key"
+      ],
+      "outcomes": [
+        "进入裂隙",
+        "遭遇守卫战斗"
+      ]
+    },
+    {
+      "scene_id": "well_descent",
+      "title": "裂隙井口",
+      "summary": "进入井口，发现共振节点。",
+      "beats": [
+        "盐化符号",
+        "黑水流动",
+        "献祭台"
+      ],
+      "required_clues": [
+        "clue_node_map"
+      ],
+      "outcomes": [
+        "定位三处节点",
+        "触发回声幻听"
+      ]
+    },
+    {
+      "scene_id": "echo_chamber",
+      "title": "回音室",
+      "summary": "核心共振装置与存在低语。",
+      "beats": [
+        "低频震动",
+        "墙体脉动",
+        "古老壁画"
+      ],
+      "required_clues": [
+        "clue_node_1",
+        "clue_node_2",
+        "clue_node_3"
+      ],
+      "outcomes": [
+        "摧毁或重写仪式",
+        "触发结局条件"
+      ]
+    },
+    {
+      "scene_id": "council_confront",
+      "title": "议会对峙",
+      "summary": "献祭名册与仪式时间表。",
+      "beats": [
+        "封存档案",
+        "签署页",
+        "压低的威胁"
+      ],
+      "required_clues": [
+        "clue_sacrifice_roster"
+      ],
+      "outcomes": [
+        "决定揭露或妥协",
+        "启动仪式倒计时"
+      ]
+    },
+    {
+      "scene_id": "rite_night",
+      "title": "古唱之夜",
+      "summary": "仪式行动与献祭迫近。",
+      "beats": [
+        "集会灯火",
+        "合唱回声",
+        "旱风卷尘"
+      ],
+      "required_clues": [
+        "clue_ritual_schedule"
+      ],
+      "outcomes": [
+        "救出祭品或献祭完成",
+        "结局触发"
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_missing_records",
+      "description": "议会与粮仓账册中有三段运送记录被切除。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "ledger_gap"
+      ],
+      "reveal": "失踪并非事故。"
+    },
+    {
+      "clue_id": "clue_council_ink",
+      "description": "账册涂改墨迹与议会印章一致。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "council_confront"
+      ],
+      "reveal": "议会介入运输与献祭。"
+    },
+    {
+      "clue_id": "clue_sacrifice_roster",
+      "description": "议会档案柜内有献祭名册。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "council_confront"
+      ],
+      "reveal": "名单由议会签署。"
+    },
+    {
+      "clue_id": "clue_ritual_schedule",
+      "description": "议会记录标注“集会夜”时间表。",
+      "location": "镇议会厅",
+      "linked_to": [
+        "rite_night"
+      ],
+      "reveal": "古唱将在干旱最重之夜举行。"
+    },
+    {
+      "clue_id": "clue_blacklist_names",
+      "description": "图书室年鉴中多页被撕掉。",
+      "location": "镇图书室",
+      "linked_to": [
+        "names_exposed"
+      ],
+      "reveal": "失踪者被从历史中抹去。"
+    },
+    {
+      "clue_id": "clue_child_chant",
+      "description": "孩子们哼唱的旋律与黑板谱一致。",
+      "location": "镇学校",
+      "linked_to": [
+        "school_song"
+      ],
+      "reveal": "古唱正在扩散。"
+    },
+    {
+      "clue_id": "clue_teacher_notes",
+      "description": "教师笔记记录“同音节重复”。",
+      "location": "镇学校",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "旋律与教堂祷词节拍吻合。"
+    },
+    {
+      "clue_id": "clue_liturgy_fragment",
+      "description": "教堂唱诗台下藏有被撕裂的仪式谱页。",
+      "location": "教堂",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "原典禁止献祭。"
+    },
+    {
+      "clue_id": "clue_original_liturgy",
+      "description": "地窖铁箱内保存完整原典。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "true_reform"
+      ],
+      "reveal": "可替代献祭流程。"
+    },
+    {
+      "clue_id": "clue_burial_list",
+      "description": "旧名册上重复出现同一姓氏。",
+      "location": "教堂地窖",
+      "linked_to": [
+        "names_exposed"
+      ],
+      "reveal": "献祭沿家族循环。"
+    },
+    {
+      "clue_id": "clue_cargo_manifest",
+      "description": "粮仓夜运清单标注“声源箱”。",
+      "location": "粮仓区",
+      "linked_to": [
+        "granary_transfer"
+      ],
+      "reveal": "祭品被装箱转运。"
+    },
+    {
+      "clue_id": "clue_cargo_marks",
+      "description": "装卸台木板上有向采石场方向的拖拽痕。",
+      "location": "粮仓区",
+      "linked_to": [
+        "quarry_access"
+      ],
+      "reveal": "祭品被送往采石场。"
+    },
+    {
+      "clue_id": "clue_rail_forge",
+      "description": "铁路支线站长伪造离镇记录。",
+      "location": "铁路支线",
+      "linked_to": [
+        "railcar"
+      ],
+      "reveal": "外来工人被隐藏。"
+    },
+    {
+      "clue_id": "clue_rail_chain",
+      "description": "封锁货车内残留铁链与血渍。",
+      "location": "铁路支线",
+      "linked_to": [
+        "granary_transfer"
+      ],
+      "reveal": "运输过程中有人被束缚。"
+    },
+    {
+      "clue_id": "clue_inhuman_tissue",
+      "description": "诊所记录写着“非人类组织”。",
+      "location": "镇诊所",
+      "linked_to": [
+        "clinic_samples"
+      ],
+      "reveal": "阈下者影响人体结构。"
+    },
+    {
+      "clue_id": "clue_dry_fevers",
+      "description": "患者出现干热与合唱幻听。",
+      "location": "镇诊所",
+      "linked_to": [
+        "school_song"
+      ],
+      "reveal": "古唱导致集体症状。"
+    },
+    {
+      "clue_id": "clue_water_sync",
+      "description": "水塔水位在集会夜前剧降。",
+      "location": "水塔",
+      "linked_to": [
+        "rite_night"
+      ],
+      "reveal": "仪式牵动地下水。"
+    },
+    {
+      "clue_id": "clue_quarry_key",
+      "description": "采石场工头保管裂隙钥匙。",
+      "location": "采石场",
+      "linked_to": [
+        "quarry_access"
+      ],
+      "reveal": "裂隙入口需要许可。"
+    },
+    {
+      "clue_id": "clue_old_miner_diary",
+      "description": "旧矿工日记记录第一次古唱与降雨。",
+      "location": "旧矿工宿舍",
+      "linked_to": [
+        "true_reform"
+      ],
+      "reveal": "古唱原本非献祭。"
+    },
+    {
+      "clue_id": "clue_node_map",
+      "description": "裂隙井口石壁描绘三处节点。",
+      "location": "裂隙井口",
+      "linked_to": [
+        "echo_chamber"
+      ],
+      "reveal": "需破坏或重写三处节点。"
+    },
+    {
+      "clue_id": "clue_node_1",
+      "description": "井口东侧导体刻有“断声”符号。",
+      "location": "裂隙井口",
+      "linked_to": [
+        "liturgy_broken"
+      ],
+      "reveal": "可切断共振第一节点。"
+    },
+    {
+      "clue_id": "clue_node_2",
+      "description": "回音室南侧共振柱出现裂纹。",
+      "location": "回音室",
+      "linked_to": [
+        "liturgy_broken"
+      ],
+      "reveal": "第二节点已脆弱。"
+    },
+    {
+      "clue_id": "clue_node_3",
+      "description": "回音室北侧壁画写着替代节拍。",
+      "location": "回音室",
+      "linked_to": [
+        "true_reform"
+      ],
+      "reveal": "可用于重写仪式节拍。"
+    },
+    {
+      "clue_id": "clue_abyss_voice",
+      "description": "回音室低语回应调查员问题。",
+      "location": "回音室",
+      "linked_to": [
+        "abyss_claimed"
+      ],
+      "reveal": "存在能感知人类思维。"
+    },
+    {
+      "clue_id": "clue_sacrifice_chain",
+      "description": "献祭台上留有铁链与血渍。",
+      "location": "裂隙井口",
+      "linked_to": [
+        "rite_night"
+      ],
+      "reveal": "献祭已开始准备。"
+    },
+    {
+      "clue_id": "clue_drought_marks",
+      "description": "镇外旱地出现短暂降雨痕迹。",
+      "location": "镇外旱地",
+      "linked_to": [
+        "arrival"
+      ],
+      "reveal": "仪式曾生效。"
+    },
+    {
+      "clue_id": "clue_old_photo",
+      "description": "旧合影中议会成员站在采石场前。",
+      "location": "镇图书室",
+      "linked_to": [
+        "council_confront"
+      ],
+      "reveal": "议会早已参与。"
+    },
+    {
+      "clue_id": "clue_cult_symbol",
+      "description": "粮仓木箱上刻着阈下者符号。",
+      "location": "粮仓区",
+      "linked_to": [
+        "granary_transfer"
+      ],
+      "reveal": "祭品箱属于圣祷会。"
+    },
+    {
+      "clue_id": "clue_witness_note",
+      "description": "报社暗箱里有外来工人失踪记录。",
+      "location": "主街与商铺",
+      "linked_to": [
+        "names_exposed"
+      ],
+      "reveal": "失踪范围被刻意缩小。"
+    },
+    {
+      "clue_id": "clue_hymn_variation",
+      "description": "不同家庭哼唱的节拍略有差异。",
+      "location": "主街与商铺",
+      "linked_to": [
+        "true_reform"
+      ],
+      "reveal": "节拍可被改写。"
+    },
+    {
+      "clue_id": "clue_station_keys",
+      "description": "站长办公室抽屉里有采石场通行证。",
+      "location": "铁路支线",
+      "linked_to": [
+        "quarry_access"
+      ],
+      "reveal": "铁路与采石场合作。"
+    },
+    {
+      "clue_id": "clue_sleepwalk",
+      "description": "孩子夜里梦游向水塔方向。",
+      "location": "镇学校",
+      "linked_to": [
+        "water_sync"
+      ],
+      "reveal": "古唱影响潜意识。"
+    },
+    {
+      "clue_id": "clue_prayer_tone",
+      "description": "镇民哼唱的音阶与水塔回声一致。",
+      "location": "主街与商铺",
+      "linked_to": [
+        "liturgy_continues"
+      ],
+      "reveal": "镇民被动参与仪式。"
+    },
+    {
+      "clue_id": "clue_quarry_warning",
+      "description": "采石场警戒棚内有“禁入”红字。",
+      "location": "采石场",
+      "linked_to": [
+        "well_descent"
+      ],
+      "reveal": "裂隙入口被刻意封锁。"
+    },
+    {
+      "clue_id": "clue_ledger_ink",
+      "description": "粮仓账册的墨迹与教堂祷词箱一致。",
+      "location": "粮仓区",
+      "linked_to": [
+        "church_whisper"
+      ],
+      "reveal": "教堂参与运输。"
+    },
+    {
+      "clue_id": "clue_rail_ticket",
+      "description": "旧票据标注“集会夜”特别班次。",
+      "location": "铁路支线",
+      "linked_to": [
+        "rite_night"
+      ],
+      "reveal": "集会夜会有秘密运输。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "dust_choke",
+      "trigger": "白天在旱地或主街停留过久",
+      "description": "尘土突起，呼吸变得艰难。",
+      "consequences": [
+        "判定劣势",
+        "体力消耗"
+      ]
+    },
+    {
+      "event_id": "night_hymn",
+      "trigger": "夜晚靠近教堂或学校",
+      "description": "低声合唱从地下传来。",
+      "consequences": [
+        "SAN 压力",
+        "暴露行踪"
+      ]
+    },
+    {
+      "event_id": "cult_watch",
+      "trigger": "调查议会或粮仓",
+      "description": "圣祷会成员暗中跟踪。",
+      "consequences": [
+        "对峙",
+        "行动暴露"
+      ]
+    },
+    {
+      "event_id": "rail_lockdown",
+      "trigger": "进入封锁货车",
+      "description": "站长拉响警铃。",
+      "consequences": [
+        "战斗",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "clinic_lockdown",
+      "trigger": "闯入诊所密柜",
+      "description": "护士试图封锁病区。",
+      "consequences": [
+        "社交对抗",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "quarry_shake",
+      "trigger": "在采石场深入",
+      "description": "岩壁震动，尘灰坠落。",
+      "consequences": [
+        "受伤",
+        "路径封闭"
+      ]
+    },
+    {
+      "event_id": "well_surge",
+      "trigger": "进入裂隙井口",
+      "description": "冷风骤强，绳索摇晃。",
+      "consequences": [
+        "体力检定",
+        "队伍分散"
+      ]
+    },
+    {
+      "event_id": "echo_mirror",
+      "trigger": "停留在回音室",
+      "description": "墙体回放调查员记忆片段。",
+      "consequences": [
+        "SAN 压力",
+        "秘密暴露"
+      ]
+    },
+    {
+      "event_id": "rite_call",
+      "trigger": "集会夜将近",
+      "description": "全镇灯火集中于教堂与粮仓。",
+      "consequences": [
+        "进入终局阶段",
+        "行动受限"
+      ]
+    },
+    {
+      "event_id": "abyss_pulse",
+      "trigger": "仪式节点受损",
+      "description": "地底脉冲扩散，镇民短暂失语。",
+      "consequences": [
+        "SAN 压力",
+        "触发结局"
+      ]
+    },
+    {
+      "event_id": "town_hunt",
+      "trigger": "调查失踪名单后在主街停留",
+      "description": "镇民组织起巡夜队围堵外来者。",
+      "consequences": [
+        "追逐",
+        "战斗"
+      ]
+    },
+    {
+      "event_id": "granary_riot",
+      "trigger": "粮仓夜运被发现",
+      "description": "工人骚动，圣祷会试图镇压。",
+      "consequences": [
+        "战斗",
+        "局势失控"
+      ]
+    },
+    {
+      "event_id": "rail_sabotage",
+      "trigger": "进入铁路支线深处",
+      "description": "有人切断信号并封锁轨道。",
+      "consequences": [
+        "时间延误",
+        "战斗"
+      ]
+    },
+    {
+      "event_id": "school_lock",
+      "trigger": "夜晚靠近镇学校",
+      "description": "学校被上锁，孩子被迫集体合唱。",
+      "consequences": [
+        "社交对抗",
+        "SAN 压力"
+      ]
+    },
+    {
+      "event_id": "library_fire",
+      "trigger": "翻找图书室年鉴",
+      "description": "有人纵火试图销毁记录。",
+      "consequences": [
+        "受伤",
+        "证据损毁"
+      ]
+    },
+    {
+      "event_id": "quarry_ambush",
+      "trigger": "进入采石场深处",
+      "description": "圣祷会守卫伏击。",
+      "consequences": [
+        "战斗",
+        "分散队伍"
+      ]
+    },
+    {
+      "event_id": "well_chant",
+      "trigger": "在裂隙井口停留",
+      "description": "井口传出合唱，绳索自行下落。",
+      "consequences": [
+        "SAN 压力",
+        "被拖拽"
+      ]
+    },
+    {
+      "event_id": "dust_storm",
+      "trigger": "在镇外旱地调查",
+      "description": "尘暴袭来，视线被完全遮蔽。",
+      "consequences": [
+        "迷失方向",
+        "体力消耗"
+      ]
+    },
+    {
+      "event_id": "clinic_sedation",
+      "trigger": "诊所病房出现异动",
+      "description": "护士试图对调查员注射镇静剂。",
+      "consequences": [
+        "社交对抗",
+        "强制休息"
+      ]
+    },
+    {
+      "event_id": "mine_cavein",
+      "trigger": "在裂隙附近发生战斗",
+      "description": "岩壁塌陷阻断退路。",
+      "consequences": [
+        "路径封闭",
+        "体力检定"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "仪式原典",
+      "description": "完整的古唱原文，禁止人祭。",
+      "effect": "可用于改写仪式流程。",
+      "location": "教堂地窖"
+    },
+    {
+      "name": "共振线圈",
+      "description": "裂隙井口的旧式线圈。",
+      "effect": "可用于切断共振节点。",
+      "location": "裂隙井口"
+    },
+    {
+      "name": "献祭名册",
+      "description": "记录被献祭与候补的名字。",
+      "effect": "揭露真相并触发对峙。",
+      "location": "镇议会厅"
+    },
+    {
+      "name": "裂隙石片",
+      "description": "带有符号的石片。",
+      "effect": "用于定位仪式节点。",
+      "location": "采石场"
+    },
+    {
+      "name": "旧猎枪",
+      "description": "仍可使用的猎枪。",
+      "effect": "战斗中可作武器。",
+      "location": "粮仓区"
+    },
+    {
+      "name": "镇诊所急救包",
+      "description": "包含止血与镇静剂。",
+      "effect": "可稳定伤势或情绪。",
+      "location": "镇诊所"
+    },
+    {
+      "name": "撤离密电抄件",
+      "description": "确认异常的撤离命令。",
+      "effect": "对外公开可触发证据线。",
+      "location": "主街与商铺"
+    },
+    {
+      "name": "采石场通行证",
+      "description": "盖有议会印章的通行证。",
+      "effect": "可通行裂隙入口。",
+      "location": "铁路支线"
+    },
+    {
+      "name": "年鉴剪报",
+      "description": "标注失踪年份的剪报。",
+      "effect": "揭示献祭循环规律。",
+      "location": "镇图书室"
+    },
+    {
+      "name": "护符布带",
+      "description": "刻着阈下者符号的布带。",
+      "effect": "可伪装圣祷会成员。",
+      "location": "教堂"
+    },
+    {
+      "name": "煤油火把",
+      "description": "可持续燃烧的火把。",
+      "effect": "驱散裂隙掠影并照亮井道。",
+      "location": "旧矿工宿舍"
+    },
+    {
+      "name": "矿井绳索",
+      "description": "结实的绳索与挂钩。",
+      "effect": "进入裂隙井口时降低风险。",
+      "location": "采石场"
+    },
+    {
+      "name": "站长钥匙圈",
+      "description": "包含货车与信号箱钥匙。",
+      "effect": "开启铁路支线封锁设施。",
+      "location": "铁路支线"
+    },
+    {
+      "name": "教堂钟楼钥匙",
+      "description": "通往钟楼与暗门的钥匙。",
+      "effect": "可进入唱诗台下暗室。",
+      "location": "教堂"
+    },
+    {
+      "name": "祷词谱页抄本",
+      "description": "记录古唱节拍的抄本。",
+      "effect": "用于校准或改写仪式节拍。",
+      "location": "镇图书室"
+    },
+    {
+      "name": "警卫左轮",
+      "description": "旧式左轮手枪与少量子弹。",
+      "effect": "战斗中可作武器。",
+      "location": "镇议会厅"
+    },
+    {
+      "name": "水塔阀门扳手",
+      "description": "用于开启或关闭主水阀。",
+      "effect": "可短暂干扰地下水流。",
+      "location": "水塔"
+    },
+    {
+      "name": "封口蜡印",
+      "description": "带议会印章的蜡封。",
+      "effect": "伪造通行许可或文书。",
+      "location": "镇议会厅"
+    },
+    {
+      "name": "录音机",
+      "description": "可录下古唱旋律。",
+      "effect": "用于对外作为证据。",
+      "location": "主街与商铺"
+    },
+    {
+      "name": "净盐袋",
+      "description": "粗盐装袋，可用于封井。",
+      "effect": "在裂隙井口可削弱共振。",
+      "location": "镇外旱地"
+    }
+  ],
+  "factions": [
+    {
+      "name": "圣祷会",
+      "goal": "维持古唱与献祭以换取降雨。",
+      "resources": [
+        "议会影响力",
+        "教堂组织",
+        "粮仓运输"
+      ],
+      "methods": [
+        "恐吓",
+        "隐瞒",
+        "献祭"
+      ],
+      "attitude": "冷酷且秩序至上。"
+    },
+    {
+      "name": "外来工人联盟",
+      "goal": "寻找失踪者并揭露真相。",
+      "resources": [
+        "铁路情报",
+        "工地工具",
+        "外部联系"
+      ],
+      "methods": [
+        "私下调查",
+        "泄露消息",
+        "组织抵抗"
+      ],
+      "attitude": "谨慎但愿意合作。"
+    },
+    {
+      "name": "镇议会与商会",
+      "goal": "维持城镇运转并压制恐慌。",
+      "resources": [
+        "档案与资金",
+        "治安力量",
+        "话语权"
+      ],
+      "methods": [
+        "封锁记录",
+        "政治施压",
+        "操控舆论"
+      ],
+      "attitude": "表面合作，暗中阻挠。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "阈下者",
+      "nature": "沉睡于裂隙下的古老意志。",
+      "signs": [
+        "低语合唱",
+        "记忆侵入",
+        "干旱与降雨反常"
+      ],
+      "escalation": [
+        "幻听加剧",
+        "群体癔症",
+        "集体失踪"
+      ],
+      "weakness": "破坏共振节点或重写古唱节拍。"
+    },
+    {
+      "name": "圣祷会追捕",
+      "nature": "组织化的清除行动。",
+      "signs": [
+        "尾随",
+        "警告纸条",
+        "夜半敲门"
+      ],
+      "escalation": [
+        "公开对峙",
+        "绑架",
+        "献祭替换"
+      ],
+      "weakness": "揭露名册与运输链。"
+    },
+    {
+      "name": "裂隙掠影",
+      "nature": "裂隙井口的未知生物。",
+      "signs": [
+        "石壁抓痕",
+        "暗处影子",
+        "潮湿腥味"
+      ],
+      "escalation": [
+        "暗处袭击",
+        "拖拽坠井",
+        "同化侵蚀"
+      ],
+      "weakness": "强光与火焰驱散。"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "60年前",
+      "event": "第一次干旱中发现裂隙井口与古唱。"
+    },
+    {
+      "time": "40年前",
+      "event": "圣祷会成形，古唱成为镇上秘密传统。"
+    },
+    {
+      "time": "20年前",
+      "event": "粮仓与铁路被改为运输链。"
+    },
+    {
+      "time": "10年前",
+      "event": "失踪事件开始频繁。"
+    },
+    {
+      "time": "1年前",
+      "event": "古唱频率增加，降雨效果减弱。"
+    },
+    {
+      "time": "3个月前",
+      "event": "外来工人多次失踪，议会封锁消息。"
+    },
+    {
+      "time": "两周前",
+      "event": "匿名信寄出，下一次古唱定档。"
+    },
+    {
+      "time": "现在",
+      "event": "你们抵达，小镇进入倒计时。"
+    }
+  ]
+}
