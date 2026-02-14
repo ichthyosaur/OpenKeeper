@@ -1,0 +1,2323 @@
+{
+  "module_name": "疯狂山脉",
+  "introduction": "1930年的南极考察季，米斯卡塔尼克大学集结一支规模空前的科学队伍，计划在南极高原开展深层钻探与化石采样。你们作为科考队成员之一，将随队进入人类极少涉足的极地腹地。官方对外宣称此行只为学术，但队内已有人私下担忧：这片死寂大陆从不轻易交出秘密。极昼之下的冰原、无人踏足的山脉、近乎无限的白色与寂静，都会让人的判断变得迟钝。你们被要求严格遵守纪律与保密原则，同时记录、采样、汇报。随着考察计划推进，队内分歧与压力不断堆积。你们的任务是确保科学目标实现、队伍安全返航，并在不可解释的异常出现时做出决定。",
+  "entry_narration": "你们在风雪与柴油味中踏上冰架，白色世界吞没了所有方向感。远处的山脊像锋利的黑色裂缝切开天幕，阳光在冰面上反射出刺眼的银色。雪橇犬的喘息声与发动机轰鸣交织在一起，很快又被风吞没。营地帐篷在雪地上显得微小而脆弱，像是随时会被抹去的标记。无线电里只有静电噪音与断断续续的报文，仿佛世界在你们身后逐渐远离。你们抬头望向更深的高原，那里没有任何已知的路标。极地的寒冷不仅侵入皮肤，也让思绪变得迟缓。此刻一切仍在计划之内，但无人能确信计划能持续多久。",
+  "key_characters": [
+    {
+      "name": "威廉·德尔",
+      "public_info": "地质组负责人，谨慎、强调流程与安全。",
+      "hidden_secrets": "他私下收到外界电报，希望他优先保障某些样本回收。"
+    },
+    {
+      "name": "弗兰克·帕波第",
+      "public_info": "工程教授，钻探设备的设计者，技术狂热。",
+      "hidden_secrets": "他对设备极端自信，愿意冒险过载使用。"
+    },
+    {
+      "name": "莱克",
+      "public_info": "生物学家，负责化石采样与分类。",
+      "hidden_secrets": "他倾向独立行动，渴望发现“前寒武纪生命”。"
+    },
+    {
+      "name": "丹福思",
+      "public_info": "年轻研究生，负责记录与绘图。",
+      "hidden_secrets": "他对怪异图案极度敏感，容易受暗示影响。"
+    },
+    {
+      "name": "埃尔伍德",
+      "public_info": "气象学家，擅长判断风暴与能见度。",
+      "hidden_secrets": "他隐瞒了一次高空读数异常。"
+    },
+    {
+      "name": "道格拉斯",
+      "public_info": "船队指挥，经验丰富的极地船长。",
+      "hidden_secrets": "他手上握着外界追加考察的指令。"
+    },
+    {
+      "name": "麦克泰格",
+      "public_info": "无线电报务员，负责营地通讯。",
+      "hidden_secrets": "他私下保存了未上报的异常信号记录。"
+    },
+    {
+      "name": "舍尔曼",
+      "public_info": "飞行员，负责往返运输与侦察。",
+      "hidden_secrets": "他曾在空中看见无法解释的地貌轮廓。"
+    }
+  ],
+  "core_secrets": [
+    "南极内陆存在与现有地质年代不相符的异常构造。",
+    "考察队的部分计划被外界利益驱动，存在信息不对称。",
+    "队内记录与报告可能被要求进行“选择性披露”。",
+    "极地环境会放大心理压力，导致判断偏差。",
+    "部分异常记录与电报被要求延迟或分级上报。",
+    "远端山脉附近存在持续性低频回声现象。",
+    "某些异常结构的尺度远超地质过程可解释范围。",
+    "有成员私下绘制更详细地图，但未纳入正式档案。"
+  ],
+  "possible_endings": [
+    {
+      "ending_id": "evacuation_success",
+      "description": "你们成功撤离，带回部分证据，但更多真相被封存。",
+      "conditions": "完成最低限度样本回收并全员撤离。"
+    },
+    {
+      "ending_id": "expedition_collapses",
+      "description": "考察队陷入混乱，设备损毁，人员失散，真相被埋在冰下。",
+      "conditions": "营地崩溃或关键成员失踪。"
+    },
+    {
+      "ending_id": "report_suppressed",
+      "description": "你们带回报告，但被上层压下，外界不知真相。",
+      "conditions": "证据不足或被迫删除关键内容。"
+    },
+    {
+      "ending_id": "warning_heeded",
+      "description": "你们成功阻止后续深入计划，南极活动被暂停。",
+      "conditions": "取得足够证据并说服权威。"
+    },
+    {
+      "ending_id": "forbidden_return",
+      "description": "你们选择再次深入，留下明确线索，但代价沉重。",
+      "conditions": "主动重返禁区以确认关键异常。"
+    },
+    {
+      "ending_id": "silence_by_choice",
+      "description": "你们决定沉默，真相只在幸存者之间流传。",
+      "conditions": "主动隐瞒关键发现。"
+    },
+    {
+      "ending_id": "catastrophic_storm",
+      "description": "风暴导致全队被迫弃营撤离，损失巨大。",
+      "conditions": "连续风暴叠加且补给中断。"
+    },
+    {
+      "ending_id": "fractured_team",
+      "description": "队伍分裂为多股行动，部分人永远留在冰原。",
+      "conditions": "决策分歧导致行动分裂。"
+    },
+    {
+      "ending_id": "evidence_smuggled",
+      "description": "你们私下带出关键证据，但必须终身躲避追问。",
+      "conditions": "在官方封锁前转移证据。"
+    },
+    {
+      "ending_id": "lost_in_white",
+      "description": "调查员在白色高原迷失，剩余人员撤离。",
+      "conditions": "极夜或能见度崩溃导致失踪。"
+    }
+  ],
+  "ending_triggers": [
+    "完成撤离并保全关键人员。",
+    "关键营地或通讯枢纽失效。",
+    "证据被封存或删除。",
+    "外界权威被说服暂停行动。",
+    "队伍主动深入禁区。",
+    "幸存者决定沉默。",
+    "连续风暴破坏补给。",
+    "队伍因决策分裂。",
+    "证据被秘密转移。",
+    "调查员在白色高原失踪。"
+  ],
+  "locations": [
+    {
+      "name": "麦克默多湾外海锚地",
+      "description": "船只与补给的起点，风浪与冰原交错。",
+      "features": [
+        "补给仓",
+        "无线电主台",
+        "装卸甲板"
+      ],
+      "secrets": [
+        "未公开的追加指令"
+      ],
+      "connections": [
+        "冰架登陆点"
+      ]
+    },
+    {
+      "name": "冰架登陆点",
+      "description": "雪橇犬、装备与飞机的集结区。",
+      "features": [
+        "临时仓库",
+        "雪橇犬围栏",
+        "燃料桶"
+      ],
+      "secrets": [
+        "缺失的物资清单"
+      ],
+      "connections": [
+        "沿冰架营地",
+        "高原补给营地"
+      ]
+    },
+    {
+      "name": "沿冰架营地",
+      "description": "过渡营地，风向多变。",
+      "features": [
+        "帐篷群",
+        "观测点",
+        "备用电台"
+      ],
+      "secrets": [
+        "异常的风向记录"
+      ],
+      "connections": [
+        "冰架登陆点",
+        "高原补给营地"
+      ]
+    },
+    {
+      "name": "高原补给营地",
+      "description": "燃料与补给中继站，飞机短停。",
+      "features": [
+        "飞机遮蔽墙",
+        "燃料储存",
+        "雪橇工具"
+      ],
+      "secrets": [
+        "被篡改的燃料记录"
+      ],
+      "connections": [
+        "沿冰架营地",
+        "南方永久营地"
+      ]
+    },
+    {
+      "name": "南方永久营地",
+      "description": "主要科研据点，钻探与气象中心。",
+      "features": [
+        "钻探设备",
+        "实验帐篷",
+        "无线电主机"
+      ],
+      "secrets": [
+        "被隐藏的异常读数"
+      ],
+      "connections": [
+        "高原补给营地",
+        "西北勘探路线"
+      ]
+    },
+    {
+      "name": "西北勘探路线",
+      "description": "通往未知区域的雪橇路线。",
+      "features": [
+        "冰脊",
+        "风蚀标记",
+        "旧雪橇道"
+      ],
+      "secrets": [
+        "路线记录中断"
+      ],
+      "connections": [
+        "南方永久营地",
+        "山麓临时营地"
+      ]
+    },
+    {
+      "name": "山麓临时营地",
+      "description": "靠近高山的前出营地，风力极强。",
+      "features": [
+        "井架残件",
+        "飞机迫降点",
+        "临时仓库"
+      ],
+      "secrets": [
+        "消失的样本箱"
+      ],
+      "connections": [
+        "西北勘探路线",
+        "异常山脉"
+      ]
+    },
+    {
+      "name": "异常山脉",
+      "description": "高耸黑色山脉，地形规则而难以解释。",
+      "features": [
+        "规则轮廓",
+        "密集洞口",
+        "黑色岩层"
+      ],
+      "secrets": [
+        "无法解释的几何结构"
+      ],
+      "connections": [
+        "山麓临时营地",
+        "高原边缘空域"
+      ]
+    },
+    {
+      "name": "高原边缘空域",
+      "description": "风暴与强气流交错的空中通道。",
+      "features": [
+        "强气流",
+        "云墙",
+        "低温层"
+      ],
+      "secrets": [
+        "短暂出现的异常轮廓"
+      ],
+      "connections": [
+        "异常山脉",
+        "远端高原"
+      ]
+    },
+    {
+      "name": "远端高原",
+      "description": "冰盖之下结构复杂的区域。",
+      "features": [
+        "冰脊迷宫",
+        "隐约结构",
+        "裂隙"
+      ],
+      "secrets": [
+        "冰下的异常纹路"
+      ],
+      "connections": [
+        "高原边缘空域",
+        "未知建筑遗址"
+      ]
+    },
+    {
+      "name": "未知建筑遗址",
+      "description": "巨大规模的冰下遗迹，被冰层覆盖。",
+      "features": [
+        "石墙残段",
+        "拱门",
+        "断裂通道"
+      ],
+      "secrets": [
+        "异常符号残留"
+      ],
+      "connections": [
+        "远端高原",
+        "冰下通道入口"
+      ]
+    },
+    {
+      "name": "冰下通道入口",
+      "description": "通向更深处的入口，温度异常。",
+      "features": [
+        "结冰台阶",
+        "拱顶",
+        "回声"
+      ],
+      "secrets": [
+        "近期活动痕迹"
+      ],
+      "connections": [
+        "未知建筑遗址",
+        "深层空洞"
+      ]
+    },
+    {
+      "name": "深层空洞",
+      "description": "回声放大、气味异常的地下空间。",
+      "features": [
+        "光滑地面",
+        "分叉通道",
+        "洞壁刻痕"
+      ],
+      "secrets": [
+        "不应存在的痕迹"
+      ],
+      "connections": [
+        "冰下通道入口",
+        "更深裂隙"
+      ]
+    },
+    {
+      "name": "更深裂隙",
+      "description": "通向未知深渊的裂隙与洞口。",
+      "features": [
+        "温暖气流",
+        "雾气",
+        "陡坡"
+      ],
+      "secrets": [
+        "回声异常增强"
+      ],
+      "connections": [
+        "深层空洞"
+      ]
+    },
+    {
+      "name": "实验帐篷区",
+      "description": "简易实验室与样本处理区，灯光终夜不灭。",
+      "features": [
+        "切片台",
+        "酒精罐",
+        "记录板"
+      ],
+      "secrets": [
+        "被锁起的异常样本"
+      ],
+      "connections": [
+        "南方永久营地",
+        "无线电站"
+      ]
+    },
+    {
+      "name": "无线电站",
+      "description": "雪墙包围的小型电台室。",
+      "features": [
+        "短波发射机",
+        "电报码",
+        "备用电池"
+      ],
+      "secrets": [
+        "未上报的信号抄件"
+      ],
+      "connections": [
+        "南方永久营地",
+        "实验帐篷区"
+      ]
+    },
+    {
+      "name": "雪橇犬营",
+      "description": "犬舍与围栏区，犬群对某些气味极度敏感。",
+      "features": [
+        "围栏",
+        "狗食仓",
+        "雪橇架"
+      ],
+      "secrets": [
+        "夜里自发的集体躁动"
+      ],
+      "connections": [
+        "冰架登陆点",
+        "沿冰架营地"
+      ]
+    },
+    {
+      "name": "飞机遮蔽墙",
+      "description": "用雪块垒起的防风墙，遮蔽机体。",
+      "features": [
+        "机翼罩",
+        "燃料箱",
+        "检修梯"
+      ],
+      "secrets": [
+        "机体被异常刮擦"
+      ],
+      "connections": [
+        "高原补给营地"
+      ]
+    },
+    {
+      "name": "临时病帐",
+      "description": "处理冻伤与高反的简易病帐。",
+      "features": [
+        "医疗包",
+        "担架",
+        "记录卡"
+      ],
+      "secrets": [
+        "异常症状记录"
+      ],
+      "connections": [
+        "南方永久营地"
+      ]
+    },
+    {
+      "name": "气象塔",
+      "description": "观测风向与温度的立架。",
+      "features": [
+        "风速计",
+        "温度计",
+        "记录箱"
+      ],
+      "secrets": [
+        "被改写的风向记录"
+      ],
+      "connections": [
+        "南方永久营地"
+      ]
+    },
+    {
+      "name": "蓝冰区",
+      "description": "暴露的蓝冰地带，能见度极高。",
+      "features": [
+        "冰裂纹",
+        "反射光",
+        "硬冰面"
+      ],
+      "secrets": [
+        "冰下结构影子"
+      ],
+      "connections": [
+        "西北勘探路线",
+        "远端高原"
+      ]
+    },
+    {
+      "name": "压力脊地带",
+      "description": "冰层挤压形成的脊线迷宫。",
+      "features": [
+        "冰脊",
+        "狭缝",
+        "风道"
+      ],
+      "secrets": [
+        "短暂出现的怪异回声"
+      ],
+      "connections": [
+        "西北勘探路线",
+        "山麓临时营地"
+      ]
+    },
+    {
+      "name": "努纳塔克岩脊",
+      "description": "露出冰面的黑色岩脊。",
+      "features": [
+        "裸岩",
+        "岩屑",
+        "风蚀纹"
+      ],
+      "secrets": [
+        "岩面刻痕"
+      ],
+      "connections": [
+        "异常山脉",
+        "远端高原"
+      ]
+    },
+    {
+      "name": "冰下交汇厅",
+      "description": "多条冰下通道的交汇处。",
+      "features": [
+        "拱门残段",
+        "回声墙",
+        "碎石堆"
+      ],
+      "secrets": [
+        "被移动的标记"
+      ],
+      "connections": [
+        "冰下通道入口",
+        "深层空洞"
+      ]
+    },
+    {
+      "name": "沉默盆地",
+      "description": "高原一处异常安静的洼地。",
+      "features": [
+        "风声消失",
+        "平整冰面",
+        "薄雾"
+      ],
+      "secrets": [
+        "无线电彻底静默"
+      ],
+      "connections": [
+        "远端高原",
+        "未知建筑遗址"
+      ]
+    },
+    {
+      "name": "旧钻孔点",
+      "description": "早期试钻留下的井口。",
+      "features": [
+        "井架残件",
+        "钻杆碎片",
+        "封盖"
+      ],
+      "secrets": [
+        "井内回声异常"
+      ],
+      "connections": [
+        "南方永久营地"
+      ]
+    },
+    {
+      "name": "裂隙边缘营",
+      "description": "靠近裂隙设置的小型前哨。",
+      "features": [
+        "绳索",
+        "标记旗",
+        "临时帐篷"
+      ],
+      "secrets": [
+        "夜间绳索自行移动"
+      ],
+      "connections": [
+        "远端高原",
+        "冰下通道入口"
+      ]
+    },
+    {
+      "name": "样本封存室",
+      "description": "封锁样本与记录的雪屋。",
+      "features": [
+        "铁箱",
+        "封条",
+        "记录簿"
+      ],
+      "secrets": [
+        "封条被重新粘贴"
+      ],
+      "connections": [
+        "南方永久营地"
+      ]
+    },
+    {
+      "name": "壁画长廊",
+      "description": "冰下遗迹中的长廊，墙面保留带状雕刻。",
+      "features": [
+        "带状浮雕",
+        "重复图案",
+        "低温凝霜"
+      ],
+      "secrets": [
+        "被刮去的旧雕刻"
+      ],
+      "connections": [
+        "未知建筑遗址",
+        "冰下交汇厅"
+      ]
+    },
+    {
+      "name": "石桥断段",
+      "description": "悬空石桥的断裂残段，通向更深处。",
+      "features": [
+        "悬空拱",
+        "碎石堆",
+        "风声"
+      ],
+      "secrets": [
+        "新近拖拽痕迹"
+      ],
+      "connections": [
+        "未知建筑遗址",
+        "冰下通道入口"
+      ]
+    },
+    {
+      "name": "螺旋斜坡遗迹",
+      "description": "圆形结构内的螺旋斜坡，通往高处。",
+      "features": [
+        "盘旋坡道",
+        "坍塌石块",
+        "拱门"
+      ],
+      "secrets": [
+        "通向另一片区域的隐蔽通道"
+      ],
+      "connections": [
+        "未知建筑遗址",
+        "冰下交汇厅"
+      ]
+    },
+    {
+      "name": "半球洞厅",
+      "description": "圆顶洞厅，回声异常清晰。",
+      "features": [
+        "穹顶",
+        "环形拱门",
+        "回声"
+      ],
+      "secrets": [
+        "通向更深裂隙的单一入口"
+      ],
+      "connections": [
+        "深层空洞",
+        "更深裂隙"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "arrival_ice",
+      "title": "抵达冰架",
+      "summary": "建立初始营地与补给点。",
+      "beats": [
+        "寒风",
+        "犬吠",
+        "装卸"
+      ],
+      "required_clues": [],
+      "outcomes": [
+        "确定营地位置",
+        "发现补给缺口"
+      ]
+    },
+    {
+      "scene_id": "supply_chain",
+      "title": "补给链条",
+      "summary": "确认燃料与通信线路是否完整。",
+      "beats": [
+        "清点",
+        "无线电噪音",
+        "风向变化"
+      ],
+      "required_clues": [
+        "clue_missing_manifest"
+      ],
+      "outcomes": [
+        "锁定问题节点",
+        "调整路线"
+      ]
+    },
+    {
+      "scene_id": "first_flight",
+      "title": "首次飞行",
+      "summary": "高空侦察与地形确认。",
+      "beats": [
+        "强气流",
+        "云墙",
+        "黑色山影"
+      ],
+      "required_clues": [
+        "clue_altitude_log"
+      ],
+      "outcomes": [
+        "确认异常山脉",
+        "触发风险评估"
+      ]
+    },
+    {
+      "scene_id": "base_drilling",
+      "title": "营地钻探",
+      "summary": "启动深层钻探作业。",
+      "beats": [
+        "设备轰鸣",
+        "碎屑",
+        "温度异常"
+      ],
+      "required_clues": [
+        "clue_drill_reading"
+      ],
+      "outcomes": [
+        "样本发现",
+        "设备过载风险"
+      ]
+    },
+    {
+      "scene_id": "weather_spike",
+      "title": "风暴预警",
+      "summary": "极端风暴临近，需决策是否撤离。",
+      "beats": [
+        "气压骤降",
+        "帐篷震动",
+        "通讯延迟"
+      ],
+      "required_clues": [
+        "clue_weather_chart"
+      ],
+      "outcomes": [
+        "提前撤离",
+        "风险延误"
+      ]
+    },
+    {
+      "scene_id": "northwest_push",
+      "title": "西北推进",
+      "summary": "小队前出勘探，带回异常样本。",
+      "beats": [
+        "雪橇道",
+        "裂纹",
+        "回声"
+      ],
+      "required_clues": [
+        "clue_route_gap"
+      ],
+      "outcomes": [
+        "建立临时营地",
+        "通讯中断风险"
+      ]
+    },
+    {
+      "scene_id": "lost_signal",
+      "title": "失联信号",
+      "summary": "前出小队通讯断续。",
+      "beats": [
+        "静电",
+        "重复电报码",
+        "时间延误"
+      ],
+      "required_clues": [
+        "clue_radio_anomaly"
+      ],
+      "outcomes": [
+        "决定搜索",
+        "等待支援"
+      ]
+    },
+    {
+      "scene_id": "mountain_silhouette",
+      "title": "山脉轮廓",
+      "summary": "远端高山轮廓与规则结构。",
+      "beats": [
+        "黑色山影",
+        "洞口",
+        "风哨"
+      ],
+      "required_clues": [
+        "clue_silhouette_photo"
+      ],
+      "outcomes": [
+        "确定异常区域",
+        "风险升级"
+      ]
+    },
+    {
+      "scene_id": "advance_rescue",
+      "title": "前出搜救",
+      "summary": "前往山麓营地搜寻失联队伍。",
+      "beats": [
+        "残骸",
+        "撕裂痕迹",
+        "异常寂静"
+      ],
+      "required_clues": [
+        "clue_camp_damage"
+      ],
+      "outcomes": [
+        "发现线索",
+        "保密决策"
+      ]
+    },
+    {
+      "scene_id": "aerial_crossing",
+      "title": "穿越高空",
+      "summary": "尝试跨越高山山隘。",
+      "beats": [
+        "气流震荡",
+        "能见度下降",
+        "异常云影"
+      ],
+      "required_clues": [
+        "clue_pass_window"
+      ],
+      "outcomes": [
+        "抵达远端高原",
+        "紧急返航"
+      ]
+    },
+    {
+      "scene_id": "ice_buried_ruins",
+      "title": "冰下遗迹",
+      "summary": "发现冰层下的大规模结构。",
+      "beats": [
+        "拱门",
+        "石墙",
+        "回声放大"
+      ],
+      "required_clues": [
+        "clue_arch_geometry"
+      ],
+      "outcomes": [
+        "记录证据",
+        "选择深入"
+      ]
+    },
+    {
+      "scene_id": "tunnel_descent",
+      "title": "通道下行",
+      "summary": "进入冰下通道。",
+      "beats": [
+        "冷气",
+        "脚印",
+        "气味"
+      ],
+      "required_clues": [
+        "clue_recent_tracks"
+      ],
+      "outcomes": [
+        "确认活动痕迹",
+        "触发恐惧测试"
+      ]
+    },
+    {
+      "scene_id": "echo_chamber",
+      "title": "回声空洞",
+      "summary": "地下空洞与异常回声。",
+      "beats": [
+        "雾气",
+        "回声",
+        "不稳定气流"
+      ],
+      "required_clues": [
+        "clue_echo_pattern"
+      ],
+      "outcomes": [
+        "定位更深裂隙",
+        "撤退决策"
+      ]
+    },
+    {
+      "scene_id": "deep_choice",
+      "title": "深处抉择",
+      "summary": "是否继续深入未知深渊。",
+      "beats": [
+        "温暖气流",
+        "能见度下降",
+        "心理压力"
+      ],
+      "required_clues": [
+        "clue_descent_map"
+      ],
+      "outcomes": [
+        "深入",
+        "撤离"
+      ]
+    },
+    {
+      "scene_id": "return_decision",
+      "title": "返程决策",
+      "summary": "如何处理证据与报告。",
+      "beats": [
+        "争执",
+        "保密",
+        "写作"
+      ],
+      "required_clues": [
+        "clue_report_draft"
+      ],
+      "outcomes": [
+        "提交报告",
+        "私下封存"
+      ]
+    },
+    {
+      "scene_id": "lab_night",
+      "title": "实验帐篷之夜",
+      "summary": "样本处理引发争执与异常现象。",
+      "beats": [
+        "切片",
+        "异味",
+        "争论"
+      ],
+      "required_clues": [
+        "clue_sample_irregular"
+      ],
+      "outcomes": [
+        "记录异常",
+        "心理压力上升"
+      ]
+    },
+    {
+      "scene_id": "radio_watch",
+      "title": "无线电守夜",
+      "summary": "信号反复出现干扰与回波。",
+      "beats": [
+        "静电",
+        "回波",
+        "重复码"
+      ],
+      "required_clues": [
+        "clue_signal_loop"
+      ],
+      "outcomes": [
+        "确认周期性干扰",
+        "调整频道"
+      ]
+    },
+    {
+      "scene_id": "dogyard_break",
+      "title": "犬营骚动",
+      "summary": "犬群突然集体躁动。",
+      "beats": [
+        "犬吠",
+        "围栏震动",
+        "异味"
+      ],
+      "required_clues": [
+        "clue_dog_agitation"
+      ],
+      "outcomes": [
+        "控制犬群",
+        "暴露位置"
+      ]
+    },
+    {
+      "scene_id": "blue_ice_run",
+      "title": "蓝冰穿越",
+      "summary": "在蓝冰区进行快速移动。",
+      "beats": [
+        "反光刺眼",
+        "滑移",
+        "裂纹"
+      ],
+      "required_clues": [
+        "clue_blue_ice_shadow"
+      ],
+      "outcomes": [
+        "缩短路线",
+        "增加风险"
+      ]
+    },
+    {
+      "scene_id": "pressure_ridge",
+      "title": "压力脊迷宫",
+      "summary": "冰脊迷宫中寻找通路。",
+      "beats": [
+        "冰脊",
+        "风道",
+        "回声"
+      ],
+      "required_clues": [
+        "clue_ridge_echo"
+      ],
+      "outcomes": [
+        "找到捷径",
+        "时间消耗"
+      ]
+    },
+    {
+      "scene_id": "nunatak_find",
+      "title": "努纳塔克发现",
+      "summary": "岩脊上出现异常刻痕。",
+      "beats": [
+        "风蚀纹",
+        "黑岩",
+        "细刻痕"
+      ],
+      "required_clues": [
+        "clue_nunatak_marks"
+      ],
+      "outcomes": [
+        "记录证据",
+        "引发疑虑"
+      ]
+    },
+    {
+      "scene_id": "silent_basin",
+      "title": "沉默盆地",
+      "summary": "无线电静默与风声消失。",
+      "beats": [
+        "寂静",
+        "低温",
+        "不安"
+      ],
+      "required_clues": [
+        "clue_silence_zone"
+      ],
+      "outcomes": [
+        "队伍紧张",
+        "决策压力"
+      ]
+    },
+    {
+      "scene_id": "supply_sabotage",
+      "title": "补给事故",
+      "summary": "燃料与器材出现异常损耗。",
+      "beats": [
+        "泄漏",
+        "争执",
+        "清点"
+      ],
+      "required_clues": [
+        "clue_fuel_discrepancy"
+      ],
+      "outcomes": [
+        "寻找责任",
+        "补给下降"
+      ]
+    },
+    {
+      "scene_id": "ice_junction",
+      "title": "冰下交汇",
+      "summary": "多通道交汇导致路线混乱。",
+      "beats": [
+        "标记",
+        "回声",
+        "分岔"
+      ],
+      "required_clues": [
+        "clue_marker_tags"
+      ],
+      "outcomes": [
+        "选择路径",
+        "迷路风险"
+      ]
+    },
+    {
+      "scene_id": "medical_alert",
+      "title": "医疗警报",
+      "summary": "失温与失语症状出现。",
+      "beats": [
+        "发抖",
+        "沙哑",
+        "记录"
+      ],
+      "required_clues": [
+        "clue_medical_note"
+      ],
+      "outcomes": [
+        "加重风险",
+        "临时隔离"
+      ]
+    },
+    {
+      "scene_id": "aircraft_damage",
+      "title": "机体损伤",
+      "summary": "飞机出现异常刮伤与故障。",
+      "beats": [
+        "划痕",
+        "结冰",
+        "检修"
+      ],
+      "required_clues": [
+        "clue_engine_scars"
+      ],
+      "outcomes": [
+        "维修延误",
+        "航行受限"
+      ]
+    },
+    {
+      "scene_id": "mural_corridor",
+      "title": "壁画长廊",
+      "summary": "冰下长廊中的浮雕记录与诡异修改痕迹。",
+      "beats": [
+        "浮雕纹带",
+        "霜雾",
+        "刻痕缺口"
+      ],
+      "required_clues": [
+        "clue_mural_scrape"
+      ],
+      "outcomes": [
+        "获得证据",
+        "心理压力上升"
+      ]
+    },
+    {
+      "scene_id": "spiral_ramp",
+      "title": "螺旋斜坡",
+      "summary": "沿螺旋斜坡探索上层结构。",
+      "beats": [
+        "盘旋坡道",
+        "碎石",
+        "风声"
+      ],
+      "required_clues": [
+        "clue_ramp_scuff"
+      ],
+      "outcomes": [
+        "发现新通道",
+        "体力消耗"
+      ]
+    },
+    {
+      "scene_id": "bridge_gap",
+      "title": "石桥断段",
+      "summary": "跨越断裂石桥进入深处。",
+      "beats": [
+        "悬空拱",
+        "裂隙",
+        "回声"
+      ],
+      "required_clues": [
+        "clue_bridge_marks"
+      ],
+      "outcomes": [
+        "进入深层",
+        "触发危险"
+      ]
+    },
+    {
+      "scene_id": "dome_hall",
+      "title": "半球洞厅",
+      "summary": "洞厅回声放大，判断入口。",
+      "beats": [
+        "穹顶回响",
+        "雾气",
+        "单入口"
+      ],
+      "required_clues": [
+        "clue_dome_echo"
+      ],
+      "outcomes": [
+        "锁定裂隙",
+        "撤退决策"
+      ]
+    },
+    {
+      "scene_id": "ration_crisis",
+      "title": "配给危机",
+      "summary": "燃料与口粮短缺引发冲突。",
+      "beats": [
+        "清点",
+        "争执",
+        "决策"
+      ],
+      "required_clues": [
+        "clue_ration_gap"
+      ],
+      "outcomes": [
+        "配给方案",
+        "队伍裂痕"
+      ]
+    },
+    {
+      "scene_id": "comm_blackout",
+      "title": "通讯黑区",
+      "summary": "无线电完全沉默，外界失联。",
+      "beats": [
+        "静默",
+        "试联",
+        "备用线圈"
+      ],
+      "required_clues": [
+        "clue_blackout_zone"
+      ],
+      "outcomes": [
+        "恢复通讯",
+        "失联加剧"
+      ]
+    },
+    {
+      "scene_id": "hypothermia_wave",
+      "title": "失温潮",
+      "summary": "多人出现失温与幻听。",
+      "beats": [
+        "体温下降",
+        "误判",
+        "躁动"
+      ],
+      "required_clues": [
+        "clue_temp_log"
+      ],
+      "outcomes": [
+        "临时隔离",
+        "行动延误"
+      ]
+    }
+  ],
+  "clues": [
+    {
+      "clue_id": "clue_missing_manifest",
+      "description": "补给清单与实物不一致。",
+      "location": "冰架登陆点",
+      "linked_to": [
+        "supply_chain"
+      ],
+      "reveal": "物资被提前转移或遗漏。"
+    },
+    {
+      "clue_id": "clue_altitude_log",
+      "description": "高空日志显示异常读数。",
+      "location": "高原边缘空域",
+      "linked_to": [
+        "first_flight"
+      ],
+      "reveal": "地貌高度超出常规估算。"
+    },
+    {
+      "clue_id": "clue_drill_reading",
+      "description": "钻探温度读数异常波动。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "base_drilling"
+      ],
+      "reveal": "地下结构异常。"
+    },
+    {
+      "clue_id": "clue_weather_chart",
+      "description": "气象图显示风暴移动不合逻辑。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "weather_spike"
+      ],
+      "reveal": "风暴可能被地形影响放大。"
+    },
+    {
+      "clue_id": "clue_route_gap",
+      "description": "西北路线记录出现空档。",
+      "location": "西北勘探路线",
+      "linked_to": [
+        "northwest_push"
+      ],
+      "reveal": "队伍停留过未记录区域。"
+    },
+    {
+      "clue_id": "clue_radio_anomaly",
+      "description": "电报中出现重复的无意义序列。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "lost_signal"
+      ],
+      "reveal": "通讯受到未知干扰。"
+    },
+    {
+      "clue_id": "clue_silhouette_photo",
+      "description": "航拍照片中出现规则轮廓。",
+      "location": "高原边缘空域",
+      "linked_to": [
+        "mountain_silhouette"
+      ],
+      "reveal": "并非自然形成的形态。"
+    },
+    {
+      "clue_id": "clue_camp_damage",
+      "description": "山麓营地残骸分布异常。",
+      "location": "山麓临时营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "破坏方式非单纯风暴。"
+    },
+    {
+      "clue_id": "clue_pass_window",
+      "description": "山隘短暂通行时间被记录。",
+      "location": "异常山脉",
+      "linked_to": [
+        "aerial_crossing"
+      ],
+      "reveal": "只能在极短窗口穿越。"
+    },
+    {
+      "clue_id": "clue_arch_geometry",
+      "description": "冰下拱门比例极其精确。",
+      "location": "未知建筑遗址",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "结构具有设计规律。"
+    },
+    {
+      "clue_id": "clue_recent_tracks",
+      "description": "通道内出现新鲜拖拽痕迹。",
+      "location": "冰下通道入口",
+      "linked_to": [
+        "tunnel_descent"
+      ],
+      "reveal": "近期有人或物体经过。"
+    },
+    {
+      "clue_id": "clue_echo_pattern",
+      "description": "回声呈固定节拍。",
+      "location": "深层空洞",
+      "linked_to": [
+        "echo_chamber"
+      ],
+      "reveal": "空间结构异常。"
+    },
+    {
+      "clue_id": "clue_descent_map",
+      "description": "临时绘制的下行路线图。",
+      "location": "冰下通道入口",
+      "linked_to": [
+        "deep_choice"
+      ],
+      "reveal": "存在进一步路径。"
+    },
+    {
+      "clue_id": "clue_report_draft",
+      "description": "草拟报告删改痕迹明显。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "return_decision"
+      ],
+      "reveal": "信息被人为压缩。"
+    },
+    {
+      "clue_id": "clue_fuel_discrepancy",
+      "description": "燃料消耗与飞行记录不符。",
+      "location": "高原补给营地",
+      "linked_to": [
+        "supply_chain"
+      ],
+      "reveal": "存在额外飞行或浪费。"
+    },
+    {
+      "clue_id": "clue_wind_hum",
+      "description": "风声中出现异常低频。",
+      "location": "异常山脉",
+      "linked_to": [
+        "mountain_silhouette"
+      ],
+      "reveal": "洞口结构放大声波。"
+    },
+    {
+      "clue_id": "clue_dog_agitation",
+      "description": "雪橇犬对某些样本异常狂躁。",
+      "location": "山麓临时营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "样本带有刺激性气味。"
+    },
+    {
+      "clue_id": "clue_buried_symbols",
+      "description": "冰面下隐约可见规则符号。",
+      "location": "远端高原",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "结构延展范围巨大。"
+    },
+    {
+      "clue_id": "clue_static_spike",
+      "description": "无线电噪音出现周期性峰值。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "lost_signal"
+      ],
+      "reveal": "可能与地形或设备共振相关。"
+    },
+    {
+      "clue_id": "clue_notebook_gap",
+      "description": "记录本被撕走多页。",
+      "location": "山麓临时营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "有人刻意隐藏记录。"
+    },
+    {
+      "clue_id": "clue_ice_dust",
+      "description": "冰尘云形成的异常形态记录。",
+      "location": "高原边缘空域",
+      "linked_to": [
+        "aerial_crossing"
+      ],
+      "reveal": "气流紊乱与地形异常有关。"
+    },
+    {
+      "clue_id": "clue_cable_wear",
+      "description": "电缆磨损程度超出使用时长。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "base_drilling"
+      ],
+      "reveal": "设备被长时间过载。"
+    },
+    {
+      "clue_id": "clue_sample_bag",
+      "description": "样本袋上有不明擦痕。",
+      "location": "山麓临时营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "样本曾被移动或检查。"
+    },
+    {
+      "clue_id": "clue_patch_letter",
+      "description": "外界追加计划的密信副本。",
+      "location": "麦克默多湾外海锚地",
+      "linked_to": [
+        "return_decision"
+      ],
+      "reveal": "外界不愿终止计划。"
+    },
+    {
+      "clue_id": "clue_rescue_route",
+      "description": "救援路线与原计划不符。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "有人修改行动路线。"
+    },
+    {
+      "clue_id": "clue_thermal_pocket",
+      "description": "局部温度升高异常。",
+      "location": "冰下通道入口",
+      "linked_to": [
+        "tunnel_descent"
+      ],
+      "reveal": "地下可能存在空腔。"
+    },
+    {
+      "clue_id": "clue_snow_plumes",
+      "description": "远端高原出现不规则雪柱。",
+      "location": "远端高原",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "风道与裂隙有关。"
+    },
+    {
+      "clue_id": "clue_engine_scars",
+      "description": "飞机引擎被异常划伤。",
+      "location": "高原补给营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "非正常维护造成。"
+    },
+    {
+      "clue_id": "clue_faded_map",
+      "description": "手绘地图标注被擦掉一角。",
+      "location": "山麓临时营地",
+      "linked_to": [
+        "deep_choice"
+      ],
+      "reveal": "有人试图隐瞒路径。"
+    },
+    {
+      "clue_id": "clue_broken_compass",
+      "description": "指南针在某一区域失灵。",
+      "location": "远端高原",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "磁异常存在。"
+    },
+    {
+      "clue_id": "clue_storm_log",
+      "description": "风暴日志与实际强度不符。",
+      "location": "沿冰架营地",
+      "linked_to": [
+        "weather_spike"
+      ],
+      "reveal": "天气记录被保守处理。"
+    },
+    {
+      "clue_id": "clue_sledge_marks",
+      "description": "雪橇痕迹指向非计划方向。",
+      "location": "西北勘探路线",
+      "linked_to": [
+        "northwest_push"
+      ],
+      "reveal": "队伍偏离路线。"
+    },
+    {
+      "clue_id": "clue_redacted_report",
+      "description": "报告中大段被涂黑。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "return_decision"
+      ],
+      "reveal": "存在强制删改。"
+    },
+    {
+      "clue_id": "clue_distant_echo",
+      "description": "远处传来回声，间隔固定。",
+      "location": "异常山脉",
+      "linked_to": [
+        "mountain_silhouette"
+      ],
+      "reveal": "洞口结构可产生共鸣。"
+    },
+    {
+      "clue_id": "clue_passive_signal",
+      "description": "被动接收的奇怪信号序列。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "lost_signal"
+      ],
+      "reveal": "信号非人为呼叫。"
+    },
+    {
+      "clue_id": "clue_ration_gap",
+      "description": "口粮消耗比登记更快。",
+      "location": "沿冰架营地",
+      "linked_to": [
+        "supply_chain"
+      ],
+      "reveal": "有人私下补给或浪费。"
+    },
+    {
+      "clue_id": "clue_photo_blur",
+      "description": "照片中出现无法解释的模糊形状。",
+      "location": "高原边缘空域",
+      "linked_to": [
+        "mountain_silhouette"
+      ],
+      "reveal": "可能是视差或异常结构。"
+    },
+    {
+      "clue_id": "clue_ice_scratch",
+      "description": "冰面有规律划痕。",
+      "location": "远端高原",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "可能与下方结构相关。"
+    },
+    {
+      "clue_id": "clue_silence_interval",
+      "description": "无线电静默时长异常一致。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "lost_signal"
+      ],
+      "reveal": "干扰具有周期性。"
+    },
+    {
+      "clue_id": "clue_evacuate_note",
+      "description": "撤离计划草案被临时改写。",
+      "location": "南方永久营地",
+      "linked_to": [
+        "return_decision"
+      ],
+      "reveal": "有人主张继续深入。"
+    },
+    {
+      "clue_id": "clue_ice_glow",
+      "description": "冰层下出现微弱反光。",
+      "location": "未知建筑遗址",
+      "linked_to": [
+        "ice_buried_ruins"
+      ],
+      "reveal": "下方空间可能为空腔。"
+    },
+    {
+      "clue_id": "clue_marker_tags",
+      "description": "纸条标记分布不合常理。",
+      "location": "冰下通道入口",
+      "linked_to": [
+        "tunnel_descent"
+      ],
+      "reveal": "标记被人移动。"
+    },
+    {
+      "clue_id": "clue_gas_taint",
+      "description": "空气中出现刺鼻异味。",
+      "location": "深层空洞",
+      "linked_to": [
+        "echo_chamber"
+      ],
+      "reveal": "近期活动迹象。"
+    },
+    {
+      "clue_id": "clue_report_copy",
+      "description": "外界媒体收到的草稿版本。",
+      "location": "麦克默多湾外海锚地",
+      "linked_to": [
+        "report_suppressed"
+      ],
+      "reveal": "存在信息分流。"
+    },
+    {
+      "clue_id": "clue_flight_detour",
+      "description": "航迹记录显示额外绕行。",
+      "location": "高原补给营地",
+      "linked_to": [
+        "advance_rescue"
+      ],
+      "reveal": "有人私下侦察。"
+    },
+    {
+      "clue_id": "clue_sample_irregular",
+      "description": "样本内部结构与年代不符。",
+      "location": "实验帐篷区",
+      "linked_to": [
+        "lab_night"
+      ],
+      "reveal": "样本来源异常。"
+    },
+    {
+      "clue_id": "clue_signal_loop",
+      "description": "电报码出现循环序列。",
+      "location": "无线电站",
+      "linked_to": [
+        "radio_watch"
+      ],
+      "reveal": "并非人为发送。"
+    },
+    {
+      "clue_id": "clue_blue_ice_shadow",
+      "description": "蓝冰下出现巨型阴影。",
+      "location": "蓝冰区",
+      "linked_to": [
+        "blue_ice_run"
+      ],
+      "reveal": "冰下结构巨大。"
+    },
+    {
+      "clue_id": "clue_ridge_echo",
+      "description": "压力脊中回声间隔固定。",
+      "location": "压力脊地带",
+      "linked_to": [
+        "pressure_ridge"
+      ],
+      "reveal": "地形具共鸣特性。"
+    },
+    {
+      "clue_id": "clue_nunatak_marks",
+      "description": "岩脊刻痕非自然风化。",
+      "location": "努纳塔克岩脊",
+      "linked_to": [
+        "nunatak_find"
+      ],
+      "reveal": "有人为加工痕迹。"
+    },
+    {
+      "clue_id": "clue_silence_zone",
+      "description": "沉默盆地无线电彻底静默。",
+      "location": "沉默盆地",
+      "linked_to": [
+        "silent_basin"
+      ],
+      "reveal": "信号被屏蔽或吸收。"
+    },
+    {
+      "clue_id": "clue_medical_note",
+      "description": "病帐记录显示失语症状。",
+      "location": "临时病帐",
+      "linked_to": [
+        "medical_alert"
+      ],
+      "reveal": "症状与环境相关。"
+    },
+    {
+      "clue_id": "clue_camp_ink",
+      "description": "记录板被擦改过。",
+      "location": "实验帐篷区",
+      "linked_to": [
+        "lab_night"
+      ],
+      "reveal": "有人试图掩盖数据。"
+    },
+    {
+      "clue_id": "clue_dog_chain",
+      "description": "围栏锁链出现异常磨损。",
+      "location": "雪橇犬营",
+      "linked_to": [
+        "dogyard_break"
+      ],
+      "reveal": "犬群试图逃离。"
+    },
+    {
+      "clue_id": "clue_antenna_bend",
+      "description": "天线杆弯曲方向异常。",
+      "location": "无线电站",
+      "linked_to": [
+        "radio_watch"
+      ],
+      "reveal": "受到强力气流或冲击。"
+    },
+    {
+      "clue_id": "clue_thermal_spike",
+      "description": "局部温度短时升高。",
+      "location": "裂隙边缘营",
+      "linked_to": [
+        "tunnel_descent"
+      ],
+      "reveal": "地下空腔接近。"
+    },
+    {
+      "clue_id": "clue_ice_ring",
+      "description": "冰面出现环形裂纹。",
+      "location": "沉默盆地",
+      "linked_to": [
+        "silent_basin"
+      ],
+      "reveal": "下方存在空洞。"
+    },
+    {
+      "clue_id": "clue_box_seal",
+      "description": "封存室封条有二次粘贴痕。",
+      "location": "样本封存室",
+      "linked_to": [
+        "return_decision"
+      ],
+      "reveal": "有人调换过样本。"
+    },
+    {
+      "clue_id": "clue_wind_record",
+      "description": "气象塔记录被改写。",
+      "location": "气象塔",
+      "linked_to": [
+        "weather_spike"
+      ],
+      "reveal": "有人压低风暴等级。"
+    },
+    {
+      "clue_id": "clue_rope_move",
+      "description": "夜间绳索自行移动。",
+      "location": "裂隙边缘营",
+      "linked_to": [
+        "tunnel_descent"
+      ],
+      "reveal": "有人或物在夜间活动。"
+    },
+    {
+      "clue_id": "clue_mural_scrape",
+      "description": "壁画上有被刮去的旧图层。",
+      "location": "壁画长廊",
+      "linked_to": [
+        "mural_corridor"
+      ],
+      "reveal": "有人刻意修改记录。"
+    },
+    {
+      "clue_id": "clue_ramp_scuff",
+      "description": "螺旋斜坡上出现新鲜磨痕。",
+      "location": "螺旋斜坡遗迹",
+      "linked_to": [
+        "spiral_ramp"
+      ],
+      "reveal": "近期有人经过。"
+    },
+    {
+      "clue_id": "clue_bridge_marks",
+      "description": "石桥断段边缘有拖拽痕。",
+      "location": "石桥断段",
+      "linked_to": [
+        "bridge_gap"
+      ],
+      "reveal": "重物被转移至深处。"
+    },
+    {
+      "clue_id": "clue_dome_echo",
+      "description": "洞厅回声节拍异常固定。",
+      "location": "半球洞厅",
+      "linked_to": [
+        "dome_hall"
+      ],
+      "reveal": "空间结构被设计过。"
+    },
+    {
+      "clue_id": "clue_blackout_zone",
+      "description": "在某些时段无法收到任何信号。",
+      "location": "无线电站",
+      "linked_to": [
+        "comm_blackout"
+      ],
+      "reveal": "存在通讯黑区。"
+    },
+    {
+      "clue_id": "clue_temp_log",
+      "description": "体温记录显示多人低温异常。",
+      "location": "临时病帐",
+      "linked_to": [
+        "hypothermia_wave"
+      ],
+      "reveal": "失温与心理异常相关。"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "whiteout",
+      "trigger": "能见度骤降",
+      "description": "白色暴风雪吞没视线。",
+      "consequences": [
+        "迷失方向",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "equipment_freeze",
+      "trigger": "设备长时间暴露",
+      "description": "关键设备冻结失灵。",
+      "consequences": [
+        "行动受限",
+        "资源消耗"
+      ]
+    },
+    {
+      "event_id": "radio_dead",
+      "trigger": "无线电静默超过阈值",
+      "description": "通讯完全中断。",
+      "consequences": [
+        "信息断裂",
+        "恐慌上升"
+      ]
+    },
+    {
+      "event_id": "fuel_leak",
+      "trigger": "燃料搬运或转运",
+      "description": "燃料泄漏导致火灾风险。",
+      "consequences": [
+        "危险升级",
+        "补给损失"
+      ]
+    },
+    {
+      "event_id": "dog_panic",
+      "trigger": "样本或遗迹附近",
+      "description": "雪橇犬集体躁动。",
+      "consequences": [
+        "控制困难",
+        "暴露位置"
+      ]
+    },
+    {
+      "event_id": "storm_wall",
+      "trigger": "穿越山隘",
+      "description": "强风壁突袭飞机。",
+      "consequences": [
+        "迫降",
+        "航线偏移"
+      ]
+    },
+    {
+      "event_id": "ice_collapse",
+      "trigger": "穿越冰脊或裂隙",
+      "description": "冰面塌陷。",
+      "consequences": [
+        "受伤",
+        "装备遗失"
+      ]
+    },
+    {
+      "event_id": "camp_mutiny",
+      "trigger": "撤离与深入分歧",
+      "description": "队内争执升级。",
+      "consequences": [
+        "队伍分裂",
+        "行动延误"
+      ]
+    },
+    {
+      "event_id": "signal_echo",
+      "trigger": "发送电报",
+      "description": "电报回波变形。",
+      "consequences": [
+        "误判",
+        "通讯失败"
+      ]
+    },
+    {
+      "event_id": "altitude_sickness",
+      "trigger": "高空作业",
+      "description": "高反症状加剧。",
+      "consequences": [
+        "行动减缓",
+        "判定劣势"
+      ]
+    },
+    {
+      "event_id": "frostbite",
+      "trigger": "长时间户外搜索",
+      "description": "冻伤出现。",
+      "consequences": [
+        "健康损耗",
+        "治疗需求"
+      ]
+    },
+    {
+      "event_id": "snow_plume",
+      "trigger": "远端高原观测",
+      "description": "雪柱翻滚，形成幻象感。",
+      "consequences": [
+        "恐惧上升",
+        "判断失误"
+      ]
+    },
+    {
+      "event_id": "gear_loss",
+      "trigger": "搬运或风暴后",
+      "description": "关键工具丢失。",
+      "consequences": [
+        "任务受阻",
+        "补给紧张"
+      ]
+    },
+    {
+      "event_id": "unexpected_thaw",
+      "trigger": "冰下通道探索",
+      "description": "局部温度异常升高。",
+      "consequences": [
+        "气流变化",
+        "路径不稳"
+      ]
+    },
+    {
+      "event_id": "night_pressure",
+      "trigger": "极昼疲劳累积",
+      "description": "精神疲劳与幻听加重。",
+      "consequences": [
+        "SAN 压力",
+        "社交劣势"
+      ]
+    },
+    {
+      "event_id": "antenna_ice",
+      "trigger": "无线电站外作业",
+      "description": "天线结冰导致通讯失真。",
+      "consequences": [
+        "通讯受阻",
+        "时间延误"
+      ]
+    },
+    {
+      "event_id": "camp_whiteout",
+      "trigger": "营地夜间",
+      "description": "突发白化风暴袭击营地。",
+      "consequences": [
+        "营地损毁",
+        "补给损失"
+      ]
+    },
+    {
+      "event_id": "ice_fog",
+      "trigger": "接近裂隙或通道",
+      "description": "低温雾气突然涌出。",
+      "consequences": [
+        "能见度下降",
+        "迷路风险"
+      ]
+    },
+    {
+      "event_id": "sledge_break",
+      "trigger": "拖运样本",
+      "description": "雪橇断裂。",
+      "consequences": [
+        "负重遗失",
+        "行动受阻"
+      ]
+    },
+    {
+      "event_id": "jet_wash",
+      "trigger": "飞机起降",
+      "description": "强风掀起冰尘。",
+      "consequences": [
+        "视线遮蔽",
+        "设备污染"
+      ]
+    },
+    {
+      "event_id": "mural_distortion",
+      "trigger": "研究壁画",
+      "description": "灯光下壁画出现错觉。",
+      "consequences": [
+        "SAN 压力",
+        "判断失误"
+      ]
+    },
+    {
+      "event_id": "ramp_fall",
+      "trigger": "攀爬螺旋斜坡",
+      "description": "碎石滑落，队员跌落。",
+      "consequences": [
+        "受伤",
+        "装备遗失"
+      ]
+    },
+    {
+      "event_id": "ration_riot",
+      "trigger": "配给争执升级",
+      "description": "部分成员抢夺口粮。",
+      "consequences": [
+        "队伍分裂",
+        "体力下降"
+      ]
+    },
+    {
+      "event_id": "signal_bounce",
+      "trigger": "启用备用线圈",
+      "description": "信号反弹造成误报。",
+      "consequences": [
+        "误判",
+        "行动偏差"
+      ]
+    },
+    {
+      "event_id": "ice_bridge_crack",
+      "trigger": "穿越石桥断段",
+      "description": "桥体裂开。",
+      "consequences": [
+        "坠落风险",
+        "撤退压力"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "无线电报日志",
+      "description": "记录通讯与异常信号。",
+      "effect": "可证明通讯异常。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "航迹记录胶卷",
+      "description": "航拍与飞行轨迹。",
+      "effect": "可作为关键证据。",
+      "location": "高原补给营地"
+    },
+    {
+      "name": "钻探样本箱",
+      "description": "密封的地层样本。",
+      "effect": "用于对外说明。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "风暴预报表",
+      "description": "气象预测与记录。",
+      "effect": "用于判断撤离时机。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "山隘通行记录",
+      "description": "短暂通行窗口标记。",
+      "effect": "可安全穿越山隘。",
+      "location": "异常山脉"
+    },
+    {
+      "name": "手绘地形图",
+      "description": "标注异常区域的地图。",
+      "effect": "降低迷路风险。",
+      "location": "山麓临时营地"
+    },
+    {
+      "name": "备用燃料桶",
+      "description": "高能汽油。",
+      "effect": "延长行动时间。",
+      "location": "高原补给营地"
+    },
+    {
+      "name": "登山绳索",
+      "description": "用于裂隙与通道下降。",
+      "effect": "降低坠落风险。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "便携相机",
+      "description": "拍摄证据的相机。",
+      "effect": "解锁证据结局。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "雪橇修理包",
+      "description": "用于修复雪橇。",
+      "effect": "避免行动中断。",
+      "location": "沿冰架营地"
+    },
+    {
+      "name": "样本记录本",
+      "description": "记录样本编号与来源。",
+      "effect": "减少证据混乱。",
+      "location": "山麓临时营地"
+    },
+    {
+      "name": "高寒药箱",
+      "description": "治疗冻伤与高反。",
+      "effect": "稳定健康。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "备用电池",
+      "description": "手电与电台备用电池。",
+      "effect": "延长探索时间。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "旧式测绘仪",
+      "description": "用于测量地形高度。",
+      "effect": "确定异常结构规模。",
+      "location": "高原补给营地"
+    },
+    {
+      "name": "封存电报副本",
+      "description": "未公开的指令电报。",
+      "effect": "揭示外界动机。",
+      "location": "麦克默多湾外海锚地"
+    },
+    {
+      "name": "高倍望远镜",
+      "description": "用于远距离观测山脉。",
+      "effect": "提升侦察准确度。",
+      "location": "气象塔"
+    },
+    {
+      "name": "样本封条",
+      "description": "用于封存样本箱。",
+      "effect": "确保样本不可被替换。",
+      "location": "样本封存室"
+    },
+    {
+      "name": "低温润滑剂",
+      "description": "用于设备低温维护。",
+      "effect": "减少设备冻结。",
+      "location": "实验帐篷区"
+    },
+    {
+      "name": "冰爪",
+      "description": "冰面行走辅助工具。",
+      "effect": "降低滑坠风险。",
+      "location": "沿冰架营地"
+    },
+    {
+      "name": "勘探钢凿",
+      "description": "用于岩面取样。",
+      "effect": "快速采样。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "应急信标",
+      "description": "可发射短程求救信号。",
+      "effect": "防止失联。",
+      "location": "无线电站"
+    },
+    {
+      "name": "风暴护目镜",
+      "description": "抵抗冰尘与强风。",
+      "effect": "降低白化风暴影响。",
+      "location": "沿冰架营地"
+    },
+    {
+      "name": "绝缘手套",
+      "description": "极寒作业防护。",
+      "effect": "减少冻伤风险。",
+      "location": "临时病帐"
+    },
+    {
+      "name": "备用雪橇刹车",
+      "description": "修复雪橇制动。",
+      "effect": "稳定拖运。",
+      "location": "雪橇犬营"
+    },
+    {
+      "name": "记录蜡板",
+      "description": "低温环境下书写工具。",
+      "effect": "保留数据不被冻裂。",
+      "location": "实验帐篷区"
+    },
+    {
+      "name": "燃料配给表",
+      "description": "每日燃料分配与记录。",
+      "effect": "降低燃料浪费与冲突。",
+      "location": "南方永久营地"
+    },
+    {
+      "name": "体温记录卡",
+      "description": "记录人员体温与失温风险。",
+      "effect": "提前发现失温。",
+      "location": "临时病帐"
+    },
+    {
+      "name": "便携融冰器",
+      "description": "用于紧急融冰与取水。",
+      "effect": "缓解补水压力。",
+      "location": "沿冰架营地"
+    },
+    {
+      "name": "无线电备用线圈",
+      "description": "修复电台短波故障。",
+      "effect": "恢复通讯。",
+      "location": "无线电站"
+    },
+    {
+      "name": "食物配给箱",
+      "description": "高热量口粮与分配单。",
+      "effect": "维持体力与士气。",
+      "location": "冰架登陆点"
+    }
+  ],
+  "factions": [
+    {
+      "name": "科学组",
+      "goal": "获取高价值样本与数据。",
+      "resources": [
+        "设备",
+        "人员",
+        "学术影响力"
+      ],
+      "methods": [
+        "持续钻探",
+        "扩大勘察"
+      ],
+      "attitude": "理性但冒险。"
+    },
+    {
+      "name": "工程与飞行组",
+      "goal": "确保设备与运输安全。",
+      "resources": [
+        "飞机",
+        "燃料",
+        "维修技能"
+      ],
+      "methods": [
+        "风险评估",
+        "保守路线"
+      ],
+      "attitude": "谨慎但受压。"
+    },
+    {
+      "name": "外界资助方",
+      "goal": "推动计划继续与成果公开。",
+      "resources": [
+        "资金",
+        "媒体",
+        "影响力"
+      ],
+      "methods": [
+        "施压",
+        "信息控制"
+      ],
+      "attitude": "强势且功利。"
+    }
+  ],
+  "threats": [
+    {
+      "name": "极地环境",
+      "nature": "持续风暴与低温。",
+      "signs": [
+        "白色暴风雪",
+        "能见度归零",
+        "设备冻结"
+      ],
+      "escalation": [
+        "补给中断",
+        "营地损毁",
+        "全员风险"
+      ],
+      "weakness": "严格气象窗口、燃料配给与体温管理。"
+    },
+    {
+      "name": "队内分裂",
+      "nature": "目标与安全冲突。",
+      "signs": [
+        "争执",
+        "私下行动",
+        "信息保留"
+      ],
+      "escalation": [
+        "行动分裂",
+        "互相猜疑",
+        "指挥失效"
+      ],
+      "weakness": "明确授权与统一指挥。"
+    },
+    {
+      "name": "未知结构",
+      "nature": "不明年代与用途的遗迹。",
+      "signs": [
+        "规则几何",
+        "异常回声",
+        "温度反常"
+      ],
+      "escalation": [
+        "心理压力",
+        "判断失误",
+        "危险深入"
+      ],
+      "weakness": "记录证据后及时撤离。"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "数月前",
+      "event": "考察计划获批并筹备。"
+    },
+    {
+      "time": "出发日",
+      "event": "船队从波士顿启航。"
+    },
+    {
+      "time": "抵达麦克默多湾",
+      "event": "建立外海锚地与登陆点。"
+    },
+    {
+      "time": "建立高原补给营地",
+      "event": "飞机与雪橇进入内陆。"
+    },
+    {
+      "time": "建立南方永久营地",
+      "event": "钻探作业开始。"
+    },
+    {
+      "time": "西北勘探启动",
+      "event": "小队前出勘探。"
+    },
+    {
+      "time": "通讯异常",
+      "event": "前出队伍信号断续。"
+    },
+    {
+      "time": "风暴逼近",
+      "event": "撤离与深入争执升级。"
+    },
+    {
+      "time": "当前",
+      "event": "你们必须做出选择。"
+    }
+  ]
+}
