@@ -196,6 +196,7 @@ button.ghost {
 
 .history-content {
   font-size: 14px;
+  white-space: pre-wrap;
 }
 
 .input-row {
