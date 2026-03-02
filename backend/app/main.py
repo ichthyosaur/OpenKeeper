@@ -8,6 +8,7 @@ import socket
 import uuid
 import json
 import yaml
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -497,8 +498,106 @@ def _load_module_by_name(module_name: str) -> Path:
     raise FileNotFoundError(module_name)
 
 
+CHARACTERISTIC_POOL = [80, 70, 60, 60, 50, 50, 50, 40]
+OCCUPATION_POOL = [70, 60, 60, 50, 50, 50, 40, 40, 40]
+ATTRIBUTE_KEYS = ["str", "dex", "int", "con", "app", "pow", "siz", "edu"]
+SKILL_EXCLUDE = {"mythos"}
+
+
+def _allowed_skills() -> set[str]:
+    keys = {"credit_rating", "own_language", "other_language"}
+    for prof in PROFESSIONS.values():
+        keys.update(prof.get("skills", {}).keys())
+    return keys
+
+
+def _validate_point_buy(payload: dict[str, Any]) -> str | None:
+    meta = payload.get("creation_meta") or {}
+    if meta.get("method") != "point_buy":
+        return "creation_meta.method must be point_buy"
+    profession = payload.get("profession")
+    if profession not in PROFESSIONS:
+        return "unknown profession"
+    attrs = payload.get("attributes") or {}
+    values = []
+    for key in ATTRIBUTE_KEYS:
+        value = attrs.get(key)
+        if not isinstance(value, int):
+            return f"attribute {key} required"
+        values.append(value)
+    if Counter(values) != Counter(CHARACTERISTIC_POOL):
+        return "attributes must use point allocation pool"
+    stats = payload.get("stats") or {}
+    con = attrs.get("con", 0)
+    siz = attrs.get("siz", 0)
+    pow_ = attrs.get("pow", 0)
+    hp = (con + siz) // 10
+    san = pow_
+    mp = pow_ // 5
+    if stats.get("hp") != hp or stats.get("hp_max") != hp:
+        return "hp mismatch"
+    if stats.get("san") != san or stats.get("san_max") != san:
+        return "san mismatch"
+    if stats.get("mp") != mp:
+        return "mp mismatch"
+    luck = stats.get("luck")
+    if not isinstance(luck, int) or luck != 50:
+        return "luck must be 50"
+    if meta.get("luck") != luck:
+        return "luck mismatch"
+    occ_skills = meta.get("occupation_skills") or []
+    personal_skills = meta.get("personal_skills") or []
+    occ_values = meta.get("occupation_values") or {}
+    if not isinstance(occ_skills, list) or not isinstance(personal_skills, list):
+        return "occupation_skills/personal_skills must be lists"
+    if not isinstance(occ_values, dict):
+        return "occupation_values must be a dict"
+    if len(occ_skills) != 8:
+        return "occupation_skills must have 8 items"
+    if len(personal_skills) != 4:
+        return "personal_skills must have 4 items"
+    if len(set(occ_skills)) != len(occ_skills):
+        return "duplicate occupation skills"
+    if len(set(personal_skills)) != len(personal_skills):
+        return "duplicate personal skills"
+    if "credit_rating" in occ_skills:
+        return "credit_rating should not be in occupation_skills"
+    if set(occ_skills) & set(personal_skills):
+        return "personal skills must not overlap occupation skills"
+    if SKILL_EXCLUDE.intersection(set(occ_skills) | set(personal_skills)):
+        return "excluded skills selected"
+    if "credit_rating" not in occ_values:
+        return "credit_rating required in occupation_values"
+    if len(occ_values) != 9:
+        return "occupation_values must include 9 skills"
+    occ_values_list = []
+    for value in occ_values.values():
+        if not isinstance(value, int):
+            return "occupation_values must be integers"
+        occ_values_list.append(value)
+    if Counter(occ_values_list) != Counter(OCCUPATION_POOL):
+        return "occupation_values must use point allocation pool"
+    skills = payload.get("skills") or {}
+    allowed = _allowed_skills()
+    if not set(skills.keys()).issubset(allowed):
+        return "skills contain unsupported keys"
+    expected_skill_keys = set(occ_values.keys()) | set(personal_skills)
+    if set(skills.keys()) != expected_skill_keys:
+        return "skills must match occupation + personal skills"
+    for key, value in occ_values.items():
+        if skills.get(key) != value:
+            return f"skill {key} must equal occupation value"
+    for key in personal_skills:
+        if skills.get(key) != 20:
+            return f"personal skill {key} must be 20"
+    return None
+
+
 @app.post("/players")
 async def create_player(payload: dict[str, Any]) -> dict[str, Any]:
+    error = _validate_point_buy(payload)
+    if error:
+        return {"ok": False, "error": error}
     profile = PlayerProfile(**payload)
     session = app.state.session
     await session.add_player(profile, role="player")

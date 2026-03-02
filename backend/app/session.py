@@ -57,7 +57,12 @@ class SessionManager:
         self.history_cache: list[HistoryEntry] = []
         self.keeper = keeper or KeeperStub()
         self.keeper_mode = keeper_mode
-        self.token_usage: dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0}
+        self.token_usage: dict[str, int] = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "cached_prompt_tokens": 0,
+            "uncached_prompt_tokens": 0,
+        }
         self.last_online_ids: list[str] = []
 
     async def ensure_session(self) -> None:
@@ -777,11 +782,23 @@ class SessionManager:
 
     def _accumulate_token_usage(self) -> None:
         usage = getattr(self.keeper, "last_usage", None) or {}
-        self.token_usage["prompt_tokens"] += int(usage.get("prompt_tokens", 0) or 0)
-        self.token_usage["completion_tokens"] += int(usage.get("completion_tokens", 0) or 0)
+        prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
+        completion_tokens = int(usage.get("completion_tokens", 0) or 0)
+        prompt_details = usage.get("prompt_tokens_details") or usage.get("input_tokens_details") or {}
+        cached_tokens = int(prompt_details.get("cached_tokens", 0) or 0)
+        uncached_tokens = max(prompt_tokens - cached_tokens, 0)
+        self.token_usage["prompt_tokens"] += prompt_tokens
+        self.token_usage["completion_tokens"] += completion_tokens
+        self.token_usage["cached_prompt_tokens"] += cached_tokens
+        self.token_usage["uncached_prompt_tokens"] += uncached_tokens
 
     def reset_token_usage(self) -> None:
-        self.token_usage = {"prompt_tokens": 0, "completion_tokens": 0}
+        self.token_usage = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "cached_prompt_tokens": 0,
+            "uncached_prompt_tokens": 0,
+        }
 
     def _all_players_inactive(self, online_ids: Optional[list[str]] = None) -> bool:
         players = list(self.state.current_state.get("players", {}).values())

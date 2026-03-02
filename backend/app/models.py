@@ -90,6 +90,7 @@ class PlayerProfile(BaseModel):
     stats: PlayerStats = Field(default_factory=PlayerStats)
     skills: dict[str, int] = Field(default_factory=dict)
     statuses: list[str] = Field(default_factory=list)
+    creation_meta: dict[str, Any] = Field(default_factory=dict)
 
 
 class SessionPlayer(BaseModel):

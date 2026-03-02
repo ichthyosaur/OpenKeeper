@@ -615,6 +615,37 @@
         historyPinned: true,
         historyScrollReady: false,
       };
+      const SKILL_LABELS = {
+        appraisal: "估价",
+        archaeology: "考古",
+        art: "艺术",
+        brawl: "斗殴",
+        chemistry: "化学",
+        craft: "工艺",
+        credit_rating: "信用评级",
+        electrical_repair: "电气维修",
+        fast_talk: "话术",
+        firearms: "枪械",
+        first_aid: "急救",
+        history: "历史",
+        intimidation: "威吓",
+        law: "法律",
+        library_use: "图书馆使用",
+        medicine: "医学",
+        mechanical_repair: "机械维修",
+        navigate: "导航",
+        occult: "神秘学",
+        photography: "摄影",
+        persuade: "说服",
+        psychology: "心理学",
+        research: "研究",
+        spot_hidden: "侦查",
+        sneak: "潜行",
+        survival: "生存",
+        mythos: "克苏鲁神话",
+        own_language: "母语",
+        other_language: "外语",
+      };
       const serverUrl = window.location.origin;
       const wsUrl = serverUrl.replace(/^http/, "ws") + "/ws";
       const hostId = crypto.randomUUID();
@@ -1053,7 +1084,17 @@
           const usage = data.usage_total || data.usage || {};
           const promptTokens = usage.prompt_tokens ?? "-";
           const completionTokens = usage.completion_tokens ?? "-";
-          el("inputTokens").textContent = `Input tokens (session): ${promptTokens}`;
+          const cachedPrompt = usage.cached_prompt_tokens ?? usage.prompt_tokens_details?.cached_tokens;
+          const uncachedPrompt = usage.uncached_prompt_tokens ?? (
+            cachedPrompt != null && promptTokens !== "-"
+              ? Math.max(Number(promptTokens) - Number(cachedPrompt), 0)
+              : null
+          );
+          const inputText =
+            cachedPrompt != null && uncachedPrompt != null
+              ? `Input tokens (session): ${promptTokens} (cached ${cachedPrompt} / uncached ${uncachedPrompt})`
+              : `Input tokens (session): ${promptTokens}`;
+          el("inputTokens").textContent = inputText;
           el("outputTokens").textContent = `Output tokens (session): ${completionTokens}`;
         } else {
           el("keeperRaw").textContent = data.error || "读取失败";
@@ -1087,6 +1128,7 @@
           item.className = "player";
           const attrs = p.attributes || {};
           const stats = p.stats || {};
+          const skills = p.skills || {};
           const profKey = p.profession || "";
           const profLabel =
             state.professions[profKey]?.label_zh ||
@@ -1103,6 +1145,12 @@
               : san <= 0
               ? "<span class=\"status-badge\">疯狂</span>"
               : "";
+          const skillTop = Object.entries(skills)
+            .filter(([, value]) => value != null)
+            .sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0))
+            .slice(0, 6)
+            .map(([key, value]) => `${SKILL_LABELS[key] || key} ${value}`)
+            .join(" / ");
           item.innerHTML = `
             <div class="player-head">
               <strong>${p.name || ""}</strong>
@@ -1114,6 +1162,7 @@
             <div class="muted">生命 ${hp} / ${hpMax} / 理智 ${san} / ${sanMax} / 魔力 ${stats.mp ?? 0} / 幸运 ${stats.luck ?? 0}</div>
             <div class="muted">力量 ${attrs.str ?? 0} 敏捷 ${attrs.dex ?? 0} 智力 ${attrs.int ?? 0} 体质 ${attrs.con ?? 0}</div>
             <div class="muted">外貌 ${attrs.app ?? 0} 意志 ${attrs.pow ?? 0} 体型 ${attrs.siz ?? 0} 教育 ${attrs.edu ?? 0}</div>
+            <div class="muted">技能（Top 6） ${skillTop || "暂无"}</div>
           `;
           container.appendChild(item);
         });

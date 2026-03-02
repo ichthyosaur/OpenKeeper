@@ -216,6 +216,49 @@
       }
       .card-title { font-weight: 700; margin-bottom: 10px; font-family: "Cinzel Decorative", serif; letter-spacing: 0.06em; color: var(--title-ink); line-height: 1.3; }
       .grid { display: grid; gap: 10px; }
+      .create-wrap { display: flex; flex-direction: column; gap: 14px; }
+      .create-section {
+        background: rgba(244, 228, 193, 0.55);
+        border: 1px solid rgba(92, 64, 51, 0.25);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .create-section h4 {
+        margin: 0 0 8px;
+        font-family: "Cinzel", serif;
+        letter-spacing: 0.1em;
+        font-size: 13px;
+        color: var(--title-ink);
+        text-transform: uppercase;
+      }
+      .create-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+      .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+      .skill-tags label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(234, 216, 168, 0.8);
+        border: 1px solid rgba(92, 64, 51, 0.25);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .skill-tags input { accent-color: #6b0f0f; }
+      .create-table { display: grid; grid-template-columns: 1fr 120px; gap: 10px; align-items: center; }
+      .create-table select { width: 100%; }
+      .counter { font-size: 12px; color: rgba(42, 26, 14, 0.65); }
+      .inline-note { font-size: 12px; color: rgba(42, 26, 14, 0.65); }
+      .value-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(107, 15, 15, 0.1);
+        color: var(--ink);
+        font-size: 12px;
+      }
       label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgba(42, 26, 14, 0.65); }
       input, select {
         padding: 9px 12px;
@@ -621,39 +664,16 @@
             <button id="useExisting">进入游戏</button>
             <button id="deletePlayer">删除角色</button>
           </div>
+          <div id="notice" class="notice"></div>
           <div class="notice">选择已有角色后进入游戏界面。</div>
         </div>
 
         <div class="card">
           <div class="card-title">角色创建</div>
-          <div class="grid">
-            <label>名称<input id="name" /></label>
-            <label>性别<select id="gender"><option value="男">男</option><option value="女">女</option></select></label>
-            <label>颜色<input id="color" type="color" value="#2dd4bf" /></label>
-            <label>职业<select id="profession">
-              <option value="retired_soldier">退役士兵</option>
-              <option value="police">警察</option>
-              <option value="doctor">医生</option>
-              <option value="professor">大学教授</option>
-              <option value="private_detective">私人侦探</option>
-              <option value="journalist">记者</option>
-              <option value="occult_researcher">神秘学研究者</option>
-              <option value="engineer">工程师</option>
-              <option value="archaeologist">考古学家</option>
-              <option value="nurse">护士</option>
-              <option value="librarian">图书馆员</option>
-              <option value="antiquarian">古董商</option>
-              <option value="author">作家</option>
-              <option value="painter">画家</option>
-              <option value="sculptor">雕塑家</option>
-              <option value="dockworker">码头工人</option>
-              <option value="chemist">化学师</option>
-            </select></label>
-          </div>
           <div class="actions">
-            <button id="create">创建角色</button>
+            <button id="openCreate">进入创建流程</button>
           </div>
-          <div id="notice" class="notice"></div>
+          <div class="notice">使用 CoC 7e 点数分配创建角色，完成后会返回大厅。</div>
         </div>
 
         <div class="card">
@@ -679,6 +699,73 @@
           <div class="notice">手机与电脑在同一 Wi‑Fi 时可用。</div>
         </div>
 
+      </section>
+
+      <section id="creation" class="setup hidden">
+        <div class="card">
+          <div class="card-title">角色创建（CoC 7e 点数分配）</div>
+          <div class="create-wrap">
+            <div class="create-section">
+              <h4>基本信息</h4>
+              <div class="create-grid">
+                <label>名称<input id="name" placeholder="角色姓名" /></label>
+                <label>性别<select id="gender"><option value="男">男</option><option value="女">女</option></select></label>
+                <label>颜色<input id="color" type="color" value="#2dd4bf" /></label>
+                <label>职业<select id="profession"></select></label>
+              </div>
+              <div id="professionHint" class="inline-note"></div>
+            </div>
+
+            <div class="create-section">
+              <h4>属性点分配</h4>
+              <div id="charPoolStatus" class="counter"></div>
+              <div id="charAlloc" class="create-grid"></div>
+              <div class="inline-note">点数池：80, 70, 60, 60, 50, 50, 50, 40（每个数值只能使用一次）。</div>
+            </div>
+
+            <div class="create-section">
+              <h4>派生属性</h4>
+              <div class="create-grid">
+                <div class="value-pill" id="derivedHp">生命: -</div>
+                <div class="value-pill" id="derivedSan">理智: -</div>
+                <div class="value-pill" id="derivedMp">魔力: -</div>
+                <div class="value-pill" id="derivedLuck">幸运: -</div>
+              </div>
+              <div class="inline-note">生命 = (CON + SIZ) / 10（向下取整），理智 = POW，魔力 = POW / 5（向下取整），幸运固定为 50。</div>
+            </div>
+
+            <div class="create-section">
+              <h4>职业技能选择</h4>
+              <div id="occSkillCount" class="counter"></div>
+              <div id="occSkillTags" class="skill-tags"></div>
+              <div class="inline-note">请选择 8 项职业技能（信用评级自动包含）。Cthulhu Mythos 不可在创建时选择。</div>
+            </div>
+
+            <div class="create-section">
+              <h4>职业技能分配</h4>
+              <div id="occValueStatus" class="counter"></div>
+              <div id="occValueTable" class="create-table"></div>
+              <div class="inline-note">点数分配：70, 60, 60, 50, 50, 50, 40, 40, 40。</div>
+            </div>
+
+            <div class="create-section">
+              <h4>个人兴趣技能（+20）</h4>
+              <div id="personalSkillCount" class="counter"></div>
+              <div id="personalSkillTags" class="skill-tags"></div>
+              <div class="inline-note">请选择 4 项非职业技能，每项增加 +20。</div>
+            </div>
+
+            <div class="create-section">
+              <h4>创建预览</h4>
+              <div id="createSummary" class="inline-note"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button id="cancelCreate">返回角色选择</button>
+            <button id="createConfirm">完成创建</button>
+          </div>
+          <div id="createNotice" class="notice warning"></div>
+        </div>
       </section>
 
       <section id="game" class="room hidden">
@@ -719,6 +806,8 @@
             <div class="stats" id="cardStats"></div>
             <button id="toggleAttrs" class="link-btn">展开属性</button>
             <div class="attributes attrs-collapsed" id="cardAttributes"></div>
+            <button id="toggleSkills" class="link-btn">展开技能</button>
+            <div class="attributes attrs-collapsed" id="cardSkills"></div>
           </div>
 
           <div class="panel small">
@@ -781,8 +870,16 @@
         clues: [],
         findingHighlights: { items: {}, clues: {} },
         attrsCollapsed: true,
+        skillsCollapsed: true,
         historyPinned: true,
         historyScrollReady: false,
+        creation: {
+          attributes: {},
+          occupationSkills: new Set(),
+          occupationValues: {},
+          personalSkills: new Set(),
+          luck: null,
+        },
       };
 
       const serverUrl = window.location.origin;
@@ -826,6 +923,52 @@
         if (!content) return "";
         return content.zh || content.en || "";
       }
+
+      const ATTRIBUTE_KEYS = ["str", "dex", "int", "con", "app", "pow", "siz", "edu"];
+      const ATTRIBUTE_LABELS = {
+        str: "力量",
+        dex: "敏捷",
+        int: "智力",
+        con: "体质",
+        app: "外貌",
+        pow: "意志",
+        siz: "体型",
+        edu: "教育",
+      };
+      const CHARACTERISTIC_POOL = [80, 70, 60, 60, 50, 50, 50, 40];
+      const OCCUPATION_VALUE_POOL = [70, 60, 60, 50, 50, 50, 40, 40, 40];
+      const SKILL_LABELS = {
+        appraisal: "估价",
+        archaeology: "考古",
+        art: "艺术",
+        brawl: "斗殴",
+        chemistry: "化学",
+        craft: "工艺",
+        credit_rating: "信用评级",
+        electrical_repair: "电气维修",
+        fast_talk: "话术",
+        firearms: "枪械",
+        first_aid: "急救",
+        history: "历史",
+        intimidation: "威吓",
+        law: "法律",
+        library_use: "图书馆使用",
+        medicine: "医学",
+        mechanical_repair: "机械维修",
+        navigate: "导航",
+        occult: "神秘学",
+        photography: "摄影",
+        persuade: "说服",
+        psychology: "心理学",
+        research: "研究",
+        spot_hidden: "侦查",
+        sneak: "潜行",
+        survival: "生存",
+        mythos: "克苏鲁神话",
+        own_language: "母语",
+        other_language: "外语",
+      };
+      const SKILL_EXCLUDE = new Set(["mythos"]);
 
       function setLanInfo(info) {
         const status = el("lanStatus");
@@ -1292,16 +1435,6 @@
           <div>幸运: ${stats.luck ?? 0}</div>
         `;
         const attrs = player.attributes || {};
-        const attrLabels = {
-          str: "力量",
-          dex: "敏捷",
-          int: "智力",
-          con: "体质",
-          app: "外貌",
-          pow: "意志",
-          siz: "体型",
-          edu: "教育",
-        };
         const attrEl = el("cardAttributes");
         if (attrEl) {
           attrEl.className = state.attrsCollapsed ? "attributes attrs-collapsed" : "attributes";
@@ -1311,8 +1444,23 @@
           toggleBtn.textContent = state.attrsCollapsed ? "展开属性" : "收起属性";
         }
         el("cardAttributes").innerHTML = Object.entries(attrs)
-          .map(([key, value]) => `<div>${attrLabels[key] || key}: ${value}</div>`)
+          .map(([key, value]) => `<div>${ATTRIBUTE_LABELS[key] || key}: ${value}</div>`)
           .join("");
+        const skills = player.skills || {};
+        const skillList = Object.entries(skills)
+          .filter(([, value]) => value != null)
+          .sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0));
+        const skillEl = el("cardSkills");
+        if (skillEl) {
+          skillEl.className = state.skillsCollapsed ? "attributes attrs-collapsed" : "attributes";
+          skillEl.innerHTML = skillList.length
+            ? skillList.map(([key, value]) => `<div>${SKILL_LABELS[key] || key}: ${value}</div>`).join("")
+            : "<div class=\"muted\">暂无技能</div>";
+        }
+        const toggleSkillBtn = el("toggleSkills");
+        if (toggleSkillBtn) {
+          toggleSkillBtn.textContent = state.skillsCollapsed ? "展开技能" : "收起技能";
+        }
       }
 
       function renderRoomPlayers() {
@@ -1487,36 +1635,49 @@
         notice.classList.toggle("active", Boolean(text));
       }
 
-      function renderLobbyPlayers() {
-        const select = el("existingPlayers");
-        const list = state.players;
-        if (!list.length) {
-          select.innerHTML = "<option value=\"\">暂无角色</option>";
-          return;
-        }
-        select.innerHTML = list
-          .map((p) => {
-            const profLabel =
-              state.professions[p.profession]?.label_zh ||
-              state.professions[p.profession]?.label ||
-              p.profession ||
-              "";
-            const label = `${p.name || "未知"} / ${p.gender || "未知"} / ${profLabel}`;
-            return `<option value=\"${p.player_id}\">${label}</option>`;
-          })
-          .join("");
+      function showLobby() {
+        el("lobby").classList.remove("hidden");
+        el("creation").classList.add("hidden");
+        el("game").classList.add("hidden");
+        el("backToLobby").classList.add("hidden");
       }
 
-      async function loadProfessions() {
-        const serverUrl = window.location.origin;
-        try {
-          const res = await fetch(`${serverUrl}/professions`);
-          const data = await res.json();
-          state.professions = data.professions || {};
-        } catch (e) {
-          state.professions = {};
-        }
+      function showCreate() {
+        el("lobby").classList.add("hidden");
+        el("creation").classList.remove("hidden");
+        el("game").classList.add("hidden");
+        el("backToLobby").classList.add("hidden");
+      }
+
+      function showGame() {
+        el("lobby").classList.add("hidden");
+        el("creation").classList.add("hidden");
+        el("game").classList.remove("hidden");
+        el("backToLobby").classList.remove("hidden");
+      }
+
+      function setCreateNotice(text) {
+        const notice = el("createNotice");
+        if (!notice) return;
+        notice.textContent = text;
+        notice.classList.toggle("active", Boolean(text));
+      }
+
+      function getAllSkillKeys() {
+        const keys = new Set(["credit_rating", "own_language", "other_language"]);
+        Object.values(state.professions || {}).forEach((prof) => {
+          Object.keys(prof?.skills || {}).forEach((k) => keys.add(k));
+        });
+        return Array.from(keys).filter((k) => !SKILL_EXCLUDE.has(k));
+      }
+
+      function skillLabel(key) {
+        return SKILL_LABELS[key] || key;
+      }
+
+      function renderProfessionOptions() {
         const select = el("profession");
+        if (!select) return;
         const keys = Object.keys(state.professions);
         const fallbackLabels = {
           retired_soldier: "退役士兵",
@@ -1568,6 +1729,317 @@
           .join("");
       }
 
+      function updateProfessionHint() {
+        const hint = el("professionHint");
+        if (!hint) return;
+        const profKey = el("profession")?.value || "";
+        hint.textContent = state.professions[profKey]?.background_zh || "";
+      }
+
+      function resetCreationState() {
+        state.creation.attributes = {};
+        ATTRIBUTE_KEYS.forEach((key) => {
+          state.creation.attributes[key] = null;
+        });
+        state.creation.occupationSkills = new Set();
+        state.creation.occupationValues = {};
+        state.creation.personalSkills = new Set();
+        state.creation.luck = 50;
+        updateProfessionHint();
+        applyProfessionDefaults();
+        renderCreation();
+      }
+
+      function applyProfessionDefaults() {
+        const profKey = el("profession")?.value || "";
+        const suggested = Object.keys(state.professions[profKey]?.skills || {})
+          .filter((k) => !SKILL_EXCLUDE.has(k));
+        const allSkills = getAllSkillKeys().filter((k) => k !== "credit_rating");
+        const selection = [];
+        suggested.forEach((k) => {
+          if (selection.length < 8 && !selection.includes(k)) selection.push(k);
+        });
+        allSkills.forEach((k) => {
+          if (selection.length < 8 && !selection.includes(k)) selection.push(k);
+        });
+        state.creation.occupationSkills = new Set(selection.slice(0, 8));
+        syncCreationAfterOccupationChange();
+      }
+
+      function syncCreationAfterOccupationChange() {
+        state.creation.personalSkills = new Set(
+          Array.from(state.creation.personalSkills).filter((k) => !state.creation.occupationSkills.has(k))
+        );
+        const occSkills = getOccupationSkillList();
+        const values = {};
+        occSkills.forEach((k) => {
+          values[k] = state.creation.occupationValues[k] ?? null;
+        });
+        state.creation.occupationValues = values;
+      }
+
+      function getOccupationSkillList() {
+        const occSkills = Array.from(state.creation.occupationSkills || []);
+        occSkills.sort((a, b) => skillLabel(a).localeCompare(skillLabel(b), "zh"));
+        return ["credit_rating", ...occSkills];
+      }
+
+      function getRemainingValues(pool, selections, exceptKey) {
+        const remaining = pool.slice();
+        Object.entries(selections).forEach(([key, value]) => {
+          if (key === exceptKey) return;
+          const num = Number(value);
+          if (!Number.isNaN(num)) {
+            const idx = remaining.indexOf(num);
+            if (idx >= 0) remaining.splice(idx, 1);
+          }
+        });
+        return remaining;
+      }
+
+      function renderCharAllocation() {
+        const container = el("charAlloc");
+        if (!container) return;
+        container.innerHTML = "";
+        ATTRIBUTE_KEYS.forEach((key) => {
+          const label = document.createElement("label");
+          label.textContent = ATTRIBUTE_LABELS[key] || key;
+          const select = document.createElement("select");
+          const current = state.creation.attributes[key];
+          const remaining = getRemainingValues(CHARACTERISTIC_POOL, state.creation.attributes, key);
+          const options = Array.from(new Set([current, ...remaining])).filter((v) => v != null);
+          select.innerHTML =
+            "<option value=\"\">选择</option>" +
+            options
+              .sort((a, b) => b - a)
+              .map((value) => `<option value="${value}" ${value === current ? "selected" : ""}>${value}</option>`)
+              .join("");
+          select.addEventListener("change", () => {
+            const value = select.value ? Number(select.value) : null;
+            const available = getRemainingValues(CHARACTERISTIC_POOL, state.creation.attributes, key);
+            if (value != null && !available.includes(value) && value !== current) {
+              setCreateNotice("该点数已被占用，请选择其他数值。");
+              select.value = current ?? "";
+              return;
+            }
+            setCreateNotice("");
+            state.creation.attributes[key] = value;
+            renderCreation();
+          });
+          label.appendChild(select);
+          container.appendChild(label);
+        });
+        const remaining = getRemainingValues(CHARACTERISTIC_POOL, state.creation.attributes);
+        const poolText = remaining.length
+          ? `剩余点数：${remaining.sort((a, b) => b - a).join(", ")}`
+          : "点数已分配完毕";
+        el("charPoolStatus").textContent = poolText;
+      }
+
+      function computeDerived() {
+        const attrs = state.creation.attributes || {};
+        const con = attrs.con ?? 0;
+        const siz = attrs.siz ?? 0;
+        const pow = attrs.pow ?? 0;
+        const hp = con && siz ? Math.floor((con + siz) / 10) : null;
+        const san = pow || null;
+        const mp = pow ? Math.floor(pow / 5) : null;
+        return { hp, san, mp };
+      }
+
+      function renderDerived() {
+        const derived = computeDerived();
+        el("derivedHp").textContent = `生命: ${derived.hp ?? "-"}`;
+        el("derivedSan").textContent = `理智: ${derived.san ?? "-"}`;
+        el("derivedMp").textContent = `魔力: ${derived.mp ?? "-"}`;
+        el("derivedLuck").textContent = `幸运: ${state.creation.luck ?? "-"}`;
+      }
+
+      function renderOccupationSkills() {
+        const container = el("occSkillTags");
+        if (!container) return;
+        container.innerHTML = "";
+        const allSkills = getAllSkillKeys().filter((k) => k !== "credit_rating");
+        const selected = state.creation.occupationSkills || new Set();
+        const ordered = [
+          ...Array.from(selected),
+          ...allSkills.filter((k) => !selected.has(k)),
+        ];
+        ordered.forEach((skillKey) => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = skillKey;
+          checkbox.checked = selected.has(skillKey);
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+              if (selected.size >= 8) {
+                checkbox.checked = false;
+                setCreateNotice("职业技能最多选择 8 项。");
+                return;
+              }
+              selected.add(skillKey);
+            } else {
+              selected.delete(skillKey);
+            }
+            setCreateNotice("");
+            state.creation.occupationSkills = new Set(selected);
+            syncCreationAfterOccupationChange();
+            renderCreation();
+          });
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(skillLabel(skillKey)));
+          container.appendChild(label);
+        });
+        el("occSkillCount").textContent = `已选 ${selected.size} / 8（信用评级自动包含）`;
+      }
+
+      function renderOccupationValues() {
+        const table = el("occValueTable");
+        if (!table) return;
+        const occSkills = getOccupationSkillList();
+        occSkills.forEach((k) => {
+          if (!(k in state.creation.occupationValues)) state.creation.occupationValues[k] = null;
+        });
+        Object.keys(state.creation.occupationValues).forEach((k) => {
+          if (!occSkills.includes(k)) delete state.creation.occupationValues[k];
+        });
+        table.innerHTML = "";
+        occSkills.forEach((skillKey) => {
+          const label = document.createElement("div");
+          label.textContent = skillLabel(skillKey);
+          const select = document.createElement("select");
+          const current = state.creation.occupationValues[skillKey];
+          const remaining = getRemainingValues(OCCUPATION_VALUE_POOL, state.creation.occupationValues, skillKey);
+          const options = Array.from(new Set([current, ...remaining])).filter((v) => v != null);
+          select.innerHTML =
+            "<option value=\"\">选择</option>" +
+            options
+              .sort((a, b) => b - a)
+              .map((value) => `<option value="${value}" ${value === current ? "selected" : ""}>${value}</option>`)
+              .join("");
+          select.addEventListener("change", () => {
+            const value = select.value ? Number(select.value) : null;
+            const available = getRemainingValues(OCCUPATION_VALUE_POOL, state.creation.occupationValues, skillKey);
+            if (value != null && !available.includes(value) && value !== current) {
+              setCreateNotice("该点数已被占用，请选择其他数值。");
+              select.value = current ?? "";
+              return;
+            }
+            setCreateNotice("");
+            state.creation.occupationValues[skillKey] = value;
+            renderCreation();
+          });
+          table.appendChild(label);
+          table.appendChild(select);
+        });
+        const remaining = getRemainingValues(OCCUPATION_VALUE_POOL, state.creation.occupationValues);
+        el("occValueStatus").textContent = remaining.length
+          ? `剩余点数：${remaining.sort((a, b) => b - a).join(", ")}`
+          : "点数已分配完毕";
+      }
+
+      function renderPersonalSkills() {
+        const container = el("personalSkillTags");
+        if (!container) return;
+        container.innerHTML = "";
+        const selected = state.creation.personalSkills || new Set();
+        const occSet = state.creation.occupationSkills || new Set();
+        const list = getAllSkillKeys()
+          .filter((k) => k !== "credit_rating" && !occSet.has(k));
+        list.sort((a, b) => skillLabel(a).localeCompare(skillLabel(b), "zh"));
+        list.forEach((skillKey) => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = skillKey;
+          checkbox.checked = selected.has(skillKey);
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+              if (selected.size >= 4) {
+                checkbox.checked = false;
+                setCreateNotice("个人兴趣技能最多选择 4 项。");
+                return;
+              }
+              selected.add(skillKey);
+            } else {
+              selected.delete(skillKey);
+            }
+            setCreateNotice("");
+            state.creation.personalSkills = new Set(selected);
+            renderCreation();
+          });
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(skillLabel(skillKey)));
+          container.appendChild(label);
+        });
+        el("personalSkillCount").textContent = `已选 ${selected.size} / 4`;
+      }
+
+      function renderCreateSummary() {
+        const summary = el("createSummary");
+        if (!summary) return;
+        const profKey = el("profession")?.value || "";
+        const profLabel =
+          state.professions[profKey]?.label_zh ||
+          state.professions[profKey]?.label ||
+          profKey;
+        const attrs = state.creation.attributes || {};
+        const attrText = ATTRIBUTE_KEYS.map((k) => `${ATTRIBUTE_LABELS[k] || k}:${attrs[k] ?? "-"}`).join(" / ");
+        const occSkills = getOccupationSkillList();
+        const occText = occSkills.map((k) => `${skillLabel(k)} ${state.creation.occupationValues[k] ?? "-"}`).join("、");
+        const personalText = Array.from(state.creation.personalSkills || [])
+          .map((k) => `${skillLabel(k)} +20`)
+          .join("、");
+        summary.textContent =
+          `职业：${profLabel}\n` +
+          `属性：${attrText}\n` +
+          `职业技能：${occText || "未分配"}\n` +
+          `个人兴趣：${personalText || "未选择"}`;
+      }
+
+      function renderCreation() {
+        updateProfessionHint();
+        renderCharAllocation();
+        renderDerived();
+        renderOccupationSkills();
+        renderOccupationValues();
+        renderPersonalSkills();
+        renderCreateSummary();
+      }
+
+      function renderLobbyPlayers() {
+        const select = el("existingPlayers");
+        const list = state.players;
+        if (!list.length) {
+          select.innerHTML = "<option value=\"\">暂无角色</option>";
+          return;
+        }
+        select.innerHTML = list
+          .map((p) => {
+            const profLabel =
+              state.professions[p.profession]?.label_zh ||
+              state.professions[p.profession]?.label ||
+              p.profession ||
+              "";
+            const label = `${p.name || "未知"} / ${p.gender || "未知"} / ${profLabel}`;
+            return `<option value=\"${p.player_id}\">${label}</option>`;
+          })
+          .join("");
+      }
+
+      async function loadProfessions() {
+        const serverUrl = window.location.origin;
+        try {
+          const res = await fetch(`${serverUrl}/professions`);
+          const data = await res.json();
+          state.professions = data.professions || {};
+        } catch (e) {
+          state.professions = {};
+        }
+        renderProfessionOptions();
+      }
+
       async function loadPlayers() {
         const serverUrl = window.location.origin;
         try {
@@ -1586,50 +2058,109 @@
         el("notice").textContent = text;
       }
 
-      el("create").addEventListener("click", async () => {
-        const serverUrl = window.location.origin;
+      el("openCreate").addEventListener("click", () => {
+        setNotice("");
+        setCreateNotice("");
+        renderProfessionOptions();
+        resetCreationState();
+        showCreate();
+      });
+
+      el("cancelCreate").addEventListener("click", () => {
+        setCreateNotice("");
+        showLobby();
+      });
+
+      el("profession").addEventListener("change", () => {
+        applyProfessionDefaults();
+        renderCreation();
+      });
+
+      el("createConfirm").addEventListener("click", async () => {
+        const name = el("name").value.trim();
+        const gender = el("gender").value;
+        const color = el("color").value;
         const profession = el("profession").value;
-        const skills = state.professions[profession]?.skills || {};
-        const attributes = {
-          str: 50, dex: 50, int: 50, con: 50, app: 50, pow: 50, siz: 50, edu: 50,
-          ...(state.professions[profession]?.attributes || {}),
-        };
-        const stats = {
-          hp: 10, hp_max: 10, san: 60, san_max: 60, mp: 10, luck: 50,
-          ...(state.professions[profession]?.stats || {}),
-        };
-        if (stats.hp_max == null) stats.hp_max = stats.hp;
-        if (stats.san_max == null) stats.san_max = stats.san;
+        if (!name) {
+          setCreateNotice("请填写角色名称。");
+          return;
+        }
+        const attrs = state.creation.attributes || {};
+        const missingAttr = ATTRIBUTE_KEYS.find((k) => !attrs[k]);
+        if (missingAttr) {
+          setCreateNotice(`请分配 ${ATTRIBUTE_LABELS[missingAttr] || missingAttr}。`);
+          return;
+        }
+        const occSkills = state.creation.occupationSkills || new Set();
+        if (occSkills.size !== 8) {
+          setCreateNotice("职业技能必须选择 8 项。");
+          return;
+        }
+        const occValues = state.creation.occupationValues || {};
+        const occList = getOccupationSkillList();
+        const missingOccValue = occList.find((k) => !occValues[k]);
+        if (missingOccValue) {
+          setCreateNotice("请为职业技能分配全部点数。");
+          return;
+        }
+        const personalSkills = state.creation.personalSkills || new Set();
+        if (personalSkills.size !== 4) {
+          setCreateNotice("个人兴趣技能必须选择 4 项。");
+          return;
+        }
+        const derived = computeDerived();
+        const skills = {};
+        occList.forEach((k) => {
+          skills[k] = Number(occValues[k] || 0);
+        });
+        personalSkills.forEach((k) => {
+          if (!skills[k]) skills[k] = 0;
+          skills[k] += 20;
+        });
         playerId = makeUUID();
         const payload = {
           player_id: playerId,
-          name: el("name").value,
-          gender: el("gender").value,
-          color: el("color").value,
+          name,
+          gender,
+          color,
           profession,
           machine_id: state.machineId,
           background: state.professions[profession]?.background_zh || "",
-          attributes,
-          stats,
+          attributes: attrs,
+          stats: {
+            hp: derived.hp ?? 0,
+            hp_max: derived.hp ?? 0,
+            san: derived.san ?? 0,
+            san_max: derived.san ?? 0,
+            mp: derived.mp ?? 0,
+            luck: state.creation.luck ?? 0,
+          },
           skills,
           statuses: [],
+          creation_meta: {
+            method: "point_buy",
+            characteristic_pool: CHARACTERISTIC_POOL.slice(),
+            occupation_pool: OCCUPATION_VALUE_POOL.slice(),
+            occupation_skills: Array.from(state.creation.occupationSkills || []),
+            occupation_values: { ...state.creation.occupationValues },
+            personal_skills: Array.from(state.creation.personalSkills || []),
+            luck: state.creation.luck ?? 0,
+          },
         };
         try {
-          const res = await fetch(`${serverUrl}/players`, {
+          const res = await fetch(`${window.location.origin}/players`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          setNotice("角色创建成功。");
           await loadPlayers();
           el("existingPlayers").value = playerId;
-          el("lobby").classList.add("hidden");
-          el("game").classList.remove("hidden");
-          el("backToLobby").classList.remove("hidden");
-          connect();
+          setCreateNotice("");
+          showLobby();
+          setNotice("角色创建成功。");
         } catch (e) {
-          setNotice("角色创建失败，请检查后端服务。");
+          setCreateNotice("角色创建失败，请检查后端服务。");
         }
       });
 
@@ -1645,9 +2176,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ player_id: playerId, machine_id: state.machineId }),
         });
-        el("lobby").classList.add("hidden");
-        el("game").classList.remove("hidden");
-        el("backToLobby").classList.remove("hidden");
+        showGame();
         connect();
       });
 
@@ -1852,6 +2381,11 @@
         renderPlayerCard();
       });
 
+      el("toggleSkills").addEventListener("click", () => {
+        state.skillsCollapsed = !state.skillsCollapsed;
+        renderPlayerCard();
+      });
+
       el("backToLobby").addEventListener("click", async () => {
         if (state.ws) state.ws.close();
         state.history = [];
@@ -1862,9 +2396,7 @@
         state.clues = [];
         state.findingHighlights = { items: {}, clues: {} };
         document.documentElement.setAttribute("data-theme", "archive");
-        el("game").classList.add("hidden");
-        el("lobby").classList.remove("hidden");
-        el("backToLobby").classList.add("hidden");
+        showLobby();
         await loadPlayers();
         renderLobbyPlayers();
         renderFindings();
