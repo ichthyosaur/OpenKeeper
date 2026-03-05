@@ -47,6 +47,15 @@ def validate_keeper_output(output: KeeperOutput) -> List[str]:
                 errors.append("update_player_attribute requires delta")
             elif not isinstance(params.get("delta"), int):
                 errors.append("update_player_attribute delta must be int")
+        if action.function_name == "update_npc_trust":
+            if "npc_id" not in params:
+                errors.append("update_npc_trust requires npc_id")
+            if "shift" not in params:
+                errors.append("update_npc_trust requires shift")
+            elif not isinstance(params.get("shift"), int):
+                errors.append("update_npc_trust shift must be int")
+            elif params.get("shift") not in (-1, 0, 1):
+                errors.append("update_npc_trust shift must be -1/0/1")
         if action.function_name == "end_module":
             if "ending_id" not in params or "description" not in params:
                 errors.append("end_module requires ending_id and description")

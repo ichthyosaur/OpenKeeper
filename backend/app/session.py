@@ -34,8 +34,10 @@ class SessionManager:
         current_state: Optional[Dict[str, Any]] = None,
         history_count: int = 100,
         max_followups: int = 2,
+        followup_delay_ms: int = 1200,
         keeper: Optional[Any] = None,
         keeper_mode: str = "stub",
+        snapshot_every: int = 20,
     ) -> None:
         self.store = store
         self.module = module
@@ -43,6 +45,7 @@ class SessionManager:
         self.round_id = str(uuid.uuid4())
         self.history_count = history_count
         self.max_followups = max_followups
+        self.followup_delay_ms = max(0, int(followup_delay_ms))
         base_state = current_state or {"players": {}, "npcs": {}, "notes": {}}
         base_state.setdefault("shared_findings", {"items": [], "clues": []})
         self.state = SessionState(
@@ -57,6 +60,7 @@ class SessionManager:
         self.history_cache: list[HistoryEntry] = []
         self.keeper = keeper or KeeperStub()
         self.keeper_mode = keeper_mode
+        self.snapshot_every = max(1, int(snapshot_every))
         self.token_usage: dict[str, int] = {
             "prompt_tokens": 0,
             "completion_tokens": 0,
@@ -64,6 +68,48 @@ class SessionManager:
             "uncached_prompt_tokens": 0,
         }
         self.last_online_ids: list[str] = []
+        self._ensure_runtime_state()
+
+    @staticmethod
+    def _notes_text(notes: Any) -> str:
+        if notes is None:
+            return ""
+        if isinstance(notes, str):
+            return notes
+        try:
+            return str(notes)
+        except Exception:
+            return ""
+
+    def _ensure_runtime_state(self) -> None:
+        clock = self.state.current_state.get("threat_clock")
+        if not isinstance(clock, dict):
+            clock = {}
+        clock["name"] = self.module.threat_clock.name
+        clock["max"] = int(self.module.threat_clock.max)
+        current = int(clock.get("value", 0) or 0)
+        clock["value"] = max(0, min(int(self.module.threat_clock.max), current))
+        clock.setdefault("last_omen_at", 0)
+        clock.setdefault("current_omen", "")
+        self.state.current_state["threat_clock"] = clock
+        npcs = self.state.current_state.get("npcs")
+        if not isinstance(npcs, dict):
+            npcs = {}
+        for npc in self.module.npcs:
+            row = npcs.get(npc.npc_id) or {}
+            base = int(row.get("base_trust", row.get("trust", 0)) or 0)
+            base = max(-2, min(2, base))
+            npcs[npc.npc_id] = {
+                "npc_id": npc.npc_id,
+                "name": npc.name,
+                "role": npc.role,
+                "encountered": bool(row.get("encountered", False)),
+                "base_trust": base,
+                "trust": max(-2, min(2, int(row.get("trust", base) or base))),
+                "last_shift": int(row.get("last_shift", 0) or 0),
+                "last_reason": str(row.get("last_reason", "") or ""),
+            }
+        self.state.current_state["npcs"] = npcs
 
     async def ensure_session(self) -> None:
         existing = await self.store.sessions.find_one({"_id": self.session_id})
@@ -199,11 +245,11 @@ class SessionManager:
         entries.append(player_entry)
         await emit([player_entry])
 
-        system_text = self.build_llm_context_text(self.history_count, online_ids)
+        runtime_text = self.build_llm_context_text(self.history_count, online_ids)
         history_text = self.build_llm_history_text(self.history_count)
-        context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
+        context_text = f"[History]\n{history_text}\n\n[Runtime]\n{runtime_text}"
         try:
-            keeper_output = self.keeper.generate(action_text, player_id, context_text)
+            keeper_output = await self._call_keeper(action_text, player_id, context_text)
             self._accumulate_token_usage()
             keeper_entries = await self._handle_keeper_output(keeper_output)
             entries.extend(keeper_entries)
@@ -284,6 +330,7 @@ class SessionManager:
             visible_to=output.visible_to,
             content=output.content,
             actions=output.actions,
+            state_diff={"keeper_notes": output.notes} if output.notes else None,
         )
         await self._record_history(narration)
         entries.append(narration)
@@ -326,9 +373,9 @@ class SessionManager:
             if not self._is_player_active(player_id):
                 break
             followups += 1
-            system_text = self.build_llm_context_text(self.history_count, online_ids)
+            runtime_text = self.build_llm_context_text(self.history_count, online_ids)
             history_text = self.build_llm_history_text(self.history_count)
-            context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
+            context_text = f"[History]\n{history_text}\n\n[Runtime]\n{runtime_text}"
             follow_text = I18NText(
                 zh="请基于刚刚的叙事与动作结果继续叙事，必须输出JSON。如果仍需要新的判定/动作，可以在 actions 中给出；否则 actions 留空。",
                 en="Continue the narration based on the latest narration and action results. Output JSON only. If further actions are needed, include them in actions; otherwise keep actions empty.",
@@ -336,7 +383,7 @@ class SessionManager:
             output = None
             for attempt in range(2):
                 try:
-                    output = self.keeper.generate(follow_text, player_id, context_text)
+                    output = await self._call_keeper(follow_text, player_id, context_text)
                     self._accumulate_token_usage()
                 except Exception as exc:
                     entry = self._make_history_entry(
@@ -353,7 +400,7 @@ class SessionManager:
                     await self._record_history(entry)
                     all_entries.append(entry)
                     return all_entries
-                if output and (output.notes or "").startswith("llm_parse_error") and attempt == 0:
+                if output and self._notes_text(output.notes).startswith("llm_parse_error") and attempt == 0:
                     await asyncio.sleep(0.5)
                     continue
                 break
@@ -366,7 +413,8 @@ class SessionManager:
 
             if not output.actions or self.state.current_state.get("phase") == "ended":
                 break
-            await asyncio.sleep(5)
+            if self.followup_delay_ms > 0:
+                await asyncio.sleep(self.followup_delay_ms / 1000)
         return all_entries
         # follow-ups handled in loop above
 
@@ -404,6 +452,8 @@ class SessionManager:
             )
             await self._record_history(entry)
             entries.append(entry)
+            clock_entries = await self._apply_threat_clock_for_action(action, state_diff)
+            entries.extend(clock_entries)
             await self._persist_player_if_needed(action)
             death_entry = self._maybe_add_death_or_madness(action)
             if death_entry is not None:
@@ -417,6 +467,99 @@ class SessionManager:
             {"$set": {"current_state": self.state.current_state}},
         )
         return entries
+
+    async def _apply_threat_clock_for_action(
+        self, action: ActionCall, state_diff: dict[str, Any]
+    ) -> list[HistoryEntry]:
+        clock_cfg = self.module.threat_clock
+        clock_state = self.state.current_state.setdefault(
+            "threat_clock",
+            {
+                "name": clock_cfg.name,
+                "max": int(clock_cfg.max),
+                "value": 0,
+                "last_omen_at": 0,
+                "current_omen": "",
+            },
+        )
+        tick = self._compute_threat_tick(action, state_diff)
+        if tick <= 0:
+            return []
+        prev = int(clock_state.get("value", 0))
+        clock_max = int(clock_state.get("max", clock_cfg.max))
+        now = min(clock_max, prev + tick)
+        if now <= prev:
+            return []
+        clock_state["value"] = now
+        crossed = [
+            stage
+            for stage in sorted(clock_cfg.stages, key=lambda s: int(s.at))
+            if prev < int(stage.at) <= now
+        ]
+        entries: list[HistoryEntry] = []
+        for stage in crossed:
+            clock_state["last_omen_at"] = int(stage.at)
+            clock_state["current_omen"] = stage.omen
+            omen_entry = self._make_history_entry(
+                actor_type=ActorType.system,
+                actor_id="system",
+                action_type=ActionType.rule_resolution,
+                message_type=MessageType.public,
+                visible_to=["all"],
+                content=I18NText(
+                    zh=stage.omen,
+                    en=stage.omen,
+                ),
+                state_diff={"threat_clock_omen_at": int(stage.at), "threat_clock_value": now},
+            )
+            await self._record_history(omen_entry)
+            entries.append(omen_entry)
+        return entries
+
+    def _compute_threat_tick(self, action: ActionCall, state_diff: dict[str, Any]) -> int:
+        rules = self.module.threat_clock.tick_rules or []
+        if not rules:
+            rules = []
+        total = 0
+        for rule in rules:
+            if rule.action_names and action.function_name not in rule.action_names:
+                continue
+            if rule.event == "check_failure":
+                level = str((state_diff.get("dice") or {}).get("success_level", ""))
+                if level in ("failure", "fumble"):
+                    total += max(0, int(rule.amount))
+            elif rule.event == "check_fumble":
+                level = str((state_diff.get("dice") or {}).get("success_level", ""))
+                if level == "fumble":
+                    total += max(0, int(rule.amount))
+            elif rule.event == "hp_loss":
+                amount = int((action.parameters or {}).get("amount", 0) or 0)
+                if action.function_name == "apply_damage" and amount >= int(rule.min_loss):
+                    total += max(0, int(rule.amount))
+            elif rule.event == "san_loss":
+                amount = int((action.parameters or {}).get("amount", 0) or 0)
+                if action.function_name == "apply_sanity_change" and abs(amount) >= int(rule.min_loss):
+                    total += max(0, int(rule.amount))
+            elif rule.event == "status_added":
+                status_text = str((action.parameters or {}).get("status", "")).lower()
+                if action.function_name == "add_status":
+                    key = str(rule.status_contains or "").lower()
+                    if not key or key in status_text:
+                        total += max(0, int(rule.amount))
+        if total > 0:
+            return total
+        # Fallback heuristics when module does not define rules.
+        if action.function_name == "roll_dice":
+            level = str((state_diff.get("dice") or {}).get("success_level", ""))
+            if level in ("failure", "fumble"):
+                return 1
+        if action.function_name == "apply_damage":
+            return 1
+        if action.function_name == "apply_sanity_change":
+            amount = int((action.parameters or {}).get("amount", 0) or 0)
+            if amount < 0:
+                return 1
+        return 0
 
     async def _persist_player_if_needed(self, action: ActionCall) -> None:
         params = action.parameters or {}
@@ -505,6 +648,17 @@ class SessionManager:
                 zh=f"调整 {name} 属性 {attr} 变化 {delta}。",
                 en=f"Adjusted {name} attribute {attr} by {delta}.",
             )
+        if action.function_name == "update_npc_trust":
+            npc_id = action.parameters.get("npc_id", "")
+            shift = int(action.parameters.get("shift", 0) or 0)
+            npc = self.state.current_state.get("npcs", {}).get(npc_id, {})
+            name = npc.get("name", npc_id)
+            trust = npc.get("trust", 0)
+            shift_text = "上升" if shift > 0 else "下降" if shift < 0 else "维持"
+            return I18NText(
+                zh=f"{name} 对你的信任{shift_text}，当前档位 {trust}。",
+                en=f"{name} trust shifted {shift}, current tier {trust}.",
+            )
         if action.function_name == "add_status":
             pid = action.parameters.get("player_id", "")
             status = action.parameters.get("status", "")
@@ -526,10 +680,11 @@ class SessionManager:
             pid = action.parameters.get("player_id", "")
             raw = action.parameters.get("clue") or action.parameters
             description = raw.get("description") or raw.get("clue_id") or raw.get("name") or ""
+            reliability = (raw.get("reliability") or "pending")
             name = self.state.current_state.get("players", {}).get(pid, {}).get("name", pid)
             return I18NText(
-                zh=f"为 {name} 添加线索 {description}。",
-                en=f"Added clue {description} to {name}.",
+                zh=f"为 {name} 添加线索 {description}（可信度:{reliability}）。",
+                en=f"Added clue {description} to {name} (reliability:{reliability}).",
             )
         if action.function_name == "remove_status":
             pid = action.parameters.get("player_id", "")
@@ -608,7 +763,10 @@ class SessionManager:
     async def _record_history(self, entry: HistoryEntry) -> None:
         self.history_cache.append(entry)
         await self.store.history.insert_one(entry.model_dump())
-        await self._snapshot_round()
+        if self.snapshot_every > 0 and len(self.history_cache) % self.snapshot_every == 0:
+            await self._snapshot_round()
+        if self.state.current_state.get("phase") == "ended":
+            await self._snapshot_round()
 
     async def _snapshot_round(self) -> None:
         await self.store.snapshots.insert_one(
@@ -619,6 +777,13 @@ class SessionManager:
                 "history": [h.model_dump() for h in self.history_cache],
                 "final_state": self.state.current_state,
             }
+        )
+
+    async def _call_keeper(
+        self, action_text: I18NText, player_id: str, context_text: str
+    ) -> KeeperOutput:
+        return await asyncio.to_thread(
+            self.keeper.generate, action_text, player_id, context_text
         )
 
     async def get_history(self) -> list[HistoryEntry]:
@@ -663,96 +828,116 @@ class SessionManager:
             id_lines.append(f"- {name} (player_id: {pid})")
         state_text = "\n".join(state_lines)
         id_text = "\n".join(id_lines)
-        locations_text = "\n".join(
+        discovered_clues = {
+            str(entry.get("description", "")).strip()
+            for pdata in self.state.current_state.get("players", {}).values()
+            for entry in (pdata.get("clues") or [])
+            if isinstance(entry, dict)
+        }
+        discovered_items = {
+            str(entry.get("description", "")).strip()
+            for pdata in self.state.current_state.get("players", {}).values()
+            for entry in (pdata.get("items") or [])
+            if isinstance(entry, dict)
+        }
+        focus_node_ids: list[str] = []
+        for clue in module.clues:
+            if clue.description in discovered_clues or clue.name in discovered_clues:
+                focus_node_ids.extend(clue.discovered_at or [])
+        for item in module.items:
+            if item.description in discovered_items or item.name in discovered_items:
+                focus_node_ids.extend(item.discovered_at or [])
+        seen_focus: set[str] = set()
+        dedup_focus: list[str] = []
+        for node_id in focus_node_ids:
+            if node_id and node_id not in seen_focus:
+                seen_focus.add(node_id)
+                dedup_focus.append(node_id)
+        focus_nodes = [node for node in module.nodes if node.node_id in dedup_focus][:3]
+        if not focus_nodes:
+            focus_nodes = module.nodes[:2]
+        focus_node_ids_set = {node.node_id for node in focus_nodes}
+        focus_npcs = module.npcs[:3]
+        focus_clues = [
+            clue for clue in module.clues if set(clue.discovered_at or []) & focus_node_ids_set
+        ][:6]
+        if not focus_clues:
+            focus_clues = module.clues[:4]
+        focus_items = [
+            item for item in module.items if set(item.discovered_at or []) & focus_node_ids_set
+        ][:4]
+        if not focus_items:
+            focus_items = module.items[:3]
+
+        nodes_text = "\n".join(
             (
-                f"- {loc.name}: {loc.description}\n"
-                f"  特征: {loc.features or []}\n"
-                f"  秘密: {loc.secrets or []}\n"
-                f"  连接: {loc.connections or []}"
+                f"- {node.node_id} / {node.title}\n"
+                f"  氛围: {node.mood}\n"
+                f"  可见征兆: {node.public_signals or []}\n"
+                f"  连接节点: {node.connected_nodes or []}"
             )
-            for loc in module.locations
+            for node in focus_nodes
         )
-        scenes_text = "\n".join(
+        npcs_text = "\n".join(
             (
-                f"- {scene.title}: {scene.summary}\n"
-                f"  节拍: {scene.beats or []}\n"
-                f"  需要线索: {scene.required_clues or []}\n"
-                f"  结果: {scene.outcomes or []}"
+                f"- {npc.npc_id} / {npc.name} ({npc.role})\n"
+                f"  表层身份: {npc.public_face}\n"
+                f"  施压点: {npc.pressure_points or []}"
             )
-            for scene in module.scenes
+            for npc in focus_npcs
         )
         clues_text = "\n".join(
             (
-                f"- {clue.clue_id} @ {clue.location}: {clue.description}\n"
-                f"  关联: {clue.linked_to or []}\n"
-                f"  揭示: {clue.reveal}"
+                f"- {clue.clue_id} / {clue.name}: {clue.description}\n"
+                f"  可发现于: {clue.discovered_at or []}\n"
+                f"  可验证: {clue.validates or []}\n"
+                f"  模糊度: {clue.ambiguity}"
             )
-            for clue in module.clues
-        )
-        events_text = "\n".join(
-            (
-                f"- {event.event_id}: {event.description}\n"
-                f"  触发: {event.trigger}\n"
-                f"  后果: {event.consequences or []}"
-            )
-            for event in module.events
+            for clue in focus_clues
         )
         items_text = "\n".join(
             (
-                f"- {item.name}: {item.description}\n"
-                f"  效果: {item.effect}\n"
-                f"  位置: {item.location}"
+                f"- {item.item_id} / {item.name}: {item.description}\n"
+                f"  可发现于: {item.discovered_at or []}\n"
+                f"  用途提示: {item.usage_hint}"
             )
-            for item in module.items
+            for item in focus_items
         )
-        factions_text = "\n".join(
-            (
-                f"- {faction.name}: {faction.goal}\n"
-                f"  资源: {faction.resources or []}\n"
-                f"  手段: {faction.methods or []}\n"
-                f"  态度: {faction.attitude}"
-            )
-            for faction in module.factions
+        clock_stages_text = "\n".join(
+            f"- {stage.at}: {stage.omen}" for stage in module.threat_clock.stages
         )
-        threats_text = "\n".join(
-            (
-                f"- {threat.name}: {threat.nature}\n"
-                f"  征兆: {threat.signs or []}\n"
-                f"  升级: {threat.escalation or []}\n"
-                f"  弱点: {threat.weakness}"
-            )
-            for threat in module.threats
+        clock_triggers_text = "\n".join(
+            f"- {trigger}" for trigger in module.threat_clock.tick_triggers
         )
-        timeline_text = "\n".join(
-            f"- {entry.time}: {entry.event}" for entry in module.timeline
+        victory_text = "\n".join(f"- {condition}" for condition in module.victory_conditions)
+        failure_text = "\n".join(f"- {condition}" for condition in module.failure_conditions)
+        principles_text = "\n".join(
+            f"- {principle}" for principle in module.investigation_principles
         )
-        ending_triggers_text = "\n".join(f"- {t}" for t in module.ending_triggers)
-        characters_text = "\n".join(
-            f"- {ch.name}: {ch.public_info}\n  隐藏: {ch.hidden_secrets}"
-            for ch in module.key_characters
-        )
-        secrets_text = "\n".join(f"- {s}" for s in module.core_secrets)
+        keeper_notes_text = "\n".join(f"- {note}" for note in module.keeper_notes)
         endings_text = "\n".join(
-            f"- {e.ending_id}: {e.description}\n  条件: {e.conditions}"
-            for e in module.possible_endings
+            f"- {e.ending_id} / {e.title}: {e.summary}\n  触发: {e.trigger}"
+            for e in module.endings
         )
         return (
-            f"模组: {module.module_name}\n"
+            f"模组: {module.module_name} ({module.module_id})\n"
             f"简介: {module.introduction}\n"
-            f"开场叙事: {module.entry_narration}\n"
-            f"关键人物:\n{characters_text}\n"
-            f"核心秘密:\n{secrets_text}\n"
-            f"可能结局:\n{endings_text}\n"
+            f"开场叙事: {module.opening_narration}\n"
+            f"基调: {module.tone}\n"
+            f"说明: 以下为焦点信息包（非完整模组），请在此范围内推进。\n"
+            f"调查原则:\n{principles_text}\n"
             f"玩家ID列表:\n{id_text}\n"
-            f"地点:\n{locations_text}\n"
-            f"场景:\n{scenes_text}\n"
-            f"线索:\n{clues_text}\n"
-            f"事件:\n{events_text}\n"
-            f"道具:\n{items_text}\n"
-            f"势力:\n{factions_text}\n"
-            f"威胁:\n{threats_text}\n"
-            f"时间线:\n{timeline_text}\n"
-            f"结局触发条件:\n{ending_triggers_text}\n"
+            f"焦点节点:\n{nodes_text}\n"
+            f"焦点人物:\n{npcs_text}\n"
+            f"焦点线索:\n{clues_text}\n"
+            f"焦点道具:\n{items_text}\n"
+            f"威胁时钟: {module.threat_clock.name} / {module.threat_clock.max}\n"
+            f"时钟推进触发:\n{clock_triggers_text}\n"
+            f"时钟阶段:\n{clock_stages_text}\n"
+            f"胜利条件:\n{victory_text}\n"
+            f"失败条件:\n{failure_text}\n"
+            f"可用结局:\n{endings_text}\n"
+            f"Keeper备注:\n{keeper_notes_text}\n"
             f"当前状态:\n{state_text}"
         )
 
@@ -833,14 +1018,14 @@ class SessionManager:
         )
         entries: list[HistoryEntry] = []
 
-        system_text = self.build_llm_context_text(self.history_count, online_ids)
+        runtime_text = self.build_llm_context_text(self.history_count, online_ids)
         history_text = self.build_llm_history_text(self.history_count)
-        context_text = f"[System]\n{system_text}\n\n[History]\n{history_text}"
+        context_text = f"[History]\n{history_text}\n\n[Runtime]\n{runtime_text}"
         follow_text = I18NText(
             zh="所有玩家已死亡或疯狂。请立刻输出结局叙事并调用 end_module，选择最符合的 ending_id。",
             en="All players are dead or insane. Immediately output an ending and call end_module with the best ending_id.",
         )
-        output = self.keeper.generate(follow_text, player_id, context_text)
+        output = await self._call_keeper(follow_text, player_id, context_text)
         self._accumulate_token_usage()
         entries.extend(await self._handle_keeper_output(output))
         return entries
@@ -860,6 +1045,13 @@ class SessionManager:
         self.history_cache = []
         self.round_id = str(uuid.uuid4())
         self.state.current_state["phase"] = "lobby"
+        self.state.current_state["threat_clock"] = {
+            "name": self.module.threat_clock.name,
+            "max": int(self.module.threat_clock.max),
+            "value": 0,
+            "last_omen_at": 0,
+            "current_omen": "",
+        }
         self.reset_token_usage()
         for pid, pdata in self.state.current_state.get("players", {}).items():
             stats = pdata.get("stats", {})
@@ -870,19 +1062,24 @@ class SessionManager:
             pdata["stats"] = stats
             pdata["items"] = []
             pdata["clues"] = []
-            statuses = pdata.get("statuses") or []
-            if statuses:
-                pdata["statuses"] = [
-                    s
-                    for s in statuses
-                    if not (str(s).startswith("持有道具：") or str(s).startswith("持有线索："))
-                ]
+            # Reset should always clear transient states (symptoms/dead/insane and legacy carry tags).
+            pdata["statuses"] = []
             await self.store.players.update_one(
                 {"_id": pid},
                 {"$set": pdata},
                 upsert=True,
             )
         self.state.current_state["shared_findings"] = {"items": [], "clues": []}
+        for npc in self.state.current_state.get("npcs", {}).values():
+            if not isinstance(npc, dict):
+                continue
+            base = int(npc.get("base_trust", npc.get("trust", 0)) or 0)
+            base = max(-2, min(2, base))
+            npc["base_trust"] = base
+            npc["trust"] = base
+            npc["encountered"] = False
+            npc["last_shift"] = 0
+            npc["last_reason"] = ""
         await self.store.history.delete_many({"session_id": self.session_id})
         await self.store.sessions.update_one(
             {"_id": self.session_id},
@@ -896,12 +1093,12 @@ class SessionManager:
             {"$set": {"active": False, "current_state": self.state.current_state}},
         )
         conditions = ""
-        for ending in self.module.possible_endings:
+        for ending in self.module.endings:
             if ending.ending_id == ending_id:
-                conditions = ending.conditions
+                conditions = ending.trigger
                 break
-        if not conditions and self.module.ending_triggers:
-            conditions = " / ".join(self.module.ending_triggers)
+        if not conditions and self.module.failure_conditions:
+            conditions = " / ".join(self.module.failure_conditions)
         entry = self._make_history_entry(
             actor_type=ActorType.system,
             actor_id="system",

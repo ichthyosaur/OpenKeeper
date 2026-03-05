@@ -20,5 +20,7 @@ htmlcov/
 dump/
 *.bson
 *.archive
+progress.md
 
 AGENTS.md
+房间玩家

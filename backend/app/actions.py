@@ -179,6 +179,8 @@ def dispatch_action(action: ActionCall, state: dict[str, Any]) -> dict[str, Any]
         return _apply_sanity_change(state, params)
     if fn == "update_player_attribute":
         return _update_player_attribute(state, params)
+    if fn == "update_npc_trust":
+        return _update_npc_trust(state, params)
     if fn == "add_item":
         return _add_item(state, params)
     if fn == "add_clue":
@@ -307,6 +309,9 @@ def _normalize_finding(raw: Any) -> dict[str, Any]:
             result["reveal"] = raw.get("reveal")
         if raw.get("effect"):
             result["effect"] = raw.get("effect")
+        reliability = str(raw.get("reliability") or "").strip().lower()
+        if reliability in ("reliable", "suspect", "pending"):
+            result["reliability"] = reliability
         return result
     return {"description": ""}
 
@@ -333,10 +338,38 @@ def _merge_findings(existing: list[dict[str, Any]], incoming: list[dict[str, Any
     for entry in incoming:
         desc = entry.get("description")
         if not desc or desc in known:
+            for old in existing:
+                if old.get("description") != desc:
+                    continue
+                if not old.get("reliability") and entry.get("reliability"):
+                    old["reliability"] = entry.get("reliability")
             continue
         existing.append(entry)
         known.add(desc)
     return existing
+
+
+def _update_npc_trust(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
+    npc_id = str(params.get("npc_id") or "").strip()
+    if not npc_id:
+        raise KeyError("npc_id is required")
+    shift = int(params.get("shift", 0) or 0)
+    shift = max(-1, min(1, shift))
+    reason = str(params.get("reason") or "").strip()
+    npcs = state.setdefault("npcs", {})
+    npc = npcs.setdefault(npc_id, {})
+    base = int(npc.get("base_trust", npc.get("trust", 0)) or 0)
+    trust = int(npc.get("trust", 0) or 0)
+    trust = max(-2, min(2, trust + shift))
+    npc["base_trust"] = max(-2, min(2, base))
+    npc["trust"] = trust
+    npc["encountered"] = True
+    npc["last_shift"] = shift
+    if reason:
+        npc["last_reason"] = reason
+    npcs[npc_id] = npc
+    state["npcs"] = npcs
+    return {"npcs": {npc_id: npc}}
 
 
 def _add_item(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
@@ -356,6 +389,10 @@ def _add_clue(state: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
     player = _get_player(state, params["player_id"])
     clues = player.setdefault("clues", [])
     incoming = _extract_entries(params, "clue")
+    for entry in incoming:
+        reliability = str(entry.get("reliability") or "").strip().lower()
+        if reliability not in ("pending", "suspect", "reliable"):
+            entry["reliability"] = "pending"
     clues = _merge_findings(clues, incoming)
     player["clues"] = clues
     shared = state.setdefault("shared_findings", {"items": [], "clues": []})

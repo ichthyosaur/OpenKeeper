@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import asyncio
 from typing import Any, AsyncIterator, Optional, Union
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -94,6 +95,7 @@ class FileBackedCollection(MemoryCollection):
     def __init__(self, path: Path) -> None:
         super().__init__()
         self.path = path
+        self._lock = asyncio.Lock()
         if path.exists():
             try:
                 self.items = json.loads(path.read_text(encoding="utf-8"))
@@ -101,16 +103,19 @@ class FileBackedCollection(MemoryCollection):
                 self.items = []
 
     async def insert_one(self, doc: dict[str, Any]) -> None:
-        await super().insert_one(doc)
-        self._flush()
+        async with self._lock:
+            await super().insert_one(doc)
+            self._flush()
 
     async def update_one(self, query: dict[str, Any], update: dict[str, Any], upsert: bool = False) -> None:
-        await super().update_one(query, update, upsert=upsert)
-        self._flush()
+        async with self._lock:
+            await super().update_one(query, update, upsert=upsert)
+            self._flush()
 
     async def delete_many(self, query: dict[str, Any]) -> None:
-        await super().delete_many(query)
-        self._flush()
+        async with self._lock:
+            await super().delete_many(query)
+            self._flush()
 
     def _flush(self) -> None:
         self.path.write_text(json.dumps(self.items, ensure_ascii=False, indent=2), encoding="utf-8")

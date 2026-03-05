@@ -17,6 +17,7 @@ class AppConfig:
     model: str
     history_count: int
     max_followups: int
+    followup_delay_ms: int
     stream_cps: int
     temperature: float
     llm_parse_retries: int
@@ -30,6 +31,7 @@ DEFAULT_CONFIG = {
     "model": "gpt-4o-mini",
     "history_count": 100,
     "max_followups": 2,
+    "followup_delay_ms": 1200,
     "stream_cps": 50,
     "temperature": 0.7,
     "llm_parse_retries": 3,
@@ -129,6 +131,7 @@ def load_config(path: Union[str, Path]) -> AppConfig:
         model=str(data.get("model")),
         history_count=int(data.get("history_count")),
         max_followups=int(data.get("max_followups")),
+        followup_delay_ms=max(0, int(data.get("followup_delay_ms", 1200))),
         stream_cps=int(data.get("stream_cps")),
         temperature=float(data.get("temperature")),
         llm_parse_retries=max(0, int(data.get("llm_parse_retries"))),

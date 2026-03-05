@@ -126,13 +126,24 @@
         opacity: 0.18;
       }
       .app { min-height: 100vh; padding: 24px; display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 1; animation: fadeInUp 0.8s ease both; }
+      .app.omen-hit::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+        background:
+          radial-gradient(circle at 50% 45%, rgba(97, 165, 255, 0.24), transparent 48%),
+          radial-gradient(circle at 50% 50%, rgba(180, 220, 255, 0.18), transparent 62%);
+        animation: omenPulse 680ms ease-out forwards;
+      }
       .paper-fog {
         position: fixed;
         inset: -20%;
         background:
           radial-gradient(60% 40% at 20% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
           radial-gradient(50% 50% at 80% 70%, rgba(255, 255, 255, 0.06), transparent 60%);
-        animation: fogDrift 24s ease-in-out infinite alternate;
+        animation: none;
         pointer-events: none;
         mix-blend-mode: soft-light;
         z-index: 0;
@@ -154,7 +165,7 @@
         position: relative;
         overflow: hidden;
       }
-      .title { font-size: 28px; font-weight: 700; font-family: "Cinzel Decorative", serif; letter-spacing: 0.2em; color: var(--title-ink); text-shadow: 0 1px 0 rgba(244,228,193,0.4), 0 -1px 1px rgba(0,0,0,0.2); animation: candleFlicker 5s ease-in-out infinite; }
+      .title { font-size: 28px; font-weight: 700; font-family: "Cinzel Decorative", serif; letter-spacing: 0.2em; color: var(--title-ink); text-shadow: 0 1px 0 rgba(244,228,193,0.4), 0 -1px 1px rgba(0,0,0,0.2); }
       .title::after {
         content: "";
         display: inline-block;
@@ -165,7 +176,7 @@
         background-size: contain;
         background-repeat: no-repeat;
         opacity: 0.7;
-        animation: sigilSpin 6s linear infinite;
+        animation: none;
         vertical-align: middle;
       }
       .subtitle { font-size: 13px; color: var(--muted); font-family: "Cinzel", serif; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.4; }
@@ -340,7 +351,7 @@
       }
       .panel::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
       .panel::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
-      .panel:hover { transform: translateY(-6px); box-shadow: 0 16px 30px rgba(10, 5, 0, 0.28), inset 0 0 18px rgba(92, 64, 51, 0.2); }
+      .panel:hover { transform: translateY(-3px); box-shadow: 0 12px 22px rgba(10, 5, 0, 0.24), inset 0 0 18px rgba(92, 64, 51, 0.2); }
       .panel.history { transform: translateY(-2px); }
       .panel.history:hover { transform: translateY(-6px); }
       .panel:has(.info-item:hover) { z-index: 30; }
@@ -355,6 +366,15 @@
         opacity: 0.8;
       }
       .panel.small { padding: 12px; }
+      .panel.priority {
+        outline: 1px solid rgba(107, 15, 15, 0.55);
+        box-shadow:
+          inset 0 0 22px rgba(107, 15, 15, 0.16),
+          inset 0 0 48px rgba(10, 5, 0, 0.18),
+          0 14px 26px rgba(10, 5, 0, 0.26);
+      }
+      .panel.priority .panel-title { color: #351a12; }
+      .panel.priority .panel-title::before { content: "✦ "; }
       .roll { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
       .roll strong { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
       .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
@@ -365,6 +385,106 @@
         box-shadow: inset 0 0 10px rgba(92, 64, 51, 0.18);
       }
       .badge.fail { background: rgba(107, 15, 15, 0.15); }
+      .outcome-panel { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--ink); }
+      .outcome-row { padding: 6px 8px; border-radius: 8px; background: rgba(244, 228, 193, 0.8); outline: 1px solid rgba(92, 64, 51, 0.3); }
+      .outcome-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+      .symptom-item { padding: 6px 8px; border-radius: 8px; background: rgba(234, 216, 168, 0.6); outline: 1px solid rgba(92, 64, 51, 0.3); }
+      .symptom-item.sev-mid {
+        background: rgba(246, 205, 129, 0.6);
+        outline-color: rgba(166, 100, 30, 0.42);
+      }
+      .symptom-item.sev-high {
+        background: rgba(200, 108, 98, 0.24);
+        outline-color: rgba(107, 15, 15, 0.52);
+      }
+      .symptom-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .symptom-effect {
+        font-size: 12px;
+        color: rgba(42, 26, 14, 0.78);
+        line-height: 1.4;
+      }
+      .npc-list { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+      .npc-item {
+        padding: 8px;
+        border-radius: 10px;
+        background: rgba(244, 228, 193, 0.9);
+        outline: 1px solid rgba(92, 64, 51, 0.3);
+      }
+      .npc-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .npc-name {
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .npc-trust {
+        font-size: 11px;
+        color: rgba(42, 26, 14, 0.72);
+      }
+      .npc-track {
+        margin-top: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(92, 64, 51, 0.18);
+        overflow: hidden;
+      }
+      .npc-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #7a1f1f, #b4772b, #7f9857);
+      }
+      .npc-meta {
+        margin-top: 6px;
+        font-size: 11px;
+        color: rgba(42, 26, 14, 0.6);
+      }
+      .npc-shift {
+        margin-top: 4px;
+        font-size: 11px;
+        color: rgba(107, 15, 15, 0.78);
+        letter-spacing: 0.05em;
+      }
+      .clue-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .clue-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid rgba(92, 64, 51, 0.35);
+        background: rgba(244, 228, 193, 0.9);
+      }
+      .clue-tag.suspect {
+        border-color: rgba(107, 15, 15, 0.45);
+        color: rgba(107, 15, 15, 0.92);
+        background: rgba(107, 15, 15, 0.08);
+      }
+      .clue-tag.pending {
+        border-color: rgba(166, 100, 30, 0.45);
+        color: rgba(120, 76, 22, 0.92);
+        background: rgba(166, 100, 30, 0.08);
+      }
+      .clue-tag.reliable {
+        border-color: rgba(62, 88, 58, 0.45);
+        color: rgba(47, 78, 44, 0.92);
+        background: rgba(62, 88, 58, 0.1);
+      }
       .modal { position: fixed; inset: 0; background: rgba(10, 5, 0, 0.78); display: flex; align-items: center; justify-content: center; z-index: 50; }
       .modal.hidden { display: none; }
       .modal-card {
@@ -419,7 +539,12 @@
         align-items: start;
       }
       .history-main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-      .summary-card { background: rgba(246, 232, 198, 0.98); outline: 1px solid rgba(92, 64, 51, 0.35); border-radius: 14px; padding: 10px 12px; position: relative; box-shadow: 0 8px 16px rgba(10, 5, 0, 0.2); transform: translateY(-2px); transition: transform 0.35s ease, box-shadow 0.35s ease; }
+      .composer {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .summary-card { background: rgba(246, 232, 198, 0.92); outline: 1px solid rgba(92, 64, 51, 0.28); border-radius: 14px; padding: 10px 12px; position: relative; box-shadow: 0 8px 16px rgba(10, 5, 0, 0.16); transform: translateY(-2px); transition: transform 0.35s ease, box-shadow 0.35s ease; }
       .summary-card:hover { transform: translateY(-6px); box-shadow: 0 12px 22px rgba(10, 5, 0, 0.26); }
       .summary-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--blood); margin-bottom: 8px; font-family: "Cinzel", serif; }
       .summary-row { font-size: 12px; color: var(--ink); display: grid; grid-template-columns: 1fr auto; gap: 8px; line-height: 1.7; }
@@ -439,7 +564,7 @@
         overflow: visible;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
       }
-      .history-item:hover { transform: translateY(-6px); box-shadow: 0 14px 24px rgba(10, 5, 0, 0.28); }
+      .history-item:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(10, 5, 0, 0.24); }
       .history-item::after {
         content: "";
         position: absolute;
@@ -465,11 +590,56 @@
       .history-item.player { border-left: 4px solid rgba(107, 15, 15, 0.6); }
       .history-item.keeper { border-left: 4px solid rgba(107, 15, 15, 0.6); }
       .history-item.system { border-left: 4px solid rgba(92, 64, 51, 0.7); }
+      .history-item.player {
+        background: linear-gradient(180deg, rgba(246, 232, 198, 0.96), rgba(242, 222, 180, 0.9));
+      }
+      .history-item.keeper {
+        background: linear-gradient(180deg, rgba(248, 236, 210, 0.98), rgba(238, 214, 170, 0.94));
+      }
+      .history-item.system {
+        background: linear-gradient(180deg, rgba(236, 225, 200, 0.94), rgba(228, 213, 184, 0.9));
+      }
+      .history-item.keeper .history-content {
+        font-size: 15px;
+        line-height: 1.9;
+        color: #28160e;
+      }
+      .history-item.system .history-content {
+        font-size: 13px;
+        color: rgba(42, 26, 14, 0.78);
+      }
       .history-item.secret {
         background: rgba(234, 240, 226, 0.92);
         outline-color: rgba(92, 110, 84, 0.4);
       }
       .history-meta { font-size: 11px; color: rgba(42, 26, 14, 0.6); display: flex; align-items: center; gap: 12px; margin-bottom: 6px; letter-spacing: 0.12em; text-transform: uppercase; }
+      .history-meta { justify-content: space-between; }
+      .history-meta-left { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+      .history-meta-right { display: inline-flex; align-items: center; gap: 6px; }
+      .history-divider {
+        position: relative;
+        margin: 2px 0 0;
+        padding: 4px 8px;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(42, 26, 14, 0.62);
+      }
+      .history-divider::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        border-top: 1px dashed rgba(92, 64, 51, 0.35);
+        z-index: 0;
+      }
+      .history-divider > span {
+        position: relative;
+        z-index: 1;
+        background: rgba(244, 228, 193, 0.9);
+        padding: 0 6px;
+      }
       .meta-label { font-weight: 700; color: var(--title-ink); }
       .meta-badge {
         padding: 2px 8px;
@@ -485,6 +655,11 @@
         border-color: rgba(92, 110, 84, 0.45);
         color: rgba(62, 88, 58, 0.78);
         text-shadow: 0 0 1px rgba(62, 88, 58, 0.2);
+      }
+      .meta-badge.risk {
+        background: rgba(107, 15, 15, 0.14);
+        border-color: rgba(107, 15, 15, 0.45);
+        color: rgba(83, 20, 20, 0.86);
       }
       .actor-stack { display: flex; flex-direction: column; line-height: 1.2; }
       .actor-name { font-size: 12px; color: var(--text); }
@@ -503,6 +678,54 @@
       }
       .input-row input:disabled { background: rgba(232, 218, 188, 0.4); color: #8b7d63; cursor: not-allowed; }
       .input-row button:disabled { opacity: 0.6; cursor: not-allowed; }
+      .risk-modes { display: flex; flex-wrap: wrap; gap: 6px; }
+      .risk-mode-btn {
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: rgba(234, 216, 168, 0.6);
+        border: 1px solid rgba(92, 64, 51, 0.35);
+        box-shadow: none;
+      }
+      .risk-mode-btn.active {
+        background: rgba(107, 15, 15, 0.2);
+        border-color: rgba(107, 15, 15, 0.5);
+      }
+      .quick-modes { display: flex; flex-wrap: wrap; gap: 6px; }
+      .quick-mode-btn {
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: rgba(234, 216, 168, 0.6);
+        border: 1px solid rgba(92, 64, 51, 0.35);
+        box-shadow: none;
+      }
+      .quick-mode-btn.active {
+        background: rgba(107, 15, 15, 0.18);
+        border-color: rgba(107, 15, 15, 0.42);
+      }
+      .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .quick-action-btn {
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        color: var(--ink);
+        background: rgba(246, 232, 198, 0.92);
+        border: 1px solid rgba(92, 64, 51, 0.42);
+        box-shadow: inset 0 0 8px rgba(92, 64, 51, 0.12);
+        white-space: normal;
+        line-height: 1.35;
+        text-align: left;
+      }
+      .quick-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .quick-action-hint { font-size: 12px; color: rgba(42, 26, 14, 0.68); }
       .side { display: flex; flex-direction: column; gap: 16px; }
       .card-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
       .chip {
@@ -547,6 +770,53 @@
         transition: opacity 0.2s ease, transform 0.2s ease;
         pointer-events: none;
         z-index: 4000;
+      }
+      .notebook-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+      .notebook-tab {
+        flex: 1;
+        border-radius: 10px;
+        border: 1px solid rgba(92, 64, 51, 0.35);
+        background: rgba(246, 232, 198, 0.85);
+        color: var(--ink);
+        padding: 8px 10px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: none;
+      }
+      .notebook-tab.active {
+        background: linear-gradient(180deg, rgba(139, 115, 85, 0.24), rgba(107, 15, 15, 0.2));
+        border-color: rgba(107, 15, 15, 0.45);
+        color: var(--title-ink);
+      }
+      .notebook-page { display: none; }
+      .notebook-page.active { display: block; }
+      .focus-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+      .focus-tab {
+        flex: 1;
+        border-radius: 10px;
+        border: 1px solid rgba(92, 64, 51, 0.35);
+        background: rgba(246, 232, 198, 0.85);
+        color: var(--ink);
+        padding: 8px 10px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: none;
+      }
+      .focus-tab.active {
+        background: linear-gradient(180deg, rgba(139, 115, 85, 0.24), rgba(107, 15, 15, 0.2));
+        border-color: rgba(107, 15, 15, 0.45);
+        color: var(--title-ink);
+      }
+      .focus-page { display: none; }
+      .focus-page.active { display: block; }
+      .note-title {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(42, 26, 14, 0.62);
+        margin-bottom: 6px;
       }
       .players { display: flex; flex-direction: column; gap: 8px; }
       .player { display: flex; align-items: center; gap: 10px; font-size: 14px; }
@@ -604,6 +874,10 @@
         80% { opacity: 1; }
         100% { opacity: 0; transform: translateY(-6px); }
       }
+      @keyframes omenPulse {
+        0% { opacity: 0.85; }
+        100% { opacity: 0; }
+      }
       @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -636,8 +910,33 @@
         70% { border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.22), 0 6px 16px rgba(34, 197, 94, 0.16); }
         100% { border-color: rgba(56, 189, 248, 0.12); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
       }
-      @media (max-width: 900px) { .room { grid-template-columns: 1fr; } }
-      @media (max-width: 900px) { .history-wrap { grid-template-columns: 1fr; } }
+      @media (max-width: 900px) {
+        .app { padding: 12px; gap: 12px; }
+        .room { grid-template-columns: 1fr; gap: 12px; }
+        .history-wrap { grid-template-columns: 1fr; gap: 10px; }
+        .history-list {
+          max-height: min(52vh, 460px);
+        }
+        .history-main { gap: 10px; }
+        .composer {
+          position: sticky;
+          bottom: 0;
+          z-index: 12;
+          background:
+            linear-gradient(180deg, rgba(246, 232, 198, 0.98), rgba(234, 216, 168, 0.96)),
+            var(--paper-texture-light);
+          outline: 1px solid rgba(92, 64, 51, 0.35);
+          border-radius: 12px;
+          padding: 8px;
+          box-shadow: 0 8px 16px rgba(10, 5, 0, 0.2);
+          padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        }
+        .input-row { gap: 6px; }
+        .input-row input { font-size: 16px; }
+        .input-row button { padding: 10px 14px; }
+        .risk-modes, .quick-modes, .quick-actions { gap: 6px; }
+        .side { gap: 10px; }
+      }
     </style>
   </head>
   <body>
@@ -783,11 +1082,17 @@
             </div>
             <div class="history-main">
               <div id="history" class="history-list"></div>
-              <div class="input-row">
-                <input id="actionInput" placeholder="行动输入..." />
-                <button id="send">发送</button>
+              <div id="actionComposer" class="composer">
+                <div class="input-row">
+                  <input id="actionInput" placeholder="行动输入..." />
+                  <button id="send">发送</button>
+                </div>
+                <div id="inputNotice" class="notice warning"></div>
+                <div id="riskModes" class="risk-modes"></div>
+                <div id="quickModes" class="quick-modes"></div>
+                <div id="quickActions" class="quick-actions"></div>
+                <div id="quickModeHint" class="quick-action-hint">按回车发送；按方向键上/下可调用最近输入。</div>
               </div>
-              <div id="inputNotice" class="notice warning"></div>
             </div>
           </div>
         </div>
@@ -810,30 +1115,62 @@
             <div class="attributes attrs-collapsed" id="cardSkills"></div>
           </div>
 
-          <div class="panel small">
-            <div class="panel-title">判定面板</div>
-            <div id="rollPanel" class="roll">
-              <div class="muted">暂无判定</div>
+          <div class="panel small priority">
+            <div class="panel-title">局势面板</div>
+            <div class="focus-tabs">
+              <button id="focusTabJudge" class="focus-tab active">判定与代价</button>
+              <button id="focusTabSignal" class="focus-tab">异兆与症状</button>
+            </div>
+            <div id="focusPageJudge" class="focus-page active">
+              <div id="rollPanel" class="roll">
+                <div class="muted">暂无判定</div>
+              </div>
+              <div id="outcomePanel" class="outcome-panel">
+                <div class="muted">暂无推进与代价</div>
+              </div>
+            </div>
+            <div id="focusPageSignal" class="focus-page">
+              <div id="omenEcho" class="outcome-panel">
+                <div class="muted">暂无异兆回声</div>
+              </div>
+              <div id="sanSymptoms" class="outcome-panel">
+                <div class="muted">暂无理智症状</div>
+              </div>
             </div>
           </div>
 
           <div class="panel">
-            <div class="panel-title">物品</div>
-            <div id="itemList" class="info-list">
-              <div class="muted">暂无物品</div>
+            <div class="panel-title">调查笔记本</div>
+            <div class="notebook-tabs">
+              <button id="tabGuide" class="notebook-tab active">手记</button>
+              <button id="tabClues" class="notebook-tab">线索页</button>
+              <button id="tabItems" class="notebook-tab">随身物</button>
             </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title">线索</div>
-            <div id="clueList" class="info-list">
-              <div class="muted">暂无线索</div>
+            <div id="pageGuide" class="notebook-page active">
+              <div id="notebookGuideList" class="info-list"></div>
+            </div>
+            <div id="pageClues" class="notebook-page">
+              <div id="clueList" class="info-list">
+                <div class="muted">暂无线索</div>
+              </div>
+            </div>
+            <div id="pageItems" class="notebook-page">
+              <div id="itemList" class="info-list">
+                <div class="muted">暂无物品</div>
+              </div>
             </div>
           </div>
 
           <div class="panel">
             <div class="panel-title">房间玩家</div>
             <div class="players" id="roomPlayers"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">NPC关系</div>
+            <div id="npcList" class="npc-list">
+              <div class="muted">暂未遭遇NPC</div>
+            </div>
           </div>
         </div>
       </section>
@@ -869,6 +1206,7 @@
         items: [],
         clues: [],
         findingHighlights: { items: {}, clues: {} },
+        notebookTab: "guide",
         attrsCollapsed: true,
         skillsCollapsed: true,
         historyPinned: true,
@@ -880,6 +1218,16 @@
           personalSkills: new Set(),
           luck: null,
         },
+        actionDraftHistory: [],
+        actionDraftCursor: -1,
+        quickActionMode: "investigate",
+        riskMode: "standard",
+        sideFocusTab: "judge",
+        lastOmenMarker: "",
+        omenFlashTimer: null,
+        npcRelations: {},
+        npcOrder: [],
+        npcTrustHighlights: {},
       };
 
       const serverUrl = window.location.origin;
@@ -922,6 +1270,15 @@
       function textFromI18n(content) {
         if (!content) return "";
         return content.zh || content.en || "";
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
       }
 
       const ATTRIBUTE_KEYS = ["str", "dex", "int", "con", "app", "pow", "siz", "edu"];
@@ -969,6 +1326,37 @@
         other_language: "外语",
       };
       const SKILL_EXCLUDE = new Set(["mythos"]);
+      const PROFESSION_TRUST_BASE = {
+        police: 1,
+        doctor: 1,
+        nurse: 1,
+        professor: 1,
+        librarian: 1,
+        journalist: 1,
+        private_detective: 0,
+        retired_soldier: 0,
+        engineer: 0,
+        archaeologist: 0,
+        antiquarian: 0,
+        author: 0,
+        painter: 0,
+        sculptor: 0,
+        chemist: 0,
+        occult_researcher: -1,
+        dockworker: 0,
+      };
+      const NPC_NAME_BLACKLIST = new Set([
+        "主街",
+        "钟楼",
+        "档案馆",
+        "杂货铺",
+        "调查员",
+        "守密者",
+        "玩家",
+        "房间",
+        "模组",
+        "结局",
+      ]);
 
       function setLanInfo(info) {
         const status = el("lanStatus");
@@ -1002,7 +1390,19 @@
         const preserveFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
         const shouldPin = preserveFromBottom < 24 || state.historyPinned;
         container.innerHTML = "";
+        let previousActor = "";
+        let previousMessageType = "";
         state.history.forEach((entry) => {
+          const rawText = textFromI18n(entry.content);
+          let displayText = rawText;
+          let riskBadge = "";
+          if (entry.actor_type === "player") {
+            const match = rawText.match(/^\[风险档位:(保守|标准|冒险)\]\s*/);
+            if (match) {
+              riskBadge = `<span class="meta-badge risk">${match[1]}</span>`;
+              displayText = rawText.slice(match[0].length);
+            }
+          }
           const item = document.createElement("div");
           item.className = `history-item ${entry.actor_type} ${entry.message_type === "secret" ? "secret" : ""}`;
           if (entry.stream_id) item.dataset.streamId = entry.stream_id;
@@ -1037,18 +1437,40 @@
             day: "2-digit",
             year: "numeric",
           });
+          if (
+            entry.actor_type !== previousActor
+            || entry.message_type !== previousMessageType
+          ) {
+            const divider = document.createElement("div");
+            divider.className = "history-divider";
+            const label =
+              entry.actor_type === "player"
+                ? "玩家行动"
+                : entry.actor_type === "keeper"
+                ? "守密者叙述"
+                : "系统结算";
+            divider.innerHTML = `<span>${label}</span>`;
+            container.appendChild(divider);
+            previousActor = entry.actor_type;
+            previousMessageType = entry.message_type;
+          }
           item.setAttribute("data-stamp", stamp);
           item.innerHTML = `
             <div class="history-meta">
-              ${
-                entry.actor_type === "keeper"
-                  ? `<span class="meta-label">KEEPER</span>${keeperTag}`
-                  : entry.actor_type === "player"
-                  ? `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-stack"><div class="actor-name">${actor}</div><div class="actor-prof">${profLabel || ""}</div></div>`
-                  : `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-name">${actor}</div>`
-              }
+              <div class="history-meta-left">
+                ${
+                  entry.actor_type === "keeper"
+                    ? `<span class="meta-label">KEEPER</span>${keeperTag}`
+                    : entry.actor_type === "player"
+                    ? `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-stack"><div class="actor-name">${actor}</div><div class="actor-prof">${profLabel || ""}</div></div>`
+                    : `<span class="actor-tag ${entry.actor_type}">${entry.actor_type}</span><div class="actor-name">${actor}</div>`
+                }
+              </div>
+              <div class="history-meta-right">
+                ${riskBadge}
+              </div>
             </div>
-            <div class="history-content">${textFromI18n(entry.content)}</div>
+            <div class="history-content">${displayText}</div>
           `;
           container.appendChild(item);
         });
@@ -1090,7 +1512,7 @@
       function normalizeFinding(raw) {
         if (!raw) return null;
         if (typeof raw === "string") {
-          return { description: raw, reveal: "", effect: "", name: "" };
+          return { description: raw, reveal: "", effect: "", name: "", reliability: "" };
         }
         if (typeof raw === "object") {
           const description =
@@ -1103,7 +1525,8 @@
           const name = raw.name || raw.clue_id || raw.item_id || raw.id || "";
           const reveal = raw.reveal || raw.details || "";
           const effect = raw.effect || "";
-          return { description, reveal, effect, name };
+          const reliability = raw.reliability || raw.credibility || raw.confidence || "";
+          return { description, reveal, effect, name, reliability };
         }
         return null;
       }
@@ -1131,12 +1554,30 @@
 
       function mergeFinding(list, next) {
         if (!next?.description) return false;
-        const exists = list.some((item) => item.description === next.description);
-        if (!exists) {
+        const idx = list.findIndex((item) => item.description === next.description);
+        if (idx < 0) {
           list.push(next);
           return true;
         }
+        const existing = list[idx];
+        if (!existing.reliability && next.reliability) existing.reliability = next.reliability;
+        if (!existing.name && next.name) existing.name = next.name;
+        if (!existing.reveal && next.reveal) existing.reveal = next.reveal;
+        if (!existing.effect && next.effect) existing.effect = next.effect;
         return false;
+      }
+
+      function clueReliabilityTag(clue) {
+        const raw = String(clue?.reliability || "").trim().toLowerCase();
+        if (raw) {
+          if (/可信|可靠|confirmed|reliable|verified/.test(raw)) return { cls: "reliable", text: "可信" };
+          if (/可疑|伪|false|suspect|mislead/.test(raw)) return { cls: "suspect", text: "可疑" };
+          if (/待验证|pending|unknown|uncertain/.test(raw)) return { cls: "pending", text: "待验证" };
+        }
+        const desc = `${clue?.description || ""}|${clue?.reveal || ""}|${clue?.effect || ""}`;
+        if (/(可疑|伪线索|误导|矛盾|冲突|不一致)/.test(desc)) return { cls: "suspect", text: "可疑" };
+        if (/(互证|吻合|印证|证实|已验证|一致)/.test(desc)) return { cls: "reliable", text: "可信" };
+        return { cls: "pending", text: "待验证" };
       }
 
       function parseFindingFromStatus(statusText) {
@@ -1243,16 +1684,16 @@
         } else {
           itemList.innerHTML = "";
           state.items.forEach((item) => {
-            const desc = item.description || "—";
-            const name = item.name || desc;
-            const effect = item.effect || item.reveal || "";
-            const revealText = `描述：${desc}\n效果：${effect || "无"}`;
+            const rawDesc = (item.description || "").trim();
+            const desc = rawDesc || "暂无描述";
+            const rawName = (item.name || "").trim();
+            const name = rawName || rawDesc || "未标注物件";
             const line = document.createElement("div");
-            const highlightAt = state.findingHighlights.items[desc] || 0;
+            const highlightAt = state.findingHighlights.items[item.description || name] || 0;
             line.className = now - highlightAt < 2000 ? "info-item new" : "info-item";
             line.innerHTML = `
-              <div class="info-text">${name}</div>
-              <div class="info-reveal">${revealText.replace(/\n/g, "<br />")}</div>
+              <div class="info-text">${escapeHtml(name)}</div>
+              <div class="info-reveal">描述：${escapeHtml(desc)}</div>
             `;
             itemList.appendChild(line);
           });
@@ -1262,20 +1703,455 @@
         } else {
           clueList.innerHTML = "";
           state.clues.forEach((clue) => {
-            const desc = clue.description || "—";
-            const name = clue.name || desc;
-            const reveal = clue.reveal || "";
-            const revealText = `描述：${desc}\n揭示：${reveal || "无"}`;
+            const rawDesc = (clue.description || "").trim();
+            const rawName = (clue.name || "").trim();
+            const desc = rawDesc || rawName || "暂无描述";
+            const name = rawName || rawDesc || "未命名线索";
             const line = document.createElement("div");
-            const highlightAt = state.findingHighlights.clues[desc] || 0;
+            const highlightAt = state.findingHighlights.clues[clue.description || name] || 0;
+            const reliability = clueReliabilityTag(clue);
             line.className = now - highlightAt < 2000 ? "info-item new" : "info-item";
             line.innerHTML = `
-              <div class="info-text">${name}</div>
-              <div class="info-reveal">${revealText.replace(/\n/g, "<br />")}</div>
+              <div class="info-text">${escapeHtml(name)}</div>
+              <div class="clue-meta"><span class="clue-tag ${reliability.cls}">${reliability.text}</span></div>
+              <div class="info-reveal">描述：${escapeHtml(desc)}</div>
             `;
             clueList.appendChild(line);
           });
         }
+      }
+
+      function collectGuideNotes() {
+        const notes = [];
+        const seen = new Set();
+        const add = (title, text) => {
+          const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+          if (!cleaned) return;
+          const key = `${title}|${cleaned}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          notes.push({ title, text: cleaned });
+        };
+        const recentClues = [...state.clues].slice(-2).reverse();
+        recentClues.forEach((clue) => {
+          if (notes.length >= 4) return;
+          const desc = clue?.description || clue?.name;
+          if (desc) add("线索誊录", desc.slice(0, 72));
+        });
+        const recentItems = [...state.items].slice(-1).reverse();
+        recentItems.forEach((item) => {
+          if (notes.length >= 4) return;
+          const name = item?.name || item?.description;
+          if (name) add("物证记录", name.slice(0, 72));
+        });
+        const lastDice = [...state.history]
+          .reverse()
+          .find((entry) => entry?.action_type === "dice_roll" && entry?.state_diff);
+        if (lastDice && notes.length < 4) {
+          const sd = lastDice.state_diff || {};
+          if (sd.opposed) {
+            add("对抗余痕", `最近一次对抗结果：${sd.winner || "tie"}`);
+          } else if (sd.dice?.type === "coc7e") {
+            const lvl = sd.dice?.success_level || "failure";
+            const map = {
+              critical: "大成功",
+              extreme_success: "极难成功",
+              hard_success: "困难成功",
+              regular_success: "成功",
+              failure: "失败",
+              fumble: "大失败",
+            };
+            add("检定余痕", `最近一次检定：${map[lvl] || lvl}`);
+          }
+        }
+        const senseKeys = ["风", "雾", "冷", "潮", "影", "钟", "声", "低语", "血", "黑", "回音", "铁锈", "气味"];
+        const keeperEntries = [...state.history].reverse().filter((entry) => entry?.actor_type === "keeper");
+        keeperEntries.forEach((entry) => {
+          if (notes.length >= 4) return;
+          const text = textFromI18n(entry.content);
+          const parts = text.split(/[。！？!?]/).map((part) => part.trim()).filter(Boolean);
+          const fragment = parts.find((part) => part.length >= 10 && senseKeys.some((k) => part.includes(k)));
+          if (!fragment) return;
+          add("手记摘录", fragment.slice(0, 72));
+        });
+        if (notes.length < 4 && state.sessionInfo?.module_introduction) {
+          const intro = state.sessionInfo.module_introduction
+            .split(/[。！？!?]/)
+            .map((part) => part.trim())
+            .find((part) => part.length >= 10);
+          if (intro) {
+            add("旧页抄录", intro.slice(0, 64));
+          }
+        }
+        if (!notes.length) {
+          add("空白页边注", "目前还没有足够信息，先观察环境细节与异常声音。");
+        }
+        return notes;
+      }
+
+      function parseKeeperNotes(raw) {
+        if (!raw) return null;
+        if (typeof raw === "object") return raw;
+        const text = String(raw).trim();
+        if (!text) return null;
+        try {
+          const json = JSON.parse(text);
+          if (json && typeof json === "object") return json;
+        } catch (e) {
+        }
+        return null;
+      }
+
+      function extractSuggestedActions() {
+        const keeperEntry = [...state.history]
+          .reverse()
+          .find((entry) => entry?.actor_type === "keeper" && entry?.action_type === "keeper_narration");
+        if (!keeperEntry) return [];
+        const notesRaw = keeperEntry?.state_diff?.keeper_notes || "";
+        const parsed = parseKeeperNotes(notesRaw);
+        if (parsed && Array.isArray(parsed.next_actions)) {
+          return parsed.next_actions
+            .map((item) => String(item || "").trim())
+            .filter(Boolean)
+            .slice(0, 4);
+        }
+        return [];
+      }
+
+      function latestKeeperNotesObject() {
+        const keeperEntry = [...state.history]
+          .reverse()
+          .find((entry) => entry?.actor_type === "keeper" && entry?.action_type === "keeper_narration");
+        if (!keeperEntry) return null;
+        return parseKeeperNotes(keeperEntry?.state_diff?.keeper_notes || "");
+      }
+
+      function sanitizeEndingTone(raw) {
+        const text = String(raw || "").trim();
+        if (!text) return "";
+        const leaked =
+          /ending|结局id|ending_id|echo[_-]|[a-z]+_[a-z]+/i.test(text);
+        if (leaked) {
+          return "高危收束风险上升，请尽快采取稳定或自救行动。";
+        }
+        return text;
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function trustLevelLabel(score) {
+        if (score <= -2) return "敌意";
+        if (score <= -1) return "戒备";
+        if (score === 0) return "中立";
+        if (score === 1) return "信任";
+        return "依赖";
+      }
+
+      function trustLevelPercent(score) {
+        return Math.round(((score + 2) / 4) * 100);
+      }
+
+      function inferBaseTrustFromPlayer() {
+        const player = state.stateView.players?.[playerId] || {};
+        const profession = String(player.profession || "").trim();
+        const background = String(player.background || "").trim();
+        let score = PROFESSION_TRUST_BASE[profession] ?? 0;
+        if (/(守法|公职|教会|医者|学者|记者|救助|志愿)/.test(background)) score += 1;
+        if (/(前科|欠债|邪教|叛逃|逃兵|通缉|黑市|走私)/.test(background)) score -= 1;
+        return clamp(score, -2, 2);
+      }
+
+      function sanitizeNpcName(raw) {
+        const name = String(raw || "").trim();
+        if (!name) return "";
+        if (name.length < 2 || name.length > 24) return "";
+        if (NPC_NAME_BLACKLIST.has(name)) return "";
+        if (/[，。！？、；：]/.test(name)) return "";
+        return name;
+      }
+
+      function isRoleStyleNpcName(name) {
+        const text = String(name || "").trim();
+        if (!text) return false;
+        if (/^(夜巡)?(警员|警官|医生|教授|馆员|牧师|神父|护士|店主|老板)$/.test(text)) return true;
+        if (/^(巡警|门卫|车夫|码头工|修女)$/.test(text)) return true;
+        return false;
+      }
+
+      function isProperNpcName(name) {
+        const text = String(name || "").trim();
+        if (!text) return false;
+        if (/[·•]/.test(text)) return true;
+        if (/^[A-Z][a-z]+ [A-Z][a-z]+$/.test(text)) return true;
+        if (/^[\u4e00-\u9fa5]{2,4}$/.test(text) && !isRoleStyleNpcName(text)) return true;
+        return false;
+      }
+
+      function extractNpcCandidatesFromText(text) {
+        const source = String(text || "");
+        if (!source) return [];
+        const found = new Set();
+        const zhPattern = /([\u4e00-\u9fa5]{2,4}[·•][\u4e00-\u9fa5]{1,6}|[\u4e00-\u9fa5]{2,4}(?:警员|警官|医生|教授|馆员|牧师))/g;
+        let m;
+        while ((m = zhPattern.exec(source)) !== null) {
+          const name = sanitizeNpcName(m[1] || "");
+          if (name) found.add(name);
+        }
+        const latinPattern = /\b([A-Z][a-z]+ [A-Z][a-z]+)\b/g;
+        while ((m = latinPattern.exec(source)) !== null) {
+          const name = sanitizeNpcName(m[1] || "");
+          if (name) found.add(name);
+        }
+        const list = Array.from(found);
+        const hasProper = list.some((name) => isProperNpcName(name));
+        const filtered = hasProper
+          ? list.filter((name) => !isRoleStyleNpcName(name))
+          : list;
+        return filtered.slice(0, 5);
+      }
+
+      function isSocialText(text) {
+        const source = String(text || "");
+        return /(询问|交涉|沟通|说服|话术|心理|威吓|谈判|请求|解释|安抚|套话)/.test(source);
+      }
+
+      function socialDeltaFromDice(entry) {
+        if (!entry || entry.action_type !== "dice_roll") return 0;
+        const sd = entry.state_diff || {};
+        const dice = sd.dice || {};
+        const level = String(dice.success_level || "");
+        const reason = String(sd.reason || "");
+        const skillName = String(dice.skill_name || sd.skill_name || "");
+        const socialSkill = /(话术|说服|心理学|威吓|交涉|fast_talk|persuade|psychology|intimidation)/i.test(`${reason}|${skillName}`);
+        if (!socialSkill && !isSocialText(reason)) return 0;
+        if (["critical", "extreme_success", "hard_success"].includes(level)) return 2;
+        if (level === "regular_success") return 1;
+        if (level === "fumble") return -2;
+        if (level === "failure") return -1;
+        return 0;
+      }
+
+      function socialDeltaFromPlayerText(text) {
+        const source = String(text || "");
+        if (!source) return 0;
+        if (/(威胁|逼问|恐吓|强迫)/.test(source)) return -1;
+        if (/(礼貌|感谢|请教|协助|道歉|安抚)/.test(source)) return 1;
+        return 0;
+      }
+
+      function socialTrustDeltaNear(entryIndex) {
+        const start = Math.max(0, entryIndex - 10);
+        let latestPlayerText = "";
+        let latestPlayerIndex = -1;
+        for (let i = entryIndex - 1; i >= start; i -= 1) {
+          const item = state.history[i];
+          if (item?.actor_type === "player" && item?.actor_id === playerId) {
+            latestPlayerIndex = i;
+            latestPlayerText = String(textFromI18n(item.content) || "").replace(/^\[风险档位:[^\]]+\]\s*/, "");
+            break;
+          }
+        }
+        if (latestPlayerIndex < 0 || !isSocialText(latestPlayerText)) return 0;
+        for (let i = latestPlayerIndex + 1; i < entryIndex; i += 1) {
+          const diceDelta = socialDeltaFromDice(state.history[i]);
+          if (diceDelta !== 0) return diceDelta;
+        }
+        return socialDeltaFromPlayerText(latestPlayerText);
+      }
+
+      function hasAuthoritativeNpcState() {
+        const npcs = state.stateView?.npcs;
+        return !!(npcs && typeof npcs === "object" && Object.keys(npcs).length);
+      }
+
+      function syncNpcRelationsFromState() {
+        if (!hasAuthoritativeNpcState()) return;
+        const npcs = state.stateView?.npcs || {};
+        const currentByName = {};
+        Object.values(npcs).forEach((raw) => {
+          if (!raw || typeof raw !== "object") return;
+          if (!raw.encountered) return;
+          const name = sanitizeNpcName(raw.name || "");
+          if (!name) return;
+          const trust = clamp(Number(raw.trust ?? 0), -2, 2);
+          const baseTrust = clamp(Number(raw.base_trust ?? trust), -2, 2);
+          const prev = state.npcRelations[name];
+          if (prev && prev.trust !== trust) {
+            state.npcTrustHighlights[name] = Date.now();
+          }
+          currentByName[name] = {
+            name,
+            trust,
+            baseTrust,
+            firstSeenAt: prev?.firstSeenAt || "已接触",
+            lastSeenAt: String(raw.last_reason || "").trim() || "已接触",
+            interactions: Number(prev?.interactions || 0) + (Number(raw.last_shift || 0) !== 0 ? 1 : 0),
+          };
+        });
+        state.npcRelations = currentByName;
+        state.npcOrder = Object.keys(currentByName);
+      }
+
+      function ensureNpcRelation(name, firstSeenAt) {
+        if (!state.npcRelations[name]) {
+          const base = inferBaseTrustFromPlayer();
+          state.npcRelations[name] = {
+            name,
+            trust: base,
+            baseTrust: base,
+            firstSeenAt: firstSeenAt || "刚刚",
+            lastSeenAt: firstSeenAt || "刚刚",
+            interactions: 0,
+          };
+          state.npcOrder.push(name);
+        }
+        return state.npcRelations[name];
+      }
+
+      function entryNarrationLabel(entryIndex) {
+        let keeperNarrationCount = 0;
+        for (let i = 0; i <= entryIndex; i += 1) {
+          const item = state.history[i];
+          if (item?.actor_type === "keeper" && item?.action_type === "keeper_narration") {
+            keeperNarrationCount += 1;
+          }
+        }
+        if (keeperNarrationCount <= 0) return "第1段叙事";
+        return `第${keeperNarrationCount}段叙事`;
+      }
+
+      function ingestNpcMentionsFromEntry(entry, entryIndex) {
+        if (hasAuthoritativeNpcState()) return;
+        if (!entry || entry.actor_type !== "keeper") return;
+        const content = textFromI18n(entry.content);
+        const notesObj = parseKeeperNotes(entry?.state_diff?.keeper_notes || "");
+        const extra = [
+          String(notesObj?.npc_focus || "").trim(),
+          String(notesObj?.npc_reaction || "").trim(),
+        ].filter(Boolean).join(" ");
+        const names = extractNpcCandidatesFromText(`${content} ${extra}`);
+        if (!names.length) return;
+        const seenAt = entryNarrationLabel(entryIndex);
+        names.forEach((name) => {
+          const relation = ensureNpcRelation(name, seenAt);
+          relation.lastSeenAt = seenAt;
+        });
+        const delta = socialTrustDeltaNear(entryIndex);
+        if (delta !== 0) {
+          names.forEach((name) => {
+            const relation = state.npcRelations[name];
+            if (!relation) return;
+            relation.trust = clamp(relation.trust + delta, -2, 2);
+            relation.interactions = (relation.interactions || 0) + 1;
+            state.npcTrustHighlights[name] = Date.now();
+          });
+        }
+      }
+
+      function rebuildNpcRelationsFromHistory() {
+        if (hasAuthoritativeNpcState()) {
+          syncNpcRelationsFromState();
+          return;
+        }
+        state.npcRelations = {};
+        state.npcOrder = [];
+        state.history.forEach((entry, idx) => {
+          ingestNpcMentionsFromEntry(entry, idx);
+        });
+      }
+
+      function renderNpcPanel() {
+        if (hasAuthoritativeNpcState()) {
+          syncNpcRelationsFromState();
+        }
+        const container = el("npcList");
+        if (!container) return;
+        if (!state.npcOrder.length) {
+          container.innerHTML = "<div class=\"muted\">暂未遭遇NPC</div>";
+          return;
+        }
+        container.innerHTML = state.npcOrder.map((name) => {
+          const relation = state.npcRelations[name];
+          if (!relation) return "";
+          const trust = clamp(Number(relation.trust || 0), -2, 2);
+          const diff = trust - Number(relation.baseTrust || 0);
+          const trend = diff > 0 ? `↑${diff}` : diff < 0 ? `↓${Math.abs(diff)}` : "→0";
+          const shifted = Date.now() - Number(state.npcTrustHighlights[name] || 0) < 6000;
+          return `
+            <div class="npc-item">
+              <div class="npc-head">
+                <div class="npc-name">${escapeHtml(relation.name || "")}</div>
+                <div class="npc-trust">${trustLevelLabel(trust)} (${trend})</div>
+              </div>
+              <div class="npc-track"><div class="npc-fill" style="width:${trustLevelPercent(trust)}%"></div></div>
+              <div class="npc-meta">最近记录 ${escapeHtml(relation.lastSeenAt || "已接触")}</div>
+              ${shifted ? "<div class=\"npc-shift\">态度有变化</div>" : ""}
+            </div>
+          `;
+        }).join("");
+      }
+
+      function buildStatusDetails() {
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        const hpMax = Number(stats.hp_max ?? stats.hp ?? 0);
+        const hp = Number(stats.hp ?? 0);
+        const sanMax = Number(stats.san_max ?? stats.san ?? 0);
+        const san = Number(stats.san ?? 0);
+        const rawStatuses = (player.statuses || [])
+          .map((s) => String(s || "").trim())
+          .filter((s) => s && !s.startsWith("持有道具：") && !s.startsWith("持有线索：") && s !== "dead");
+        const details = [];
+        const pushDetail = (title, effect, severity = "low") => {
+          if (!title || !effect) return;
+          const key = `${title}|${effect}`;
+          if (details.some((d) => d.key === key)) return;
+          details.push({ key, title, effect, severity });
+        };
+        rawStatuses.forEach((status) => {
+          if (/(失语|缄默|哑|语言紊乱)/.test(status)) pushDetail("交流受限", "交涉快捷行动不可用，建议改用书写/调查。", "high");
+          else if (/(偏执|疑惧|妄想)/.test(status)) pushDetail("信任波动", "NPC对话更易恶化，关系提升难度提高。", "mid");
+          else if (/(惊恐|恐慌|战栗|崩溃)/.test(status)) pushDetail("高压惊恐", "不可选择冒险档位，优先求生或撤离。", "high");
+          else if (/(幻听|幻视|错觉|时间错位)/.test(status)) pushDetail("感知失真", "调查可能得到伪线索，建议复核证据。", "mid");
+          else pushDetail("异常状态", status, "low");
+        });
+        if (hpMax > 0) {
+          const ratio = hp / hpMax;
+          if (ratio <= 0.25) pushDetail("重伤", "行动风险显著上升，建议立即处理伤势。", "high");
+          else if (ratio <= 0.5) pushDetail("受伤", "建议减少冒险行动，保持掩护与退路。", "mid");
+        }
+        if (sanMax > 0) {
+          const ratio = san / sanMax;
+          if (ratio <= 0.25) pushDetail("理智濒危", "现实感脆弱，任何神秘接触都可能引发失控。", "high");
+          else if (ratio <= 0.5) pushDetail("理智侵蚀", "建议控制暴露时长并分段行动。", "mid");
+        }
+        return details;
+      }
+
+      function renderNotebook() {
+        const tabs = {
+          guide: { tab: el("tabGuide"), page: el("pageGuide") },
+          clues: { tab: el("tabClues"), page: el("pageClues") },
+          items: { tab: el("tabItems"), page: el("pageItems") },
+        };
+        Object.entries(tabs).forEach(([key, refs]) => {
+          refs.tab?.classList.toggle("active", state.notebookTab === key);
+          refs.page?.classList.toggle("active", state.notebookTab === key);
+        });
+        const guideList = el("notebookGuideList");
+        if (guideList) {
+          const notes = collectGuideNotes();
+          guideList.innerHTML = "";
+          notes.forEach((note) => {
+            const line = document.createElement("div");
+            line.className = "info-item";
+            line.innerHTML = `<div class="note-title">${note.title}</div><div class="info-text">${note.text}</div>`;
+            guideList.appendChild(line);
+          });
+        }
+        renderFindings();
       }
 
       function toastIcon(type) {
@@ -1495,9 +2371,14 @@
         renderHistory();
         renderPlayerCard();
         renderRoomPlayers();
+        renderNpcPanel();
         updateActionLock();
         renderRollPanel();
-        renderFindings();
+        renderOutcomePanel();
+        renderOmenPanel();
+        renderSymptomsPanel();
+        renderFocusPanel();
+        renderNotebook();
         renderSummary();
       }
 
@@ -1525,10 +2406,18 @@
         pending.forEach(({ entry, streamId }) => {
           pushHistoryEntry(entry, streamId);
           toastFromEntry(entry);
+          const idx = streamId
+            ? state.history.findIndex((item) => item.stream_id === streamId)
+            : state.history.length - 1;
+          if (idx >= 0) ingestNpcMentionsFromEntry(state.history[idx], idx);
         });
         renderHistory();
         renderRollPanel();
-        renderFindings();
+        renderOutcomePanel();
+        renderOmenPanel();
+        renderSymptomsPanel();
+        renderNpcPanel();
+        renderNotebook();
         renderSummary();
       }
 
@@ -1594,38 +2483,156 @@
         `;
       }
 
-      function updateActionLock() {
-        const player = state.stateView.players?.[playerId] || {};
-        const stats = player.stats || {};
-        const phase = state.stateView.phase || "lobby";
-        const locked = phase !== "active" || (stats.hp ?? 1) <= 0 || (stats.san ?? 1) <= 0;
-        const input = el("actionInput");
-        const btn = el("send");
-        const notice = el("inputNotice");
-        input.disabled = locked;
-        btn.disabled = locked;
-        if (locked) {
-          if (phase !== "active") {
-            input.placeholder = "等待调查开始";
-            setInputNotice("调查尚未开始，请等待主持人开启模组。");
-          } else {
-            if ((stats.hp ?? 1) <= 0) {
-              input.placeholder = "你已死亡";
-              setInputNotice("你的角色已死亡，无法行动。");
-            } else if ((stats.san ?? 1) <= 0) {
-              input.placeholder = "你已陷入疯狂";
-              setInputNotice("你的角色已陷入疯狂，无法行动。");
-            } else {
-              input.placeholder = "行动输入...";
-              setInputNotice("");
-            }
-            setNotice("你的角色已死亡或疯狂，无法行动。");
-          }
-        } else {
-          input.placeholder = "行动输入...";
-          setInputNotice("");
-          setNotice("");
+      function renderOutcomePanel() {
+        const panel = el("outcomePanel");
+        if (!panel) return;
+        const lastDiceIndex = [...state.history]
+          .map((entry, idx) => ({ entry, idx }))
+          .reverse()
+          .find((item) => item.entry?.action_type === "dice_roll" && item.entry?.state_diff)?.idx;
+        if (lastDiceIndex == null) {
+          panel.innerHTML = "<div class=\"muted\">暂无推进与代价</div>";
+          return;
         }
+        const lastDice = state.history[lastDiceIndex];
+        const stateDiff = lastDice?.state_diff || {};
+        const level = (stateDiff.dice || {}).success_level || "";
+        const isFailure = level === "failure" || level === "fumble";
+        const reason = stateDiff.reason || "本轮判定";
+        let progressText = isFailure
+          ? `失败，但推进了调查：${reason}（可转向次级证据或更稳妥路径）。`
+          : `成功推进：${reason}`;
+
+        const costs = [];
+        for (let i = lastDiceIndex + 1; i < Math.min(state.history.length, lastDiceIndex + 8); i += 1) {
+          const entry = state.history[i];
+          const action = entry?.actions?.[0];
+          if (!action) continue;
+          const fn = action.function_name;
+          if (fn === "apply_damage") {
+            costs.push(`生命变化 ${action.parameters?.amount ?? 0}`);
+          } else if (fn === "apply_sanity_change") {
+            costs.push(`理智变化 ${action.parameters?.amount ?? 0}`);
+          } else if (fn === "add_status") {
+            const statusText = action.parameters?.status || action.parameters?.status_text || action.parameters?.text || "";
+            if (statusText) costs.push(`状态变化 ${statusText}`);
+          }
+        }
+        let costText = costs.length ? costs.join("；") : "暂无显性代价";
+        const notesObj = latestKeeperNotesObject();
+        if (notesObj && typeof notesObj === "object") {
+          const noteProgress = String(notesObj.progress || "").trim();
+          const noteCost = String(notesObj.cost || "").trim();
+          if (noteProgress) progressText = noteProgress;
+          if (noteCost) costText = noteCost;
+        }
+        const rows = [
+          `
+          <div class="outcome-row">
+            <div class="outcome-label">推进信息</div>
+            <div>${escapeHtml(progressText)}</div>
+          </div>
+          `,
+          `
+          <div class="outcome-row">
+            <div class="outcome-label">当前代价</div>
+            <div>${escapeHtml(costText)}</div>
+          </div>
+          `,
+        ];
+        if (notesObj && typeof notesObj === "object") {
+          const falseLead = String(notesObj.false_lead || "").trim();
+          const endingTone = sanitizeEndingTone(notesObj.ending_tone || "");
+          if (falseLead) {
+            rows.push(`
+              <div class="outcome-row">
+                <div class="outcome-label">可疑线索</div>
+                <div>${escapeHtml(falseLead)}</div>
+              </div>
+            `);
+          }
+          if (endingTone) {
+            rows.push(`
+              <div class="outcome-row">
+                <div class="outcome-label">结局倾向</div>
+                <div>${escapeHtml(endingTone)}</div>
+              </div>
+            `);
+          }
+        }
+        panel.innerHTML = rows.join("");
+      }
+
+      function renderOmenPanel() {
+        const panel = el("omenEcho");
+        if (!panel) return;
+        const omenEntry = [...state.history]
+          .reverse()
+          .find((entry) => entry?.state_diff?.threat_clock_omen_at);
+        const notesObj = latestKeeperNotesObject();
+        const noteOmen = String(notesObj?.omen_signal || "").trim();
+        const omenAt = String(omenEntry?.state_diff?.threat_clock_omen_at || "");
+        const marker = `${omenAt}|${noteOmen}`;
+        if (marker && marker !== "|" && marker !== state.lastOmenMarker) {
+          state.lastOmenMarker = marker;
+          triggerOmenHit();
+        }
+        if (!omenEntry && !noteOmen) {
+          panel.innerHTML = "<div class=\"muted\">暂无异兆回声</div>";
+          return;
+        }
+        const omenText = noteOmen || textFromI18n(omenEntry?.content) || "空气里有不对劲的回响。";
+        panel.innerHTML = `
+          <div class="outcome-row">
+            <div class="outcome-label">当前异兆</div>
+            <div>${escapeHtml(omenText)}</div>
+          </div>
+        `;
+      }
+
+      function renderSymptomsPanel() {
+        const panel = el("sanSymptoms");
+        if (!panel) return;
+        const details = buildStatusDetails();
+        if (!details.length) {
+          panel.innerHTML = "<div class=\"muted\">暂无理智症状</div>";
+          return;
+        }
+        panel.innerHTML = details.map((item) => {
+          const cls = item.severity === "high" ? "symptom-item sev-high" : item.severity === "mid" ? "symptom-item sev-mid" : "symptom-item";
+          return `
+            <div class="${cls}">
+              <div class="symptom-title">${escapeHtml(item.title)}</div>
+              <div class="symptom-effect">${escapeHtml(item.effect)}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function triggerOmenHit() {
+        const app = document.querySelector(".app");
+        if (!app) return;
+        app.classList.remove("omen-hit");
+        void app.offsetWidth;
+        app.classList.add("omen-hit");
+        if (state.omenFlashTimer) {
+          clearTimeout(state.omenFlashTimer);
+        }
+        state.omenFlashTimer = setTimeout(() => {
+          app.classList.remove("omen-hit");
+          state.omenFlashTimer = null;
+        }, 760);
+      }
+
+      function renderFocusPanel() {
+        const tabs = {
+          judge: { tab: el("focusTabJudge"), page: el("focusPageJudge") },
+          signal: { tab: el("focusTabSignal"), page: el("focusPageSignal") },
+        };
+        Object.entries(tabs).forEach(([key, refs]) => {
+          refs.tab?.classList.toggle("active", state.sideFocusTab === key);
+          refs.page?.classList.toggle("active", state.sideFocusTab === key);
+        });
       }
 
       function setInputNotice(text) {
@@ -1633,6 +2640,334 @@
         if (!notice) return;
         notice.textContent = text;
         notice.classList.toggle("active", Boolean(text));
+      }
+
+      function getActionLockReason() {
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        const phase = state.stateView.phase || "lobby";
+        if (phase !== "active") return "调查尚未开始，请等待主持人开启模组。";
+        if ((stats.hp ?? 1) <= 0) return "你的角色已死亡，无法行动。";
+        if ((stats.san ?? 1) <= 0) return "你的角色已陷入疯狂，无法行动。";
+        if (state.streamingCount > 0) return "守密者正在叙述，请稍候再行动。";
+        if (!state.ws || state.ws.readyState !== 1) return "连接未就绪，请稍后重试。";
+        return "";
+      }
+
+      function canSendAction() {
+        return !getActionLockReason();
+      }
+
+      const QUICK_ACTION_MODES = {
+        suggested: "建议",
+        investigate: "调查",
+        social: "交涉",
+        survive: "求生",
+        occult: "神秘",
+      };
+      const RISK_MODE_LABELS = {
+        cautious: "保守",
+        standard: "标准",
+        risky: "冒险",
+      };
+      const MODE_BEHAVIOR_HINT = {
+        investigate: "调查",
+        social: "交涉",
+        survive: "求生",
+        occult: "神秘",
+        suggested: "建议",
+      };
+
+      function deriveSymptomConstraints() {
+        const player = state.stateView.players?.[playerId] || {};
+        const statuses = (player.statuses || [])
+          .map((s) => String(s || "").trim())
+          .filter(Boolean);
+        const text = statuses.join(" | ");
+        const disabledModes = new Set();
+        const disabledRisks = new Set();
+        const notes = [];
+
+        if (/(失语|缄默|哑|语言紊乱)/.test(text)) {
+          disabledModes.add("social");
+          notes.push("失语症状：交涉行动不可用");
+        }
+        if (/(偏执|疑惧|妄想)/.test(text)) {
+          notes.push("偏执症状：交涉与协作更易失败");
+        }
+        if (/(惊恐|恐慌|战栗|崩溃)/.test(text)) {
+          disabledRisks.add("risky");
+          notes.push("惊恐症状：不可选择冒险档位");
+        }
+        if (/(幻听|幻视|错觉|时间错位)/.test(text)) {
+          notes.push("感知紊乱：调查结果可能受误导");
+        }
+        return { disabledModes, disabledRisks, notes };
+      }
+
+      const QUICK_ACTION_LIBRARY = {
+        investigate: [
+          { label: "观察环境", text: "我先仔细观察当前环境，寻找异常痕迹。" },
+          { label: "检查细节", text: "我检查附近可疑细节，看看是否有隐藏信息。" },
+          { label: "追查线索", text: "我想围绕“{clue}”继续调查，优先寻找可验证的细节。" },
+          { label: "测绘位置", text: "我记录当前位置与可通行路线，确认退路与盲区。" },
+        ],
+        social: [
+          { label: "礼貌试探", text: "我先用温和语气试探对方，观察其反应与回避点。" },
+          { label: "直问关键", text: "我直接询问与“{clue}”相关的关键问题，逼近事实。" },
+          { label: "核对口供", text: "我复述先前说法并要求对方确认细节，寻找矛盾处。" },
+          { label: "请求协助", text: "我请求在场者提供可验证的时间、地点与目击细节。" },
+        ],
+        survive: [
+          { label: "警戒移动", text: "我保持低声与警戒，先移动到更有掩护的位置。" },
+          { label: "优先撤离", text: "我先组织撤离并确保队伍完整，再考虑继续调查。" },
+          { label: "控制风险", text: "我先确认危险来源与范围，避免无准备接触。" },
+          { label: "使用物品", text: "我尝试使用“{item}”降低当前风险，并观察反馈。" },
+        ],
+        occult: [
+          { label: "辨识符号", text: "我检查现场符号与陈设，判断其可能的仪式含义。" },
+          { label: "低语来源", text: "我追踪异常声音或低语来源，保持记录与对照。" },
+          { label: "神秘关联", text: "我将“{clue}”与已知异常现象进行关联比对。" },
+          { label: "谨慎触发", text: "我在做好防护前提下，进行一次最小接触测试。" },
+        ],
+      };
+
+      function recentNarrationText() {
+        return [...state.history]
+          .reverse()
+          .filter((entry) => entry?.actor_type === "keeper")
+          .slice(0, 3)
+          .map((entry) => textFromI18n(entry.content))
+          .join(" ");
+      }
+
+      function inferQuickActionMode() {
+        const text = recentNarrationText();
+        const dangerWords = ["追逐", "袭击", "威胁", "危险", "尖叫", "血", "黑影"];
+        const occultWords = ["仪式", "符号", "祭坛", "神话", "低语", "异象"];
+        const socialWords = ["询问", "交涉", "证词", "口供", "对话", "目击者"];
+        if (dangerWords.some((word) => text.includes(word))) return "survive";
+        if (occultWords.some((word) => text.includes(word))) return "occult";
+        if (socialWords.some((word) => text.includes(word))) return "social";
+        return "investigate";
+      }
+
+      function quickActionsForMode(mode) {
+        if (mode === "suggested") {
+          const suggested = extractSuggestedActions();
+          if (!suggested.length) {
+            return [{ label: "暂无建议", text: "" }];
+          }
+          return suggested.map((text) => ({
+            label: text,
+            text,
+          }));
+        }
+        const chosenMode = QUICK_ACTION_LIBRARY[mode] ? mode : "investigate";
+        const latestClue = [...(state.clues || [])].reverse().find((clue) => clue?.description || clue?.name);
+        const latestItem = [...(state.items || [])].reverse().find((item) => item?.description || item?.name);
+        const clueName = (latestClue?.name || latestClue?.description || "当前线索").slice(0, 30);
+        const itemName = (latestItem?.name || latestItem?.description || "手边物品").slice(0, 30);
+        return QUICK_ACTION_LIBRARY[chosenMode].map((item) => ({
+          label: item.label,
+          text: item.text.replaceAll("{clue}", clueName).replaceAll("{item}", itemName),
+        }));
+      }
+
+      function sanityToneAugment(action) {
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        const san = Number(stats.san ?? 0);
+        const sanMax = Number((stats.san_max ?? san) || 1);
+        const ratio = sanMax > 0 ? san / sanMax : 1;
+        if (ratio > 0.5) return action;
+        const baseText = String(action.text || "");
+        if (!baseText) return action;
+        if (ratio <= 0.25) {
+          return {
+            ...action,
+            label: `心悸·${action.label}`,
+            text: `${baseText} 我不断怀疑感知是否真实，但还是执行这一步。`,
+          };
+        }
+        return {
+          ...action,
+          label: `不安·${action.label}`,
+          text: `${baseText} 我强压不安继续行动，并准备复核结果。`,
+        };
+      }
+
+      function buildQuickActions() {
+        const mode = state.quickActionMode || inferQuickActionMode();
+        return quickActionsForMode(mode)
+          .map((item) => sanityToneAugment(item))
+          .slice(0, 6);
+      }
+
+      function renderQuickActions() {
+        renderRiskModes();
+        const modeContainer = el("quickModes");
+        const container = el("quickActions");
+        const hint = el("quickModeHint");
+        if (!modeContainer || !container) return;
+        const constraints = deriveSymptomConstraints();
+        const inferredMode = inferQuickActionMode();
+        if (!state.quickActionMode || !QUICK_ACTION_MODES[state.quickActionMode]) {
+          state.quickActionMode = inferredMode;
+        }
+        if (constraints.disabledModes.has(state.quickActionMode)) {
+          state.quickActionMode = "investigate";
+        }
+        if (hint) {
+          const symptomHint = constraints.notes.length ? ` 症状限制：${constraints.notes.join("；")}。` : "";
+          hint.textContent = `风险档位：${RISK_MODE_LABELS[state.riskMode] || "标准"}；推荐模式：${QUICK_ACTION_MODES[inferredMode]}。${symptomHint}按回车发送；按方向键上/下可调用最近输入。`;
+        }
+        modeContainer.innerHTML = "";
+        const suggestedCount = extractSuggestedActions().length;
+        Object.entries(QUICK_ACTION_MODES).forEach(([key, label]) => {
+          const btn = document.createElement("button");
+          btn.className = key === state.quickActionMode ? "quick-mode-btn active" : "quick-mode-btn";
+          btn.type = "button";
+          btn.textContent = key === "suggested" && suggestedCount > 0 ? `${label}(${suggestedCount})` : label;
+          btn.dataset.quickMode = key;
+          if (constraints.disabledModes.has(key)) {
+            btn.disabled = true;
+            btn.title = `症状限制：当前不可使用${MODE_BEHAVIOR_HINT[key] || key}`;
+          }
+          modeContainer.appendChild(btn);
+        });
+        container.innerHTML = "";
+        const disabled = !canSendAction();
+        buildQuickActions().forEach((action) => {
+          const btn = document.createElement("button");
+          btn.className = "quick-action-btn";
+          btn.type = "button";
+          const fullText = String(action.label || "");
+          btn.textContent = fullText.length > 42 ? `${fullText.slice(0, 42)}...` : fullText;
+          btn.title = fullText;
+          btn.disabled = disabled || !String(action.text || "").trim();
+          btn.dataset.actionText = action.text;
+          container.appendChild(btn);
+        });
+      }
+
+      function renderRiskModes() {
+        const container = el("riskModes");
+        if (!container) return;
+        container.innerHTML = "";
+        const disabled = !canSendAction();
+        const constraints = deriveSymptomConstraints();
+        if (constraints.disabledRisks.has(state.riskMode)) {
+          state.riskMode = "standard";
+        }
+        Object.entries(RISK_MODE_LABELS).forEach(([key, label]) => {
+          const btn = document.createElement("button");
+          btn.className = key === state.riskMode ? "risk-mode-btn active" : "risk-mode-btn";
+          btn.type = "button";
+          btn.textContent = label;
+          const riskLocked = constraints.disabledRisks.has(key);
+          btn.disabled = disabled || riskLocked;
+          if (riskLocked) {
+            btn.title = "症状限制：当前不可选择该风险档位";
+          }
+          btn.dataset.riskMode = key;
+          container.appendChild(btn);
+        });
+      }
+
+      function rememberActionDraft(text) {
+        const cleaned = String(text || "").trim();
+        if (!cleaned) return;
+        const history = state.actionDraftHistory;
+        if (history.length && history[history.length - 1] === cleaned) {
+          state.actionDraftCursor = history.length;
+          return;
+        }
+        history.push(cleaned);
+        if (history.length > 30) history.shift();
+        state.actionDraftCursor = history.length;
+      }
+
+      function recallActionDraft(step) {
+        const input = el("actionInput");
+        const history = state.actionDraftHistory;
+        if (!input || !history.length) return;
+        const max = history.length;
+        let next = state.actionDraftCursor + step;
+        if (next < 0) next = 0;
+        if (next > max) next = max;
+        state.actionDraftCursor = next;
+        input.value = next === max ? "" : history[next];
+      }
+
+      function sendPlayerAction(rawText) {
+        const text = String(rawText || "").trim();
+        if (!text) return false;
+        const reason = getActionLockReason();
+        if (reason) {
+          setInputNotice(reason);
+          return false;
+        }
+        const constraints = deriveSymptomConstraints();
+        if (constraints.disabledModes.has(state.quickActionMode)) {
+          setInputNotice(`当前症状限制：不可使用${MODE_BEHAVIOR_HINT[state.quickActionMode] || state.quickActionMode}模式行动。`);
+          return false;
+        }
+        const riskLabel = RISK_MODE_LABELS[state.riskMode] || "标准";
+        const payloadText = `[风险档位:${riskLabel}] ${text}`;
+        state.ws.send(JSON.stringify({
+          type: "client.player_action",
+          payload: {
+            player_id: playerId,
+            action_text: { zh: payloadText, en: "" }
+          }
+        }));
+        rememberActionDraft(text);
+        const input = el("actionInput");
+        if (input) {
+          input.value = "";
+          input.focus();
+        }
+        return true;
+      }
+
+      function updateActionLock() {
+        const player = state.stateView.players?.[playerId] || {};
+        const stats = player.stats || {};
+        const phase = state.stateView.phase || "lobby";
+        const locked = phase !== "active" || (stats.hp ?? 1) <= 0 || (stats.san ?? 1) <= 0 || state.streamingCount > 0;
+        const input = el("actionInput");
+        const btn = el("send");
+        input.disabled = locked;
+        btn.disabled = locked;
+        if (locked) {
+          if (phase !== "active") {
+            input.placeholder = "等待调查开始";
+            setInputNotice("调查尚未开始，请等待主持人开启模组。");
+            setNotice("");
+          } else if ((stats.hp ?? 1) <= 0) {
+            input.placeholder = "你已死亡";
+            setInputNotice("你的角色已死亡，无法行动。");
+            setNotice("你的角色已死亡，无法行动。");
+          } else if ((stats.san ?? 1) <= 0) {
+            input.placeholder = "你已陷入疯狂";
+            setInputNotice("你的角色已陷入疯狂，无法行动。");
+            setNotice("你的角色已陷入疯狂，无法行动。");
+          } else if (state.streamingCount > 0) {
+            input.placeholder = "守密者叙述中...";
+            setInputNotice("守密者正在叙述，请稍候再行动。");
+            setNotice("");
+          } else {
+            input.placeholder = "行动输入...";
+            setInputNotice("");
+            setNotice("");
+          }
+        } else {
+          input.placeholder = "行动输入...";
+          setInputNotice("");
+          setNotice("");
+        }
+        renderQuickActions();
       }
 
       function showLobby() {
@@ -1654,6 +2989,8 @@
         el("creation").classList.add("hidden");
         el("game").classList.remove("hidden");
         el("backToLobby").classList.remove("hidden");
+        state.notebookTab = "guide";
+        state.sideFocusTab = "judge";
       }
 
       function setCreateNotice(text) {
@@ -2032,10 +3369,17 @@
         const serverUrl = window.location.origin;
         try {
           const res = await fetch(`${serverUrl}/professions`);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
           const data = await res.json();
           state.professions = data.professions || {};
+          if (!Object.keys(state.professions).length) {
+            setNotice("职业数据为空，无法正常创建角色。");
+          }
         } catch (e) {
           state.professions = {};
+          setNotice("加载职业数据失败，请检查后端服务。");
         }
         renderProfessionOptions();
       }
@@ -2043,13 +3387,31 @@
       async function loadPlayers() {
         const serverUrl = window.location.origin;
         try {
-          const res = await fetch(
+          const scopedRes = await fetch(
             `${serverUrl}/players?machine_id=${state.machineId}&include_unbound=true`
           );
-          const data = await res.json();
-          state.players = data.players || [];
+          if (!scopedRes.ok) {
+            throw new Error(`HTTP ${scopedRes.status}`);
+          }
+          const scopedData = await scopedRes.json();
+          const scopedPlayers = scopedData.players || [];
+          if (scopedPlayers.length) {
+            state.players = scopedPlayers;
+          } else {
+            // Fallback: local machine id may have changed; show all players for recovery.
+            const allRes = await fetch(`${serverUrl}/players`);
+            if (!allRes.ok) {
+              throw new Error(`HTTP ${allRes.status}`);
+            }
+            const allData = await allRes.json();
+            state.players = allData.players || [];
+            if (state.players.length) {
+              setNotice("未找到本机绑定角色，已显示全部角色。");
+            }
+          }
         } catch (e) {
           state.players = [];
+          setNotice("加载角色列表失败，请检查后端服务。");
         }
         renderLobbyPlayers();
       }
@@ -2153,29 +3515,45 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.ok === false) {
+            throw new Error(data.error || `HTTP ${res.status}`);
+          }
           await loadPlayers();
           el("existingPlayers").value = playerId;
           setCreateNotice("");
           showLobby();
           setNotice("角色创建成功。");
         } catch (e) {
-          setCreateNotice("角色创建失败，请检查后端服务。");
+          const msg = (e && e.message) ? e.message : "请检查后端服务";
+          setCreateNotice(`角色创建失败：${msg}`);
         }
       });
 
-      el("useExisting").addEventListener("click", () => {
+      el("useExisting").addEventListener("click", async () => {
         const selected = el("existingPlayers").value;
         if (!selected) {
           setNotice("请选择一个角色。");
           return;
         }
         playerId = selected;
-        fetch(`${window.location.origin}/players/claim`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ player_id: playerId, machine_id: state.machineId }),
-        });
+        try {
+          const res = await fetch(`${window.location.origin}/players/claim`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ player_id: playerId, machine_id: state.machineId }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.ok === false) {
+            const reason = data.error || ("HTTP " + res.status);
+            setNotice("绑定角色失败：" + reason);
+            return;
+          }
+        } catch (e) {
+          const msg = (e && e.message) ? e.message : "网络错误";
+          setNotice("绑定角色失败：" + msg);
+          return;
+        }
         showGame();
         connect();
       });
@@ -2212,6 +3590,7 @@
             type: "client.join",
             payload: { player_id: playerId, role: "player" }
           }));
+          updateActionLock();
         };
         state.ws.onmessage = (evt) => {
           const message = JSON.parse(evt.data);
@@ -2228,9 +3607,13 @@
               state.items = [];
               state.clues = [];
               state.findingHighlights = { items: {}, clues: {} };
+              state.npcRelations = {};
+              state.npcOrder = [];
+              state.npcTrustHighlights = {};
             }
             rebuildFindingsFromHistory();
             syncFindingsFromState();
+            rebuildNpcRelationsFromHistory();
             renderAll();
             return;
           }
@@ -2240,12 +3623,17 @@
             if (Array.isArray(entry)) {
               state.history = entry;
               rebuildFindingsFromHistory();
+              rebuildNpcRelationsFromHistory();
             } else {
               if (state.streamingCount > 0 && (!streamId || !state.activeStreamIds.has(streamId))) {
                 state.pendingEntries.push({ entry, streamId });
               } else {
                 pushHistoryEntry(entry, streamId);
                 toastFromEntry(entry);
+                const idx = streamId
+                  ? state.history.findIndex((item) => item.stream_id === streamId)
+                  : state.history.length - 1;
+                if (idx >= 0) ingestNpcMentionsFromEntry(state.history[idx], idx);
                 (entry.actions || []).forEach((action) => {
                   if (["add_item", "add_clue", "add_status"].includes(action.function_name)) {
                     applyFindingAction(action);
@@ -2255,7 +3643,11 @@
             }
             renderHistory();
             renderRollPanel();
-            renderFindings();
+            renderOutcomePanel();
+            renderOmenPanel();
+            renderSymptomsPanel();
+            renderNpcPanel();
+            renderNotebook();
             if (entry?.state_diff?.ending_id) {
               showEndingModal(entry);
             }
@@ -2275,6 +3667,7 @@
               });
               renderHistory();
             }
+            updateActionLock();
             return;
           }
           if (message.type === "server.keeper_stream_delta") {
@@ -2297,12 +3690,18 @@
               state.items = [];
               state.clues = [];
               state.findingHighlights = { items: {}, clues: {} };
+              state.npcRelations = {};
+              state.npcOrder = [];
+              state.npcTrustHighlights = {};
             }
             syncFindingsFromState();
             renderPlayerCard();
             renderRoomPlayers();
+            renderNpcPanel();
             updateActionLock();
-            renderFindings();
+            renderOmenPanel();
+            renderSymptomsPanel();
+            renderNotebook();
             renderSummary();
           }
           if (message.type === "server.module_info") {
@@ -2321,9 +3720,16 @@
             state.items = [];
             state.clues = [];
             state.findingHighlights = { items: {}, clues: {} };
+            state.npcRelations = {};
+            state.npcOrder = [];
+            state.npcTrustHighlights = {};
             renderHistory();
             renderRollPanel();
-            renderFindings();
+            renderOutcomePanel();
+            renderOmenPanel();
+            renderSymptomsPanel();
+            renderNpcPanel();
+            renderNotebook();
             return;
           }
           if (message.type === "server.keeper_stream_end") {
@@ -2333,11 +3739,13 @@
             if (state.streamingCount === 0) {
               flushPendingEntries();
             }
+            updateActionLock();
           }
         };
         state.ws.onclose = () => {
           el("status").className = "status off";
           el("status").textContent = "DISCONNECTED";
+          updateActionLock();
         };
         state.ws.onerror = () => {
           el("status").className = "status warn";
@@ -2347,23 +3755,8 @@
       }
 
       el("send").addEventListener("click", () => {
-        if (!state.ws || state.ws.readyState !== 1) return;
         const input = el("actionInput");
-        const player = state.stateView.players?.[playerId] || {};
-        const stats = player.stats || {};
-        if ((stats.hp ?? 1) <= 0 || (stats.san ?? 1) <= 0) {
-          setNotice("你的角色已死亡或疯狂，无法行动。");
-          return;
-        }
-        if (!input.value.trim()) return;
-        state.ws.send(JSON.stringify({
-          type: "client.player_action",
-          payload: {
-            player_id: playerId,
-            action_text: { zh: input.value, en: "" }
-          }
-        }));
-        input.value = "";
+        sendPlayerAction(input.value);
       });
 
       el("closeEnding").addEventListener("click", () => {
@@ -2372,8 +3765,43 @@
 
       el("actionInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
+          e.preventDefault();
           el("send").click();
+          return;
         }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          recallActionDraft(-1);
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          recallActionDraft(1);
+        }
+      });
+
+      el("quickActions").addEventListener("click", (event) => {
+        const button = event.target?.closest?.(".quick-action-btn");
+        if (!button) return;
+        sendPlayerAction(button.dataset.actionText || "");
+      });
+
+      el("quickModes").addEventListener("click", (event) => {
+        const button = event.target?.closest?.(".quick-mode-btn");
+        if (!button) return;
+        const mode = button.dataset.quickMode || "investigate";
+        if (!QUICK_ACTION_MODES[mode]) return;
+        state.quickActionMode = mode;
+        renderQuickActions();
+      });
+
+      el("riskModes").addEventListener("click", (event) => {
+        const button = event.target?.closest?.(".risk-mode-btn");
+        if (!button) return;
+        const mode = button.dataset.riskMode || "standard";
+        if (!RISK_MODE_LABELS[mode]) return;
+        state.riskMode = mode;
+        renderQuickActions();
       });
 
       el("toggleAttrs").addEventListener("click", () => {
@@ -2386,6 +3814,29 @@
         renderPlayerCard();
       });
 
+      el("tabGuide").addEventListener("click", () => {
+        state.notebookTab = "guide";
+        renderNotebook();
+      });
+      el("tabClues").addEventListener("click", () => {
+        state.notebookTab = "clues";
+        renderNotebook();
+      });
+      el("tabItems").addEventListener("click", () => {
+        state.notebookTab = "items";
+        renderNotebook();
+      });
+
+      el("focusTabJudge").addEventListener("click", () => {
+        state.sideFocusTab = "judge";
+        renderFocusPanel();
+      });
+
+      el("focusTabSignal").addEventListener("click", () => {
+        state.sideFocusTab = "signal";
+        renderFocusPanel();
+      });
+
       el("backToLobby").addEventListener("click", async () => {
         if (state.ws) state.ws.close();
         state.history = [];
@@ -2395,11 +3846,15 @@
         state.items = [];
         state.clues = [];
         state.findingHighlights = { items: {}, clues: {} };
+        state.npcRelations = {};
+        state.npcOrder = [];
+        state.npcTrustHighlights = {};
         document.documentElement.setAttribute("data-theme", "archive");
         showLobby();
         await loadPlayers();
         renderLobbyPlayers();
-        renderFindings();
+        renderNotebook();
+        renderNpcPanel();
       });
 
       loadProfessions();

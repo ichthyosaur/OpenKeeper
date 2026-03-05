@@ -38,6 +38,7 @@ from app.keeper import KeeperStub
 from app.keeper_llm import KeeperLLM
 from app.session import SessionManager
 from app.visibility import filter_history, filter_state
+from app.connections import ConnectionManager
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -181,146 +182,13 @@ def _guess_lan_ip() -> str:
     return ip
 
 
-class Connection:
-    def __init__(self, ws: WebSocket, player_id: str, role: str) -> None:
-        self.ws = ws
-        self.player_id = player_id
-        self.role = role
-        self.stream_lock = asyncio.Lock()
-
-
-class ConnectionManager:
-    def __init__(self) -> None:
-        self.connections: list[Connection] = []
-        self.lock = asyncio.Lock()
-        self._online: dict[str, int] = {}
-
-    async def connect(self, ws: WebSocket, player_id: str, role: str) -> Connection:
-        conn = Connection(ws, player_id, role)
-        async with self.lock:
-            self.connections.append(conn)
-            self._online[player_id] = self._online.get(player_id, 0) + 1
-        return conn
-
-    async def disconnect(self, conn: Connection) -> None:
-        async with self.lock:
-            if conn in self.connections:
-                self.connections.remove(conn)
-            if conn.player_id in self._online:
-                self._online[conn.player_id] -= 1
-                if self._online[conn.player_id] <= 0:
-                    self._online.pop(conn.player_id, None)
-
-    async def online_player_ids(self) -> list[str]:
-        async with self.lock:
-            return list(self._online.keys())
-
-    async def broadcast(self, message: dict[str, Any]) -> None:
-        async with self.lock:
-            targets = list(self.connections)
-        for conn in targets:
-            await conn.ws.send_json(message)
-
-    async def broadcast_filtered(self, entries: list, session: SessionManager) -> None:
-        async with self.lock:
-            targets = list(self.connections)
-        tasks = [
-            asyncio.create_task(self._send_entries(conn, entries, session))
-            for conn in targets
-        ]
-        if tasks:
-            await asyncio.gather(*tasks)
-
-    async def _send_entries(self, conn: Connection, entries: list, session: SessionManager) -> None:
-        filtered = filter_history(entries, conn.player_id, conn.role)
-        for entry in filtered:
-            if entry.actor_type == "keeper" and entry.content:
-                app.state.last_keeper_text = entry.content.zh or entry.content.en or ""
-                stream_id = str(uuid.uuid4())
-                async with conn.stream_lock:
-                    await self._stream_keeper_entry(conn, entry, stream_id)
-                    await conn.ws.send_json(
-                        {
-                            "type": "server.history_append",
-                            "payload": {
-                                "entry": entry.model_dump(mode="json"),
-                                "visible_to": entry.visible_to,
-                                "stream_id": stream_id,
-                            },
-                        }
-                    )
-                continue
-            await conn.ws.send_json(
-                {
-                    "type": "server.history_append",
-                    "payload": {
-                        "entry": entry.model_dump(mode="json"),
-                        "visible_to": entry.visible_to,
-                    },
-                }
-            )
-        await conn.ws.send_json(
-            {
-                "type": "server.state_update",
-                "payload": {
-                    "state_diff": filter_state(
-                        session.state.current_state, conn.player_id, conn.role
-                    ),
-                    "online_player_ids": await self.online_player_ids(),
-                    "visible_to": ["all"],
-                },
-            }
-        )
-
-    async def _stream_keeper_entry(self, conn: Connection, entry, stream_id: str) -> None:
-        content = entry.content
-        if content is None:
-            return
-        text = content.zh or content.en or ""
-        await conn.ws.send_json(
-            {
-                "type": "server.keeper_stream_start",
-                "payload": {
-                    "stream_id": stream_id,
-                    "actor_type": entry.actor_type,
-                    "message_type": entry.message_type,
-                },
-            }
-        )
-        interval = 0.05
-        chunk_size = max(1, int(app.state.config.stream_cps * interval))
-        for i in range(0, len(text), chunk_size):
-            await conn.ws.send_json(
-                {
-                    "type": "server.keeper_stream_delta",
-                    "payload": {"stream_id": stream_id, "delta": text[i : i + chunk_size]},
-                }
-            )
-            await asyncio.sleep(interval)
-        await conn.ws.send_json(
-            {"type": "server.keeper_stream_end", "payload": {"stream_id": stream_id}}
-        )
-    async def broadcast_state(self, session: SessionManager) -> None:
-        async with self.lock:
-            targets = list(self.connections)
-        online_ids = await self.online_player_ids()
-        for conn in targets:
-            await conn.ws.send_json(
-                {
-                    "type": "server.state_update",
-                    "payload": {
-                        "state_diff": filter_state(
-                            session.state.current_state, conn.player_id, conn.role
-                        ),
-                        "online_player_ids": online_ids,
-                        "visible_to": ["all"],
-                    },
-                }
-            )
-
-
 config = load_config(CONFIG_PATH)
-connections = ConnectionManager()
+connections = ConnectionManager(
+    get_stream_cps=lambda: app.state.config.stream_cps,
+    on_keeper_text=lambda text: setattr(app.state, "last_keeper_text", text),
+    filter_history=filter_history,
+    filter_state=filter_state,
+)
 
 
 def _persist_config() -> None:
@@ -329,6 +197,7 @@ def _persist_config() -> None:
         "mongo_db": app.state.config.mongo_db,
         "history_count": app.state.config.history_count,
         "max_followups": app.state.config.max_followups,
+        "followup_delay_ms": app.state.config.followup_delay_ms,
         "stream_cps": app.state.config.stream_cps,
         "temperature": app.state.config.temperature,
         "llm_parse_retries": app.state.config.llm_parse_retries,
@@ -432,6 +301,7 @@ async def startup() -> None:
         module,
         history_count=config.history_count,
         max_followups=config.max_followups,
+        followup_delay_ms=config.followup_delay_ms,
         keeper=keeper_llm,
         keeper_mode="llm",
     )
@@ -695,7 +565,11 @@ async def list_modules() -> dict[str, Any]:
     modules_dir = APP_ROOT / "modules"
     modules = []
     for path in modules_dir.glob("*.json"):
-        modules.append({"id": path.stem, "filename": path.name})
+        try:
+            module = load_module(path)
+        except Exception:
+            continue
+        modules.append({"id": path.stem, "filename": path.name, "name": module.module_name})
     return {"modules": modules}
 
 
@@ -900,6 +774,7 @@ async def start_session(payload: dict[str, Any]) -> dict[str, Any]:
         current_state=dict(previous.state.current_state),
         history_count=app.state.config.history_count,
         max_followups=app.state.config.max_followups,
+        followup_delay_ms=app.state.config.followup_delay_ms,
         keeper=previous.keeper,
         keeper_mode=previous.keeper_mode,
     )
@@ -909,7 +784,7 @@ async def start_session(payload: dict[str, Any]) -> dict[str, Any]:
     app.state.module = module
     app.state.session = session
     entry = await session.add_keeper_narration(
-        I18NText(zh=module.entry_narration, en=module.entry_narration)
+        I18NText(zh=module.opening_narration, en=module.opening_narration)
     )
     await connections.broadcast({"type": "server.history_clear", "payload": {"reason": "module_switch"}})
     await connections.broadcast(
@@ -948,6 +823,7 @@ async def get_config() -> dict[str, Any]:
     return {
         "history_count": config.history_count,
         "max_followups": config.max_followups,
+        "followup_delay_ms": config.followup_delay_ms,
         "stream_cps": config.stream_cps,
         "temperature": config.temperature,
         "llm_parse_retries": config.llm_parse_retries,
@@ -992,6 +868,19 @@ async def update_max_followups(payload: dict[str, Any]) -> dict[str, Any]:
     app.state.session.max_followups = count
     _persist_config()
     return {"ok": True, "max_followups": count}
+
+
+@app.post("/config/followup-delay")
+async def update_followup_delay(payload: dict[str, Any]) -> dict[str, Any]:
+    value = payload.get("followup_delay_ms")
+    try:
+        delay_ms = max(0, int(value))
+    except Exception:
+        return {"ok": False, "error": "followup_delay_ms must be int"}
+    app.state.config.followup_delay_ms = delay_ms
+    app.state.session.followup_delay_ms = delay_ms
+    _persist_config()
+    return {"ok": True, "followup_delay_ms": delay_ms}
 
 
 @app.post("/config/stream")

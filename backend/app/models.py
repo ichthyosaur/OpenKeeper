@@ -38,6 +38,7 @@ class ActionCall(BaseModel):
         "apply_damage",
         "apply_sanity_change",
         "update_player_attribute",
+        "update_npc_trust",
         "add_item",
         "add_clue",
         "add_status",
@@ -53,7 +54,7 @@ class KeeperOutput(BaseModel):
     visible_to: list[str]
     content: I18NText
     actions: list[ActionCall] = Field(default_factory=list)
-    notes: Optional[str] = None
+    notes: Optional[Any] = None
 
 
 class PlayerAttributes(BaseModel):
@@ -124,91 +125,89 @@ class SessionState(BaseModel):
     active: bool = True
 
 
-class ModuleCharacter(BaseModel):
-    name: str
-    public_info: str
-    hidden_secrets: str
-
-
-class ModuleEnding(BaseModel):
-    ending_id: str
-    description: str
-    conditions: str
-
-
-class ModuleLocation(BaseModel):
-    name: str
-    description: str
-    features: list[str] = []
-    secrets: list[str] = []
-    connections: list[str] = []
-
-
-class ModuleScene(BaseModel):
-    scene_id: str
+class ModuleNode(BaseModel):
+    node_id: str
     title: str
-    summary: str
-    beats: list[str] = []
-    required_clues: list[str] = []
-    outcomes: list[str] = []
+    mood: str
+    public_signals: list[str] = Field(default_factory=list)
+    hidden_truths: list[str] = Field(default_factory=list)
+    connected_nodes: list[str] = Field(default_factory=list)
+
+
+class ModuleNpc(BaseModel):
+    npc_id: str
+    name: str
+    role: str
+    public_face: str
+    private_motive: str
+    pressure_points: list[str] = Field(default_factory=list)
 
 
 class ModuleClue(BaseModel):
     clue_id: str
+    name: str
     description: str
-    location: str
-    linked_to: list[str] = []
-    reveal: str = ""
-
-
-class ModuleEvent(BaseModel):
-    event_id: str
-    trigger: str
-    description: str
-    consequences: list[str] = []
+    discovered_at: list[str] = Field(default_factory=list)
+    validates: list[str] = Field(default_factory=list)
+    ambiguity: str = "medium"
+    reliability: str = "pending"
 
 
 class ModuleItem(BaseModel):
+    item_id: str
     name: str
     description: str
-    effect: str = ""
-    location: str = ""
+    discovered_at: list[str] = Field(default_factory=list)
+    usage_hint: str = ""
 
 
-class ModuleFaction(BaseModel):
+class ModuleClockStage(BaseModel):
+    at: int
+    omen: str
+
+
+class ModuleClockTickRule(BaseModel):
+    event: Literal[
+        "check_failure",
+        "check_fumble",
+        "hp_loss",
+        "san_loss",
+        "status_added",
+    ]
+    amount: int = 1
+    min_loss: int = 1
+    status_contains: str = ""
+    action_names: list[str] = Field(default_factory=list)
+
+
+class ModuleThreatClock(BaseModel):
     name: str
-    goal: str
-    resources: list[str] = []
-    methods: list[str] = []
-    attitude: str = ""
+    max: int = 6
+    tick_triggers: list[str] = Field(default_factory=list)
+    stages: list[ModuleClockStage] = Field(default_factory=list)
+    tick_rules: list[ModuleClockTickRule] = Field(default_factory=list)
 
 
-class ModuleThreat(BaseModel):
-    name: str
-    nature: str
-    signs: list[str] = []
-    escalation: list[str] = []
-    weakness: str = ""
-
-
-class ModuleTimelineEntry(BaseModel):
-    time: str
-    event: str
+class ModuleEnding(BaseModel):
+    ending_id: str
+    title: str
+    summary: str
+    trigger: str
 
 
 class Module(BaseModel):
+    module_id: str
     module_name: str
     introduction: str
-    entry_narration: str
-    key_characters: list[ModuleCharacter]
-    core_secrets: list[str]
-    possible_endings: list[ModuleEnding]
-    ending_triggers: list[str] = []
-    locations: list[ModuleLocation] = []
-    scenes: list[ModuleScene] = []
-    clues: list[ModuleClue] = []
-    events: list[ModuleEvent] = []
-    items: list[ModuleItem] = []
-    factions: list[ModuleFaction] = []
-    threats: list[ModuleThreat] = []
-    timeline: list[ModuleTimelineEntry] = []
+    opening_narration: str
+    tone: str = "mysterious, restrained, uneasy"
+    investigation_principles: list[str] = Field(default_factory=list)
+    nodes: list[ModuleNode] = Field(default_factory=list)
+    npcs: list[ModuleNpc] = Field(default_factory=list)
+    clues: list[ModuleClue] = Field(default_factory=list)
+    items: list[ModuleItem] = Field(default_factory=list)
+    threat_clock: ModuleThreatClock
+    victory_conditions: list[str] = Field(default_factory=list)
+    failure_conditions: list[str] = Field(default_factory=list)
+    endings: list[ModuleEnding] = Field(default_factory=list)
+    keeper_notes: list[str] = Field(default_factory=list)

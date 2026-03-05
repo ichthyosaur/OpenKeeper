@@ -176,6 +176,9 @@
         font-size: 12px;
       }
       .badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: rgba(246, 232, 198, 0.92); color: var(--ink); font-size: 12px; outline: 1px solid rgba(92, 64, 51, 0.45); box-shadow: inset 0 0 10px rgba(92, 64, 51, 0.18); }
+      .lan-tip { margin-top: 10px; padding: 10px; border-radius: 10px; outline: 1px dashed rgba(92, 64, 51, 0.35); background: rgba(244, 228, 193, 0.98); display: grid; gap: 8px; }
+      .lan-title { font-weight: 600; font-size: 13px; }
+      .lan-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; word-break: break-all; }
       input, select {
         padding: 9px 12px;
         border-radius: 8px;
@@ -491,6 +494,9 @@
             <label>递归续写上限
               <input id="maxFollowups" type="number" min="0" value="2" />
             </label>
+            <label>续写间隔（毫秒）
+              <input id="followupDelayMs" type="number" min="0" step="100" value="1200" />
+            </label>
             <label>流式速度（字/秒）
               <input id="streamCps" type="number" min="1" value="50" />
             </label>
@@ -572,6 +578,8 @@
               <div class="summary-row"><span>阶段</span><span id="summaryPhase">-</span></div>
               <div class="summary-row"><span>玩家</span><span id="summaryPlayers">0</span></div>
               <div class="summary-row"><span>记录</span><span id="summaryHistory">0</span></div>
+              <div class="summary-row"><span>威胁时钟</span><span id="summaryClock">0 / 0</span></div>
+              <div class="summary-row"><span>当前征兆</span><span id="summaryOmen">—</span></div>
               <div class="summary-row"><span>日期</span><span id="summaryDate">-</span></div>
               <div class="summary-row intro"><span>简介</span><span id="summaryIntro">-</span></div>
             </div>
@@ -873,6 +881,10 @@
           phase === "active" ? state.sessionInfo?.module_introduction || "" : "";
         const players = Object.keys(state.stateView.players || {}).length;
         const historyCount = state.history.length;
+        const threatClock = state.stateView.threat_clock || {};
+        const clockValue = Number(threatClock.value ?? 0);
+        const clockMax = Number(threatClock.max ?? 0);
+        const omen = (threatClock.current_omen || "").trim() || "—";
         const date = new Date().toLocaleDateString("en-US", {
           month: "short",
           day: "2-digit",
@@ -886,6 +898,8 @@
         set("summaryPhase", phaseMap[phase] || phase);
         set("summaryPlayers", String(players));
         set("summaryHistory", String(historyCount));
+        set("summaryClock", `${clockValue} / ${clockMax || "?"}`);
+        set("summaryOmen", omen);
         set("summaryDate", date);
         set("summaryIntro", intro || "—");
       }
@@ -1204,6 +1218,7 @@
           const data = await res.json();
           if (typeof data.history_count === "number") el("historyCount").value = data.history_count;
           if (typeof data.max_followups === "number") el("maxFollowups").value = data.max_followups;
+          if (typeof data.followup_delay_ms === "number") el("followupDelayMs").value = data.followup_delay_ms;
           if (typeof data.stream_cps === "number") el("streamCps").value = data.stream_cps;
           if (typeof data.temperature === "number") el("temperature").value = data.temperature;
           if (typeof data.llm_parse_retries === "number") el("llmRetry").value = data.llm_parse_retries;
@@ -1265,8 +1280,29 @@
         const data = await res.json();
         if (data.ok) {
           setNotice("游戏已重置。");
+          const nextPlayers = {};
+          Object.entries(state.stateView.players || {}).forEach(([pid, p]) => {
+            const stats = { ...(p.stats || {}) };
+            const hpMax = stats.hp_max ?? stats.hp ?? 0;
+            const sanMax = stats.san_max ?? stats.san ?? 0;
+            stats.hp = hpMax;
+            stats.san = sanMax;
+            nextPlayers[pid] = { ...p, stats, statuses: [], items: [], clues: [] };
+          });
+          const prevClock = state.stateView.threat_clock || {};
+          state.stateView = {
+            ...state.stateView,
+            players: nextPlayers,
+            threat_clock: {
+              ...prevClock,
+              value: 0,
+              last_omen_at: 0,
+              current_omen: "",
+            },
+          };
           state.history = [];
           renderHistory();
+          renderPlayers();
           renderSummary();
         } else {
           setNotice("重置失败。");
@@ -1339,6 +1375,21 @@
         const data = await res.json();
         if (data.ok) {
           setNotice(`递归上限已更新：${data.max_followups}`);
+        } else {
+          setNotice(data.error || "更新失败");
+        }
+      }
+
+      async function updateFollowupDelay() {
+        const value = el("followupDelayMs").value;
+        const res = await fetch(`${serverUrl}/config/followup-delay`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ followup_delay_ms: value }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setNotice(`续写间隔已更新：${data.followup_delay_ms} ms`);
         } else {
           setNotice(data.error || "更新失败");
         }
@@ -1559,6 +1610,7 @@
       el("hostMsgType").addEventListener("change", toggleSecretSelect);
       el("historyCount").addEventListener("change", updateHistoryCount);
       el("maxFollowups").addEventListener("change", updateMaxFollowups);
+      el("followupDelayMs").addEventListener("change", updateFollowupDelay);
       el("streamCps").addEventListener("change", updateStreamCps);
       el("temperature").addEventListener("change", updateTemperature);
       el("llmRetry").addEventListener("change", updateLlmRetry);
